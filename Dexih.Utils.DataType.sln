@@ -3,7 +3,25 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26730.12
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dexih.Utils.DataType", "src\Dexih.Utils.DataType\Dexih.Utils.DataType.csproj", "{5843FFFA-BE89-45F2-9995-722EA5723A83}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dexih.Utils.DataType.Tests", "test\Dexih.Utils.DataType.Tests\Dexih.Utils.DataType.Tests.csproj", "{426735E6-58B8-479F-9CC7-3A6874DE6D09}"
+EndProject
 Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5843FFFA-BE89-45F2-9995-722EA5723A83}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5843FFFA-BE89-45F2-9995-722EA5723A83}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5843FFFA-BE89-45F2-9995-722EA5723A83}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5843FFFA-BE89-45F2-9995-722EA5723A83}.Release|Any CPU.Build.0 = Release|Any CPU
+		{426735E6-58B8-479F-9CC7-3A6874DE6D09}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{426735E6-58B8-479F-9CC7-3A6874DE6D09}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{426735E6-58B8-479F-9CC7-3A6874DE6D09}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{426735E6-58B8-479F-9CC7-3A6874DE6D09}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
