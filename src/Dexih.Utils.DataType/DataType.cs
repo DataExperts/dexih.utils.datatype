@@ -49,6 +49,7 @@ namespace Dexih.Utils.DataType
             Double,
             Single,
             String,
+            Text,
             Boolean,
             DateTime,
             Time,
@@ -90,6 +91,7 @@ namespace Dexih.Utils.DataType
                 case ETypeCode.Single:
                     return float.MaxValue;
                 case ETypeCode.String:
+                case ETypeCode.Text:
                     return new string('Z', length);
                 case ETypeCode.Boolean:
                     return true;
@@ -140,6 +142,7 @@ namespace Dexih.Utils.DataType
                 case ETypeCode.Single:
                     return float.MinValue;
                 case ETypeCode.String:
+                case ETypeCode.Text:
                     return "";
                 case ETypeCode.Boolean:
                     return false;
@@ -180,6 +183,7 @@ namespace Dexih.Utils.DataType
                 case ETypeCode.Double:
                 case ETypeCode.Single: return EBasicType.Numeric;
                 case ETypeCode.Guid:
+                case ETypeCode.Text:
                 case ETypeCode.String: return EBasicType.String;
                 case ETypeCode.Boolean: return EBasicType.Boolean;
                 case ETypeCode.DateTime: return EBasicType.Date;
@@ -358,6 +362,8 @@ namespace Dexih.Utils.DataType
                     return DbType.Single;
                 case ETypeCode.String:
                     return DbType.String;
+                case ETypeCode.Text:
+                    return DbType.String;
                 case ETypeCode.Boolean:
                     return DbType.Boolean;
                 case ETypeCode.DateTime:
@@ -439,6 +445,7 @@ namespace Dexih.Utils.DataType
                 case ETypeCode.Single:
                     return Math.Abs((float)inputValue - (float)compareValue) < 0.0001 ? ECompareResult.Equal : (float)inputValue > (float)compareValue ? ECompareResult.Greater : ECompareResult.Less;
                 case ETypeCode.String:
+                case ETypeCode.Text:
                     var compareResult = string.Compare((string)inputValue, (string)compareValue);
                     return compareResult == 0 ? ECompareResult.Equal : compareResult < 0 ? ECompareResult.Less : ECompareResult.Greater;
                 case ETypeCode.Guid:
@@ -479,6 +486,12 @@ namespace Dexih.Utils.DataType
                 {
                     throw new DataTypeParseException("The string " + inputValue + " exceeds the maximum length of " + maxLength);
                 }
+                return result;
+            }
+
+            if (tryDataType == ETypeCode.Text)
+            {
+                result = inputValue is DBNull ? null : inputValue.ToString();
                 return result;
             }
 
@@ -598,7 +611,7 @@ namespace Dexih.Utils.DataType
             {
                 string value;
 
-                if (inputType != ETypeCode.String)
+                if (inputType != ETypeCode.String && inputType != ETypeCode.Text)
                     value = inputValue.ToString();
                 else
                     value = (string)inputValue;
@@ -685,6 +698,7 @@ namespace Dexih.Utils.DataType
                         result = sbyteResult;
                         break;
                     case ETypeCode.String:
+                    case ETypeCode.Text:
                         result = value;
                         break;
                     case ETypeCode.Guid:
