@@ -204,37 +204,37 @@ namespace Dexih.Utils.DataType
         /// <returns>ETypeCode</returns>
         public static ETypeCode GetTypeCode(Type dataType)
         {
-            if (dataType == typeof(byte))
+            if (dataType == typeof(byte) || dataType == typeof(byte?))
                 return ETypeCode.Byte;
-            if (dataType == typeof(sbyte))
+            if (dataType == typeof(sbyte) || dataType == typeof(sbyte?))
                 return ETypeCode.SByte;
-            if (dataType == typeof(ushort))
+            if (dataType == typeof(ushort) || dataType == typeof(ushort?))
                 return ETypeCode.UInt16;
-            if (dataType == typeof(uint))
+            if (dataType == typeof(uint) || dataType == typeof(uint?))
                 return ETypeCode.UInt32;
-            if (dataType == typeof(ulong))
+            if (dataType == typeof(ulong) || dataType == typeof(ulong?))
                 return ETypeCode.UInt64;
-            if (dataType == typeof(short))
+            if (dataType == typeof(short) || dataType == typeof(short?))
                 return ETypeCode.Int16;
-            if (dataType == typeof(int))
+            if (dataType == typeof(int) || dataType == typeof(int?))
                 return ETypeCode.Int32;
-            if (dataType == typeof(long))
+            if (dataType == typeof(long) || dataType == typeof(long?))
                 return ETypeCode.Int64;
-            if (dataType == typeof(decimal))
+            if (dataType == typeof(decimal) || dataType == typeof(decimal?))
                 return ETypeCode.Decimal;
-            if (dataType == typeof(double))
+            if (dataType == typeof(double) || dataType == typeof(double?))
                 return ETypeCode.Double;
-            if (dataType == typeof(float))
+            if (dataType == typeof(float) || dataType == typeof(float?))
                 return ETypeCode.Single;
             if (dataType == typeof(string))
                 return ETypeCode.String;
-            if (dataType == typeof(bool))
+            if (dataType == typeof(bool) || dataType == typeof(bool?) )
                 return ETypeCode.Boolean;
-            if (dataType == typeof(DateTime))
+            if (dataType == typeof(DateTime) || dataType == typeof(DateTime?))
                 return ETypeCode.DateTime;
-            if (dataType == typeof(TimeSpan))
+            if (dataType == typeof(TimeSpan) || dataType == typeof(TimeSpan?))
                 return ETypeCode.Time;
-            if (dataType == typeof(Guid))
+            if (dataType == typeof(Guid) || dataType == typeof(Guid?))
                 return ETypeCode.Guid;
             if (dataType == typeof(byte[]))
                 return ETypeCode.Binary;
