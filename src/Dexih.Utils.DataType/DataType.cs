@@ -256,11 +256,12 @@ namespace Dexih.Utils.DataType
         {
             switch (jsonType)
             {
-                case JTokenType.None:
                 case JTokenType.Object:
                 case JTokenType.Array:
                 case JTokenType.Constructor:
                 case JTokenType.Property:
+                    return ETypeCode.Json;
+                case JTokenType.None:
                 case JTokenType.Comment:
                 case JTokenType.Null:
                 case JTokenType.Undefined:
