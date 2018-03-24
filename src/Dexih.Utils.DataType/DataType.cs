@@ -208,7 +208,7 @@ namespace Dexih.Utils.DataType
         /// <returns>ETypeCode</returns>
         public static ETypeCode GetTypeCode(Type dataType)
         {
-            if (dataType == typeof(byte) || dataType == typeof(byte?))
+            if (dataType == typeof(byte) || dataType == typeof(byte?) || dataType == typeof(byte&))
                 return ETypeCode.Byte;
             if (dataType == typeof(sbyte) || dataType == typeof(sbyte?))
                 return ETypeCode.SByte;
