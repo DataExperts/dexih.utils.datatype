@@ -211,5 +211,61 @@ namespace Dexih.Utils.DataType.Tests
         {
             Assert.Throws(typeof(DataTypeParseException),() => DataType.TryParse(dataType, inputValue, maxLength));
         }
+
+        [Theory]
+        [InlineData(ETypeCode.UInt16, (ushort)5, (ushort) 3, (ushort) 8)]
+        [InlineData(ETypeCode.UInt32, (uint)5, (uint) 3, (uint) 8)]
+        [InlineData(ETypeCode.UInt64, (ulong)5, (ulong) 3, (ulong) 8)]
+        [InlineData(ETypeCode.Int16, (short)5, (short) 3, (short) 8)]
+        [InlineData(ETypeCode.Int32, (int)5, (int) 3, (int) 8)]
+        [InlineData(ETypeCode.Int64, (long)5, (long) 3, (long) 8)]
+        [InlineData(ETypeCode.Double, (double)5, (double) 3, (double) 8)]
+        //[InlineData(ETypeCode.Decimal, (decimal)5, (decimal) 3, (decimal) 8)]
+        public void DataType_Add(ETypeCode dataType, object value1, object value2, object expected)
+        {
+            Assert.Equal(expected, DataType.Add(dataType, value1, value2));
+        }
+        
+        [Theory]
+        [InlineData(ETypeCode.UInt16, (ushort)5, (ushort) 3, (ushort) 2)]
+        [InlineData(ETypeCode.UInt32, (uint)5, (uint) 3, (uint) 2)]
+        [InlineData(ETypeCode.UInt64, (ulong)5, (ulong) 3, (ulong) 2)]
+        [InlineData(ETypeCode.Int16, (short)5, (short) 3, (short) 2)]
+        [InlineData(ETypeCode.Int32, (int)5, (int) 3, (int) 2)]
+        [InlineData(ETypeCode.Int64, (long)5, (long) 3, (long) 2)]
+        [InlineData(ETypeCode.Double, (double)5, (double) 3, (double) 2)]
+        //[InlineData(ETypeCode.Decimal, (decimal)5, (decimal) 3, (decimal) 8)]
+        public void DataType_Subtract(ETypeCode dataType, object value1, object value2, object expected)
+        {
+            Assert.Equal(expected, DataType.Subtract(dataType, value1, value2));
+        }
+        
+        [Theory]
+        [InlineData(ETypeCode.UInt16, (ushort)5, (ushort) 3, (ushort) 15)]
+        [InlineData(ETypeCode.UInt32, (uint)5, (uint) 3, (uint) 15)]
+        [InlineData(ETypeCode.UInt64, (ulong)5, (ulong) 3, (ulong) 15)]
+        [InlineData(ETypeCode.Int16, (short)5, (short) 3, (short) 15)]
+        [InlineData(ETypeCode.Int32, (int)5, (int) 3, (int) 15)]
+        [InlineData(ETypeCode.Int64, (long)5, (long) 3, (long) 15)]
+        [InlineData(ETypeCode.Double, (double)5, (double) 3, (double) 15)]
+        //[InlineData(ETypeCode.Decimal, (decimal)5, (decimal) 3, (decimal) 8)]
+        public void DataType_Multiply(ETypeCode dataType, object value1, object value2, object expected)
+        {
+            Assert.Equal(expected, DataType.Multiply(dataType, value1, value2));
+        }
+        
+        [Theory]
+        [InlineData(ETypeCode.UInt16, (ushort)6, (ushort) 3, (ushort) 2)]
+        [InlineData(ETypeCode.UInt32, (uint)6, (uint) 3, (uint) 2)]
+        [InlineData(ETypeCode.UInt64, (ulong)6, (ulong) 3, (ulong) 2)]
+        [InlineData(ETypeCode.Int16, (short)6, (short) 3, (short) 2)]
+        [InlineData(ETypeCode.Int32, (int)6, (int) 3, (int) 2)]
+        [InlineData(ETypeCode.Int64, (long)6, (long) 3, (long) 2)]
+        [InlineData(ETypeCode.Double, (double)6, (double) 3, (double) 2)]
+        //[InlineData(ETypeCode.Decimal, (decimal)5, (decimal) 3, (decimal) 8)]
+        public void DataType_Divide(ETypeCode dataType, object value1, object value2, object expected)
+        {
+            Assert.Equal(expected, DataType.Divide(dataType, value1, value2));
+        }
     }
 }

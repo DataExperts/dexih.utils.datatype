@@ -208,7 +208,7 @@ namespace Dexih.Utils.DataType
         /// <returns>ETypeCode</returns>
         public static ETypeCode GetTypeCode(Type dataType)
         {
-            if (dataType == typeof(byte) || dataType == typeof(byte?) || dataType == typeof(byte&))
+            if (dataType == typeof(byte) || dataType == typeof(byte?)) // || dataType == typeof(byte&))
                 return ETypeCode.Byte;
             if (dataType == typeof(sbyte) || dataType == typeof(sbyte?))
                 return ETypeCode.SByte;
@@ -774,6 +774,210 @@ namespace Dexih.Utils.DataType
             return result;
         }
 
+        public static object Add(ETypeCode typeCode,  object value1, object value2)
+        {
+            var convertedValue1 = TryParse(typeCode, value1);
+            var convertedValue2 = TryParse(typeCode, value2);
+            switch (typeCode)
+            {
+                case ETypeCode.Binary:
+                case ETypeCode.Byte:
+                case ETypeCode.SByte:
+                case ETypeCode.String:
+                case ETypeCode.Text:
+                case ETypeCode.DateTime:
+                case ETypeCode.Boolean:
+                case ETypeCode.Unknown:
+                case ETypeCode.Guid:
+                case ETypeCode.Time:
+                case ETypeCode.Json:
+                case ETypeCode.Xml:
+                    throw new Exception($"Cannot add {typeCode} types.");
+                case ETypeCode.UInt16:
+                    return (ushort)((ushort) convertedValue1 + (ushort) convertedValue2);
+                    break;
+                case ETypeCode.UInt32:
+                    return (uint) convertedValue1 + (uint) convertedValue2;
+                    break;
+                case ETypeCode.UInt64:
+                    return (ulong) convertedValue1 + (ulong) convertedValue2;
+                    break;
+                case ETypeCode.Int16:
+                    return (short)((short) convertedValue1 + (short) convertedValue2);
+                    break;
+                case ETypeCode.Int32:
+                    return (int) convertedValue1 + (int) convertedValue2;
+                    break;
+                case ETypeCode.Int64:
+                    return (long) convertedValue1 + (long) convertedValue2;
+                    break;
+                case ETypeCode.Decimal:
+                    return (decimal) convertedValue1 + (decimal) convertedValue2;
+                    break;
+                case ETypeCode.Double:
+                    return (double) convertedValue1 + (double) convertedValue2;
+                    break;
+                case ETypeCode.Single:
+                    return (float) convertedValue1 + (float) convertedValue2;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(typeCode), typeCode, null);
+            }
+        }
+        
+       public static object Subtract(ETypeCode typeCode,  object value1, object value2)
+        {
+            var convertedValue1 = TryParse(typeCode, value1);
+            var convertedValue2 = TryParse(typeCode, value2);
+            switch (typeCode)
+            {
+                case ETypeCode.Binary:
+                case ETypeCode.Byte:
+                case ETypeCode.SByte:
+                case ETypeCode.String:
+                case ETypeCode.Text:
+                case ETypeCode.DateTime:
+                case ETypeCode.Boolean:
+                case ETypeCode.Unknown:
+                case ETypeCode.Guid:
+                case ETypeCode.Time:
+                case ETypeCode.Json:
+                case ETypeCode.Xml:
+                    throw new Exception($"Cannot add {typeCode} types.");
+                case ETypeCode.UInt16:
+                    return (ushort)((ushort) convertedValue1 - (ushort) convertedValue2);
+                    break;
+                case ETypeCode.UInt32:
+                    return (uint) convertedValue1 - (uint) convertedValue2;
+                    break;
+                case ETypeCode.UInt64:
+                    return (ulong) convertedValue1 - (ulong) convertedValue2;
+                    break;
+                case ETypeCode.Int16:
+                    return (short)((short) convertedValue1 - (short) convertedValue2);
+                    break;
+                case ETypeCode.Int32:
+                    return (int) convertedValue1 - (int) convertedValue2;
+                    break;
+                case ETypeCode.Int64:
+                    return (long) convertedValue1 - (long) convertedValue2;
+                    break;
+                case ETypeCode.Decimal:
+                    return (decimal) convertedValue1 - (decimal) convertedValue2;
+                    break;
+                case ETypeCode.Double:
+                    return (double) convertedValue1 - (double) convertedValue2;
+                    break;
+                case ETypeCode.Single:
+                    return (float) convertedValue1 - (float) convertedValue2;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(typeCode), typeCode, null);
+            }
+        }
+
+       public static object Multiply(ETypeCode typeCode,  object value1, object value2)
+        {
+            var convertedValue1 = TryParse(typeCode, value1);
+            var convertedValue2 = TryParse(typeCode, value2);
+            switch (typeCode)
+            {
+                case ETypeCode.Binary:
+                case ETypeCode.Byte:
+                case ETypeCode.SByte:
+                case ETypeCode.String:
+                case ETypeCode.Text:
+                case ETypeCode.DateTime:
+                case ETypeCode.Boolean:
+                case ETypeCode.Unknown:
+                case ETypeCode.Guid:
+                case ETypeCode.Time:
+                case ETypeCode.Json:
+                case ETypeCode.Xml:
+                    throw new Exception($"Cannot add {typeCode} types.");
+                case ETypeCode.UInt16:
+                    return (ushort)((ushort) convertedValue1 * (ushort) convertedValue2);
+                    break;
+                case ETypeCode.UInt32:
+                    return (uint) convertedValue1 * (uint) convertedValue2;
+                    break;
+                case ETypeCode.UInt64:
+                    return (ulong) convertedValue1 * (ulong) convertedValue2;
+                    break;
+                case ETypeCode.Int16:
+                    return (short)((short) convertedValue1 * (short) convertedValue2);
+                    break;
+                case ETypeCode.Int32:
+                    return (int) convertedValue1 * (int) convertedValue2;
+                    break;
+                case ETypeCode.Int64:
+                    return (long) convertedValue1 * (long) convertedValue2;
+                    break;
+                case ETypeCode.Decimal:
+                    return (decimal) convertedValue1 * (decimal) convertedValue2;
+                    break;
+                case ETypeCode.Double:
+                    return (double) convertedValue1 * (double) convertedValue2;
+                    break;
+                case ETypeCode.Single:
+                    return (float) convertedValue1 * (float) convertedValue2;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(typeCode), typeCode, null);
+            }
+        }
+        
+           public static object Divide(ETypeCode typeCode,  object value1, object value2)
+        {
+            var convertedValue1 = TryParse(typeCode, value1);
+            var convertedValue2 = TryParse(typeCode, value2);
+            switch (typeCode)
+            {
+                case ETypeCode.Binary:
+                case ETypeCode.Byte:
+                case ETypeCode.SByte:
+                case ETypeCode.String:
+                case ETypeCode.Text:
+                case ETypeCode.DateTime:
+                case ETypeCode.Boolean:
+                case ETypeCode.Unknown:
+                case ETypeCode.Guid:
+                case ETypeCode.Time:
+                case ETypeCode.Json:
+                case ETypeCode.Xml:
+                    throw new Exception($"Cannot add {typeCode} types.");
+                case ETypeCode.UInt16:
+                    return (ushort)((ushort) convertedValue1 / (ushort) convertedValue2);
+                    break;
+                case ETypeCode.UInt32:
+                    return (uint) convertedValue1 / (uint) convertedValue2;
+                    break;
+                case ETypeCode.UInt64:
+                    return (ulong) convertedValue1 / (ulong) convertedValue2;
+                    break;
+                case ETypeCode.Int16:
+                    return (short)((short) convertedValue1 / (short) convertedValue2);
+                    break;
+                case ETypeCode.Int32:
+                    return (int) convertedValue1 / (int) convertedValue2;
+                    break;
+                case ETypeCode.Int64:
+                    return (long) convertedValue1 / (long) convertedValue2;
+                    break;
+                case ETypeCode.Decimal:
+                    return (decimal) convertedValue1 / (decimal) convertedValue2;
+                    break;
+                case ETypeCode.Double:
+                    return (double) convertedValue1 / (double) convertedValue2;
+                    break;
+                case ETypeCode.Single:
+                    return (float) convertedValue1 / (float) convertedValue2;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(typeCode), typeCode, null);
+            }
+        }
+        
         /// <summary>
         /// Removes all non alphanumeric characters from the string
         /// </summary>
