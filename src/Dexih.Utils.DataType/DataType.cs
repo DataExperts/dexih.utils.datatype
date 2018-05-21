@@ -497,7 +497,15 @@ namespace Dexih.Utils.DataType
 
             if (tryDataType == ETypeCode.String)
             {
-                result = inputValue is DBNull ? null : inputValue.ToString();
+                if (inputValue is byte[] byteValue)
+                {
+                    result = ByteArrayToHex(byteValue);
+                }
+                else
+                {
+                    result = inputValue is DBNull ? null : inputValue.ToString();
+                }
+
                 if (maxLength != null && result != null && ((string)result).Length > maxLength)
                 {
                     throw new DataTypeParseException("The string " + inputValue + " exceeds the maximum length of " + maxLength);
@@ -636,79 +644,68 @@ namespace Dexih.Utils.DataType
                 switch (tryDataType)
                 {
                     case ETypeCode.Byte:
-                        byte byteResult;
-                        returnValue = byte.TryParse(value, out byteResult);
+                        returnValue = byte.TryParse(value, out var byteResult);
                         if (returnValue == false)
                             throw new DataTypeParseException("The value " + value + " could not be converted to a byte.");
 
                         result = byteResult;
                         break;
                     case ETypeCode.Int16:
-                        short int16Result;
-                        returnValue = short.TryParse(value, out int16Result);
+                        returnValue = short.TryParse(value, out var int16Result);
                         if (returnValue == false)
                             throw new DataTypeParseException("The value " + value + " could not be converted to a Int16.");
                         result = int16Result;
                         break;
                     case ETypeCode.Int32:
-                        int int32Result;
-                        returnValue = int.TryParse(value, out int32Result);
+                        returnValue = int.TryParse(value, out var int32Result);
                         if (returnValue == false)
                             throw new DataTypeParseException("The value " + value + " could not be converted to a Int32.");
                         result = int32Result;
                         break;
                     case ETypeCode.Int64:
-                        long int64Result;
-                        returnValue = long.TryParse(value, out int64Result);
+                        returnValue = long.TryParse(value, out var int64Result);
                         if (returnValue == false)
                             throw new DataTypeParseException("The value " + value + " could not be converted to a Int64.");
                         result = int64Result;
                         break;
                     case ETypeCode.UInt16:
-                        ushort uint16Result;
-                        returnValue = ushort.TryParse(value, out uint16Result);
+                        returnValue = ushort.TryParse(value, out var uint16Result);
                         if (returnValue == false)
                             throw new DataTypeParseException("The value " + value + " could not be converted to a UInt16.");
                         result = uint16Result;
                         break;
                     case ETypeCode.UInt32:
-                        uint uint32Result;
-                        returnValue = uint.TryParse(value, out uint32Result);
+                        returnValue = uint.TryParse(value, out var uint32Result);
                         if (returnValue == false)
                             throw new DataTypeParseException("The value " + value + " could not be converted to a UInt32.");
                         result = uint32Result;
                         break;
                     case ETypeCode.UInt64:
-                        ulong uint64Result;
-                        returnValue = ulong.TryParse(value, out uint64Result);
+                        returnValue = ulong.TryParse(value, out var uint64Result);
                         if (returnValue == false)
                             throw new DataTypeParseException("The value " + value + " could not be converted to a Int64.");
                         result = uint64Result;
                         break;
                     case ETypeCode.Double:
-                        double doubleResult;
-                        returnValue = double.TryParse(value, out doubleResult);
+                        returnValue = double.TryParse(value, out var doubleResult);
                         if (returnValue == false)
                             throw new DataTypeParseException("The value " + value + " could not be converted to a Double.");
                         result = doubleResult;
                         break;
                     case ETypeCode.Decimal:
-                        decimal decimalResult;
-                        returnValue = decimal.TryParse(value, out decimalResult);
+                        returnValue = decimal.TryParse(value, out var decimalResult);
                         if (returnValue == false)
                             throw new DataTypeParseException("The value " + value + " could not be converted to a Decimal.");
                         result = decimalResult;
                         break;
                     case ETypeCode.Single:
-                        float singleResult;
-                        returnValue = float.TryParse(value, out singleResult);
+                        returnValue = float.TryParse(value, out var singleResult);
                         if (returnValue == false)
                             throw new DataTypeParseException("The value " + value + " could not be converted to a Single.");
                         result = singleResult;
                         break;
                     case ETypeCode.SByte:
-                        sbyte sbyteResult;
-                        returnValue = sbyte.TryParse(value, out sbyteResult);
+                        returnValue = sbyte.TryParse(value, out var sbyteResult);
                         if (returnValue == false)
                             throw new DataTypeParseException("The value " + value + " could not be converted to a SByte.");
                         result = sbyteResult;
@@ -720,15 +717,13 @@ namespace Dexih.Utils.DataType
                         result = value;
                         break;
                     case ETypeCode.Guid:
-                        Guid guidResult;
-                        returnValue = Guid.TryParse(value, out guidResult);
+                        returnValue = Guid.TryParse(value, out var guidResult);
                         if (returnValue == false)
                             throw new DataTypeParseException("The value " + value + " could not be converted to a Guid.");
                         result = guidResult;
                         break;
                     case ETypeCode.Boolean:
-                        bool booleanResult;
-                        returnValue = bool.TryParse(value, out booleanResult);
+                        returnValue = bool.TryParse(value, out var booleanResult);
                         if (returnValue == false)
                         {
                             returnValue = short.TryParse(value, out int16Result);
@@ -753,19 +748,24 @@ namespace Dexih.Utils.DataType
                             result = booleanResult;
                         break;
                     case ETypeCode.DateTime:
-                        DateTime dateTimeResult;
-                        returnValue = DateTime.TryParse(value, out dateTimeResult);
+                        returnValue = DateTime.TryParse(value, out var dateTimeResult);
                         if (returnValue == false)
                             throw new DataTypeParseException("The value " + value + " could not be converted to a DataTime.");
                         result = dateTimeResult;
                         break;
                     case ETypeCode.Time:
-                        TimeSpan timeResult;
-                        returnValue = TimeSpan.TryParse(value, out timeResult);
+                        returnValue = TimeSpan.TryParse(value, out var timeResult);
                         if (returnValue == false)
                             throw new DataTypeParseException("The value " + value + " could not be converted to a DataTime.");
                         result = timeResult;
                         break;
+                    case ETypeCode.Binary:
+                        if (value != null)
+                        {
+                            result = HexToByteArray(value.ToString());
+                            break;
+                        }
+                        throw new DataTypeParseException("The value " + value + " could not be converted to binary.");
                     default:
                         throw new DataTypeParseException("Cannot convert value " + inputValue + " from to " + tryDataType + ".");
                 }
@@ -990,6 +990,51 @@ namespace Dexih.Utils.DataType
             var arr = value.Where(c => (char.IsLetterOrDigit(c))).ToArray();
             var newValue = new string(arr);
             return newValue;
+        }
+        
+        private static readonly uint[] _lookup32 = CreateLookup32();
+
+        private static uint[] CreateLookup32()
+        {
+            var result = new uint[256];
+            for (int i = 0; i < 256; i++)
+            {
+                string s=i.ToString("X2");
+                result[i] = ((uint)s[0]) + ((uint)s[1] << 16);
+            }
+            return result;
+        }
+        
+        /// <summary>
+        /// Converts a byte[] into a hex string
+        /// </summary>
+        /// <param name="bytes"></param>
+        /// <returns></returns>
+        public static string ByteArrayToHex(byte[] bytes)
+        {
+            var lookup32 = _lookup32;
+            var result = new char[bytes.Length * 2];
+            for (int i = 0; i < bytes.Length; i++)
+            {
+                var val = lookup32[bytes[i]];
+                result[2*i] = (char)val;
+                result[2*i + 1] = (char) (val >> 16);
+            }
+            return new string(result);
+        }
+        
+        /// <summary>
+        /// Converts a hex string into a byte[]
+        /// </summary>
+        /// <param name="hex"></param>
+        /// <returns></returns>
+        public static byte[] HexToByteArray(string hex)
+        {
+            int NumberChars = hex.Length;
+            byte[] bytes = new byte[NumberChars / 2];
+            for (int i = 0; i < NumberChars; i += 2)
+                bytes[i / 2] = Convert.ToByte(hex.Substring(i, 2), 16);
+            return bytes;
         }
     }
 }
