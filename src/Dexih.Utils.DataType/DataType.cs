@@ -399,9 +399,9 @@ namespace Dexih.Utils.DataType
         /// </summary>
         public enum ECompareResult
         {
-            Greater,
-            Less,
-            Equal
+            Less = -1,
+            Equal = 0,
+            Greater = 1
         }
 
         /// <summary>
@@ -434,50 +434,52 @@ namespace Dexih.Utils.DataType
                 compareValue = TryParse(dataType, compareValue);
             }
 
-            switch (dataType)
-            {
-                case ETypeCode.Byte:
-                    return (byte)inputValue == (byte)compareValue ? ECompareResult.Equal : (byte)inputValue > (byte)compareValue ? ECompareResult.Greater : ECompareResult.Less;
-                case ETypeCode.SByte:
-                    return (sbyte)inputValue == (sbyte)compareValue ? ECompareResult.Equal : (sbyte)inputValue > (sbyte)compareValue ? ECompareResult.Greater : ECompareResult.Less;
-                case ETypeCode.UInt16:
-                    return (ushort)inputValue == (ushort)compareValue ? ECompareResult.Equal : (ushort)inputValue > (ushort)compareValue ? ECompareResult.Greater : ECompareResult.Less;
-                case ETypeCode.UInt32:
-                    return (uint)inputValue == (uint)compareValue ? ECompareResult.Equal : (uint)inputValue > (uint)compareValue ? ECompareResult.Greater : ECompareResult.Less;
-                case ETypeCode.UInt64:
-                    return (ulong)inputValue == (ulong)compareValue ? ECompareResult.Equal : (ulong)inputValue > (ulong)compareValue ? ECompareResult.Greater : ECompareResult.Less;
-                case ETypeCode.Int16:
-                    return (short)inputValue == (short)compareValue ? ECompareResult.Equal : (short)inputValue > (short)compareValue ? ECompareResult.Greater : ECompareResult.Less;
-                case ETypeCode.Int32:
-                    return (int)inputValue == (int)compareValue ? ECompareResult.Equal : (int)inputValue > (int)compareValue ? ECompareResult.Greater : ECompareResult.Less;
-                case ETypeCode.Int64:
-                    return (long)inputValue == (long)compareValue ? ECompareResult.Equal : (long)inputValue > (long)compareValue ? ECompareResult.Greater : ECompareResult.Less;
-                case ETypeCode.Decimal:
-                    return (decimal)inputValue == (decimal)compareValue ? ECompareResult.Equal : (decimal)inputValue > (decimal)compareValue ? ECompareResult.Greater : ECompareResult.Less;
-                case ETypeCode.Double:
-                    return Math.Abs((double)inputValue - (double)compareValue) < 0.0001 ? ECompareResult.Equal : (double)inputValue > (double)compareValue ? ECompareResult.Greater : ECompareResult.Less;
-                case ETypeCode.Single:
-                    return Math.Abs((float)inputValue - (float)compareValue) < 0.0001 ? ECompareResult.Equal : (float)inputValue > (float)compareValue ? ECompareResult.Greater : ECompareResult.Less;
-                case ETypeCode.String:
-                case ETypeCode.Json:
-                case ETypeCode.Xml:
-                case ETypeCode.Text:
-                    var compareResult = string.Compare((string)inputValue, (string)compareValue);
-                    return compareResult == 0 ? ECompareResult.Equal : compareResult < 0 ? ECompareResult.Less : ECompareResult.Greater;
-                case ETypeCode.Guid:
-                    compareResult = string.Compare(inputValue.ToString(), compareValue.ToString());
-                    return compareResult == 0 ? ECompareResult.Equal : compareResult < 0 ? ECompareResult.Less : ECompareResult.Greater;
-                case ETypeCode.Boolean:
-                    return (bool)inputValue == (bool)compareValue ? ECompareResult.Equal : (bool)inputValue ? ECompareResult.Greater : ECompareResult.Less;
-                case ETypeCode.DateTime:
-                    return (DateTime)inputValue == (DateTime)compareValue ? ECompareResult.Equal : (DateTime)inputValue > (DateTime)compareValue ? ECompareResult.Greater : ECompareResult.Less;
-                case ETypeCode.Time:
-                    return (TimeSpan)inputValue == (TimeSpan)compareValue ? ECompareResult.Equal : (TimeSpan)inputValue > (TimeSpan)compareValue ? ECompareResult.Greater : ECompareResult.Less;
-                case ETypeCode.Binary:
-                    return StructuralComparisons.StructuralEqualityComparer.Equals(inputValue, compareValue) ? ECompareResult.Equal : ECompareResult.Greater;
-                default:
-                    throw new DataTypeCompareException("Compare failed due to unsupported datatype: " + dataType);
-            }
+            return (ECompareResult) ((IComparable) inputValue).CompareTo((IComparable) compareValue);
+
+//            switch (dataType)
+//            {
+//                case ETypeCode.Byte:
+//                    return (byte)inputValue == (byte)compareValue ? ECompareResult.Equal : (byte)inputValue > (byte)compareValue ? ECompareResult.Greater : ECompareResult.Less;
+//                case ETypeCode.SByte:
+//                    return (sbyte)inputValue == (sbyte)compareValue ? ECompareResult.Equal : (sbyte)inputValue > (sbyte)compareValue ? ECompareResult.Greater : ECompareResult.Less;
+//                case ETypeCode.UInt16:
+//                    return (ushort)inputValue == (ushort)compareValue ? ECompareResult.Equal : (ushort)inputValue > (ushort)compareValue ? ECompareResult.Greater : ECompareResult.Less;
+//                case ETypeCode.UInt32:
+//                    return (uint)inputValue == (uint)compareValue ? ECompareResult.Equal : (uint)inputValue > (uint)compareValue ? ECompareResult.Greater : ECompareResult.Less;
+//                case ETypeCode.UInt64:
+//                    return (ulong)inputValue == (ulong)compareValue ? ECompareResult.Equal : (ulong)inputValue > (ulong)compareValue ? ECompareResult.Greater : ECompareResult.Less;
+//                case ETypeCode.Int16:
+//                    return (short)inputValue == (short)compareValue ? ECompareResult.Equal : (short)inputValue > (short)compareValue ? ECompareResult.Greater : ECompareResult.Less;
+//                case ETypeCode.Int32:
+//                    return (int)inputValue == (int)compareValue ? ECompareResult.Equal : (int)inputValue > (int)compareValue ? ECompareResult.Greater : ECompareResult.Less;
+//                case ETypeCode.Int64:
+//                    return (long)inputValue == (long)compareValue ? ECompareResult.Equal : (long)inputValue > (long)compareValue ? ECompareResult.Greater : ECompareResult.Less;
+//                case ETypeCode.Decimal:
+//                    return (decimal)inputValue == (decimal)compareValue ? ECompareResult.Equal : (decimal)inputValue > (decimal)compareValue ? ECompareResult.Greater : ECompareResult.Less;
+//                case ETypeCode.Double:
+//                    return Math.Abs((double)inputValue - (double)compareValue) < 0.0001 ? ECompareResult.Equal : (double)inputValue > (double)compareValue ? ECompareResult.Greater : ECompareResult.Less;
+//                case ETypeCode.Single:
+//                    return Math.Abs((float)inputValue - (float)compareValue) < 0.0001 ? ECompareResult.Equal : (float)inputValue > (float)compareValue ? ECompareResult.Greater : ECompareResult.Less;
+//                case ETypeCode.String:
+//                case ETypeCode.Json:
+//                case ETypeCode.Xml:
+//                case ETypeCode.Text:
+//                    var compareResult = string.Compare((string)inputValue, (string)compareValue);
+//                    return compareResult == 0 ? ECompareResult.Equal : compareResult < 0 ? ECompareResult.Less : ECompareResult.Greater;
+//                case ETypeCode.Guid:
+//                    compareResult = string.Compare(inputValue.ToString(), compareValue.ToString());
+//                    return compareResult == 0 ? ECompareResult.Equal : compareResult < 0 ? ECompareResult.Less : ECompareResult.Greater;
+//                case ETypeCode.Boolean:
+//                    return (bool)inputValue == (bool)compareValue ? ECompareResult.Equal : (bool)inputValue ? ECompareResult.Greater : ECompareResult.Less;
+//                case ETypeCode.DateTime:
+//                    return (DateTime)inputValue == (DateTime)compareValue ? ECompareResult.Equal : (DateTime)inputValue > (DateTime)compareValue ? ECompareResult.Greater : ECompareResult.Less;
+//                case ETypeCode.Time:
+//                    return (TimeSpan)inputValue == (TimeSpan)compareValue ? ECompareResult.Equal : (TimeSpan)inputValue > (TimeSpan)compareValue ? ECompareResult.Greater : ECompareResult.Less;
+//                case ETypeCode.Binary:
+//                    return StructuralComparisons.StructuralEqualityComparer.Equals(inputValue, compareValue) ? ECompareResult.Equal : ECompareResult.Greater;
+//                default:
+//                    throw new DataTypeCompareException("Compare failed due to unsupported datatype: " + dataType);
+//            }
         }
 
         /// <summary>
@@ -795,31 +797,22 @@ namespace Dexih.Utils.DataType
                     throw new Exception($"Cannot add {typeCode} types.");
                 case ETypeCode.UInt16:
                     return (ushort)((ushort) convertedValue1 + (ushort) convertedValue2);
-                    break;
                 case ETypeCode.UInt32:
                     return (uint) convertedValue1 + (uint) convertedValue2;
-                    break;
                 case ETypeCode.UInt64:
                     return (ulong) convertedValue1 + (ulong) convertedValue2;
-                    break;
                 case ETypeCode.Int16:
                     return (short)((short) convertedValue1 + (short) convertedValue2);
-                    break;
                 case ETypeCode.Int32:
                     return (int) convertedValue1 + (int) convertedValue2;
-                    break;
                 case ETypeCode.Int64:
                     return (long) convertedValue1 + (long) convertedValue2;
-                    break;
                 case ETypeCode.Decimal:
                     return (decimal) convertedValue1 + (decimal) convertedValue2;
-                    break;
                 case ETypeCode.Double:
                     return (double) convertedValue1 + (double) convertedValue2;
-                    break;
                 case ETypeCode.Single:
                     return (float) convertedValue1 + (float) convertedValue2;
-                    break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(typeCode), typeCode, null);
             }
@@ -846,10 +839,8 @@ namespace Dexih.Utils.DataType
                     throw new Exception($"Cannot add {typeCode} types.");
                 case ETypeCode.UInt16:
                     return (ushort)((ushort) convertedValue1 - (ushort) convertedValue2);
-                    break;
                 case ETypeCode.UInt32:
                     return (uint) convertedValue1 - (uint) convertedValue2;
-                    break;
                 case ETypeCode.UInt64:
                     return (ulong) convertedValue1 - (ulong) convertedValue2;
                     break;
@@ -997,9 +988,9 @@ namespace Dexih.Utils.DataType
         private static uint[] CreateLookup32()
         {
             var result = new uint[256];
-            for (int i = 0; i < 256; i++)
+            for (var i = 0; i < 256; i++)
             {
-                string s=i.ToString("X2");
+                var s=i.ToString("X2");
                 result[i] = ((uint)s[0]) + ((uint)s[1] << 16);
             }
             return result;
@@ -1014,7 +1005,7 @@ namespace Dexih.Utils.DataType
         {
             var lookup32 = _lookup32;
             var result = new char[bytes.Length * 2];
-            for (int i = 0; i < bytes.Length; i++)
+            for (var i = 0; i < bytes.Length; i++)
             {
                 var val = lookup32[bytes[i]];
                 result[2*i] = (char)val;
@@ -1030,9 +1021,9 @@ namespace Dexih.Utils.DataType
         /// <returns></returns>
         public static byte[] HexToByteArray(string hex)
         {
-            int NumberChars = hex.Length;
-            byte[] bytes = new byte[NumberChars / 2];
-            for (int i = 0; i < NumberChars; i += 2)
+            var numberChars = hex.Length;
+            var bytes = new byte[numberChars / 2];
+            for (var i = 0; i < numberChars; i += 2)
                 bytes[i / 2] = Convert.ToByte(hex.Substring(i, 2), 16);
             return bytes;
         }
