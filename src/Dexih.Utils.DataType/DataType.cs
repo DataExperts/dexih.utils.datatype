@@ -522,7 +522,7 @@ namespace Dexih.Utils.DataType
             var tryType = GetType(tryDataType);
             var inputType = inputValue.GetType();
 
-            if (tryType == inputType && maxLength == null)
+            if ((tryType == inputType && maxLength == null) || tryDataType == ETypeCode.Unknown)
             {
                 return inputValue;
             }

@@ -178,6 +178,7 @@ namespace Dexih.Utils.DataType.Tests
         [InlineData(ETypeCode.Boolean, 1, true)]
         [InlineData(ETypeCode.Boolean, "0", false)]
         [InlineData(ETypeCode.Boolean, 0, false)]
+        [InlineData(ETypeCode.Unknown, "123", "123")]
         [MemberData("OtherDataTypes")]
         public void DataType_TryParse(ETypeCode dataType, object inputValue, object expectedValue)
         {
