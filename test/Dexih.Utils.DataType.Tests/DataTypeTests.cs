@@ -1,12 +1,23 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Reflection.Metadata;
+using System.Threading.Tasks;
 using Xunit;
+using Xunit.Abstractions;
 using static Dexih.Utils.DataType.DataType;
 
 namespace Dexih.Utils.DataType.Tests
 {
     public class DataTypeTests
     {
+        private readonly ITestOutputHelper _output;
+
+        public DataTypeTests(ITestOutputHelper output)
+        {
+            this._output = output;
+        }
+        
         [Theory]
         [InlineData(ETypeCode.Boolean, EBasicType.Boolean)]
         [InlineData(ETypeCode.Byte, EBasicType.Numeric)]
@@ -165,6 +176,8 @@ namespace Dexih.Utils.DataType.Tests
         [InlineData(ETypeCode.Boolean, "true", true)]
         [InlineData(ETypeCode.Boolean, "1", true)]
         [InlineData(ETypeCode.Boolean, 1, true)]
+        [InlineData(ETypeCode.Boolean, "0", false)]
+        [InlineData(ETypeCode.Boolean, 0, false)]
         [MemberData("OtherDataTypes")]
         public void DataType_TryParse(ETypeCode dataType, object inputValue, object expectedValue)
         {
@@ -212,7 +225,7 @@ namespace Dexih.Utils.DataType.Tests
         [InlineData(ETypeCode.Guid, "asdfadsf", 0)]
         public void DataType_TryParse_False(ETypeCode dataType, object inputValue, int maxLength = 0)
         {
-            Assert.Throws(typeof(DataTypeParseException),() => DataType.TryParse(dataType, inputValue, maxLength));
+            Assert.ThrowsAny<Exception>( () => DataType.TryParse(dataType, inputValue, maxLength));
         }
 
         [Theory]
@@ -269,6 +282,91 @@ namespace Dexih.Utils.DataType.Tests
         public void DataType_Divide(ETypeCode dataType, object value1, object value2, object expected)
         {
             Assert.Equal(expected, DataType.Divide(dataType, value1, value2));
+        }
+
+        public void Timer(string name, Action action)
+        {
+            var start = Stopwatch.StartNew();
+            action.Invoke();
+            var time = start.ElapsedMilliseconds;
+            _output.WriteLine($"Test \"{name}\" completed in {time}ms");
+        }
+
+        [Theory]
+        [InlineData(10000000)]
+        public void ComparePerformance(long iterations)
+        {
+
+            Timer("Compare integers baseline", () =>
+            {
+                for(var i = 0; i< iterations; i++)
+                {
+                    var a = 2;
+                    var b = 3;
+                    if (a.GetType() == b.GetType())
+                    {
+                        a.CompareTo(b);
+                    }
+                }
+            });
+            
+//
+            Timer("DataType.Compare Integers", () =>
+            {
+                for(var i = 0; i< iterations; i++)
+                {
+                    var value = DataType.Compare(null, 1, 2);
+                }
+            });
+            
+            Timer("DataType.Compare Nulls", () =>
+            {
+                for(var i = 0; i< iterations; i++)
+                {
+                    var value = DataType.Compare(null, null, null);
+                }
+            });
+            
+            Timer("DataType.Compare DbNulls", () =>
+            {
+                for(var i = 0; i< iterations; i++)
+                {
+                    var value = DataType.Compare(null, DBNull.Value, null);
+                }
+            });
+            
+            Timer("DataType.Compare Integer/Decimal", () =>
+            {
+                for(var i = 0; i< iterations; i++)
+                {
+                    var value = DataType.Compare(null, 2, 2d);
+                }
+            });
+            
+            Timer("DataType.Compare Integer/String", () =>
+            {
+                for(var i = 0; i< iterations; i++)
+                {
+                    var value = DataType.Compare(null, 2, "2");
+                }
+            });
+            
+            Timer("DataType.Compare String/Integer", () =>
+            {
+                for(var i = 0; i< iterations; i++)
+                {
+                    var value = DataType.Compare(null, 2, "2");
+                }
+            });
+            
+//            
+//            Timer("Compare dec-dec", () =>
+//            {
+//                for(var i = 0; i< iterations; i++)
+//                {
+//                    var value = DataType.Compare(1.1, 2.2);
+//                }
+//            });
         }
     }
 }

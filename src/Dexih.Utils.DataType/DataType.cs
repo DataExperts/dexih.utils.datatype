@@ -2,6 +2,8 @@
 using System.Collections;
 using System.Data;
 using System.Linq;
+using System.Net.Http.Headers;
+using System.Runtime.InteropServices;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
@@ -245,6 +247,66 @@ namespace Dexih.Utils.DataType
 
             return ETypeCode.Unknown;
         }
+        
+        public static ETypeCode GetTypeCode(object value)
+        {
+            switch (value)
+            {
+                case byte byteValue:
+                    return ETypeCode.Byte;
+                    break;
+                case sbyte sbyteValue:
+                    return ETypeCode.SByte;
+                    break;
+                case ushort uint16Value:
+                    return ETypeCode.UInt16;
+                    break;
+                case uint uint32Value:
+                    return ETypeCode.UInt32;
+                    break;
+                case ulong uint64Value:
+                    return ETypeCode.UInt64;
+                    break;
+                case short int16Value:
+                    return ETypeCode.Int16;
+                    break;
+                case int int32Value:
+                    return ETypeCode.Int32;
+                    break;
+                case long int64Value:
+                    return ETypeCode.Int64;
+                    break;
+                case decimal decimalValue:
+                    return ETypeCode.Decimal;
+                    break;
+                case double doubleValue:
+                    return ETypeCode.Double;
+                    break;
+                case float singleValue:
+                    return ETypeCode.Single;
+                    break;
+                case string stringValue:
+                    return ETypeCode.String;
+                    break;
+                case bool boolValue:
+                    return ETypeCode.Boolean;
+                    break;
+                case DateTime datetimeValue:
+                    return ETypeCode.DateTime;
+                    break;
+                case TimeSpan timeValue:
+                    return ETypeCode.Time;
+                    break;
+                case Guid guidValue:
+                    return ETypeCode.Guid;
+                    break;
+                case byte[] binaryValue:
+                    return ETypeCode.Binary;
+                    break;
+            }
+
+            return ETypeCode.Unknown;
+        }
 
 
         /// <summary>
@@ -410,76 +472,36 @@ namespace Dexih.Utils.DataType
         /// <para/>If one value is null, it will be "Less" than the other value.
         /// <para/>Note: The inputValue and compareValue can be of any underlying type, and they will be parsed before comparison.  If the parse fails, an exception will be raised.
         /// </summary>
-        /// <param name="dataType">data type to compare</param>
+        /// <param name="typeCode">data type to compare, if null datatype will be inferred from inputValue</param>
         /// <param name="inputValue">primary value</param>
         /// <param name="compareValue">value to compare against</param>
         /// <returns>Compare Result = Greater, Less, Equal</returns>
-        public static ECompareResult Compare(ETypeCode dataType, object inputValue, object compareValue)
+        public static ECompareResult Compare(ETypeCode? typeCode, object inputValue, object compareValue)
         {
-            if ((inputValue == null || inputValue is DBNull) && (compareValue == null || compareValue is DBNull))
+            var inputType = inputValue?.GetType();
+            var compareType = compareValue?.GetType();
+
+            if ((inputValue == null || inputValue == DBNull.Value) && (compareValue == null || compareValue == DBNull.Value))
                 return ECompareResult.Equal;
 
-            if (inputValue == null || inputValue is DBNull || compareValue == null || compareValue is DBNull)
+            if (inputValue == null || inputValue == DBNull.Value || compareValue == null || compareValue == DBNull.Value)
                 return (inputValue == null || inputValue is DBNull) ? ECompareResult.Less : ECompareResult.Greater;
 
+            var dataType = typeCode ?? GetTypeCode(inputValue);
+            
             var type = GetType(dataType);
 
-            if (inputValue.GetType() != type)
+            if (inputType != type)
             {
                 inputValue = TryParse(dataType, inputValue);
             }
 
-            if (compareValue.GetType() != type)
+            if (compareType != type)
             {
                 compareValue = TryParse(dataType, compareValue);
             }
 
             return (ECompareResult) ((IComparable) inputValue).CompareTo((IComparable) compareValue);
-
-//            switch (dataType)
-//            {
-//                case ETypeCode.Byte:
-//                    return (byte)inputValue == (byte)compareValue ? ECompareResult.Equal : (byte)inputValue > (byte)compareValue ? ECompareResult.Greater : ECompareResult.Less;
-//                case ETypeCode.SByte:
-//                    return (sbyte)inputValue == (sbyte)compareValue ? ECompareResult.Equal : (sbyte)inputValue > (sbyte)compareValue ? ECompareResult.Greater : ECompareResult.Less;
-//                case ETypeCode.UInt16:
-//                    return (ushort)inputValue == (ushort)compareValue ? ECompareResult.Equal : (ushort)inputValue > (ushort)compareValue ? ECompareResult.Greater : ECompareResult.Less;
-//                case ETypeCode.UInt32:
-//                    return (uint)inputValue == (uint)compareValue ? ECompareResult.Equal : (uint)inputValue > (uint)compareValue ? ECompareResult.Greater : ECompareResult.Less;
-//                case ETypeCode.UInt64:
-//                    return (ulong)inputValue == (ulong)compareValue ? ECompareResult.Equal : (ulong)inputValue > (ulong)compareValue ? ECompareResult.Greater : ECompareResult.Less;
-//                case ETypeCode.Int16:
-//                    return (short)inputValue == (short)compareValue ? ECompareResult.Equal : (short)inputValue > (short)compareValue ? ECompareResult.Greater : ECompareResult.Less;
-//                case ETypeCode.Int32:
-//                    return (int)inputValue == (int)compareValue ? ECompareResult.Equal : (int)inputValue > (int)compareValue ? ECompareResult.Greater : ECompareResult.Less;
-//                case ETypeCode.Int64:
-//                    return (long)inputValue == (long)compareValue ? ECompareResult.Equal : (long)inputValue > (long)compareValue ? ECompareResult.Greater : ECompareResult.Less;
-//                case ETypeCode.Decimal:
-//                    return (decimal)inputValue == (decimal)compareValue ? ECompareResult.Equal : (decimal)inputValue > (decimal)compareValue ? ECompareResult.Greater : ECompareResult.Less;
-//                case ETypeCode.Double:
-//                    return Math.Abs((double)inputValue - (double)compareValue) < 0.0001 ? ECompareResult.Equal : (double)inputValue > (double)compareValue ? ECompareResult.Greater : ECompareResult.Less;
-//                case ETypeCode.Single:
-//                    return Math.Abs((float)inputValue - (float)compareValue) < 0.0001 ? ECompareResult.Equal : (float)inputValue > (float)compareValue ? ECompareResult.Greater : ECompareResult.Less;
-//                case ETypeCode.String:
-//                case ETypeCode.Json:
-//                case ETypeCode.Xml:
-//                case ETypeCode.Text:
-//                    var compareResult = string.Compare((string)inputValue, (string)compareValue);
-//                    return compareResult == 0 ? ECompareResult.Equal : compareResult < 0 ? ECompareResult.Less : ECompareResult.Greater;
-//                case ETypeCode.Guid:
-//                    compareResult = string.Compare(inputValue.ToString(), compareValue.ToString());
-//                    return compareResult == 0 ? ECompareResult.Equal : compareResult < 0 ? ECompareResult.Less : ECompareResult.Greater;
-//                case ETypeCode.Boolean:
-//                    return (bool)inputValue == (bool)compareValue ? ECompareResult.Equal : (bool)inputValue ? ECompareResult.Greater : ECompareResult.Less;
-//                case ETypeCode.DateTime:
-//                    return (DateTime)inputValue == (DateTime)compareValue ? ECompareResult.Equal : (DateTime)inputValue > (DateTime)compareValue ? ECompareResult.Greater : ECompareResult.Less;
-//                case ETypeCode.Time:
-//                    return (TimeSpan)inputValue == (TimeSpan)compareValue ? ECompareResult.Equal : (TimeSpan)inputValue > (TimeSpan)compareValue ? ECompareResult.Greater : ECompareResult.Less;
-//                case ETypeCode.Binary:
-//                    return StructuralComparisons.StructuralEqualityComparer.Equals(inputValue, compareValue) ? ECompareResult.Equal : ECompareResult.Greater;
-//                default:
-//                    throw new DataTypeCompareException("Compare failed due to unsupported datatype: " + dataType);
-//            }
         }
 
         /// <summary>
@@ -491,289 +513,388 @@ namespace Dexih.Utils.DataType
         /// <returns>True and the converted value for success, false and a message for conversion fail.</returns>
         public static object TryParse(ETypeCode tryDataType, object inputValue, int? maxLength = null)
         {
-            object result = null;
-            if (inputValue == null)
+            object result;
+            if (inputValue == null || inputValue == DBNull.Value)
             {
                 return null;
             }
 
-            if (tryDataType == ETypeCode.String)
-            {
-                if (inputValue is byte[] byteValue)
-                {
-                    result = ByteArrayToHex(byteValue);
-                }
-                else
-                {
-                    result = inputValue is DBNull ? null : inputValue.ToString();
-                }
+            var tryType = GetType(tryDataType);
+            var inputType = inputValue.GetType();
 
-                if (maxLength != null && result != null && ((string)result).Length > maxLength)
-                {
-                    throw new DataTypeParseException("The string " + inputValue + " exceeds the maximum length of " + maxLength);
-                }
-                return result;
-            }
-
-            if(tryDataType == ETypeCode.Text || tryDataType == ETypeCode.Xml || tryDataType == ETypeCode.Json)
-            {
-                result = inputValue is DBNull ? null : inputValue.ToString();
-                return result;
-            }
-
-            if (tryDataType == ETypeCode.Unknown)
+            if (tryType == inputType && maxLength == null)
             {
                 return inputValue;
             }
-
-            if (inputValue is DBNull)
+            
+            switch (tryDataType)
             {
-                result = inputValue;
-                return result;
-            }
-
-            var inputType = GetTypeCode(inputValue.GetType());
-
-            if (tryDataType == inputType)
-            {
-                result = inputValue;
-                return result;
-            }
-
-            var tryBasicType = GetBasicType(tryDataType);
-            var inputBasicType = GetBasicType(inputType);
-
-            if (tryBasicType == EBasicType.Numeric && (inputBasicType == EBasicType.Numeric))
-            {
-                try
-                {
-                    switch (tryDataType)
+                case ETypeCode.Binary:
+                    if (inputValue is string inputString)
                     {
-                        case ETypeCode.Byte:
-                            result = Convert.ToByte(inputValue);
-                            return result;
-                        case ETypeCode.SByte:
-                            result = Convert.ToSByte(inputValue);
-                            return result;
-                        case ETypeCode.Int16:
-                            result = Convert.ToInt16(inputValue);
-                            return result;
-                        case ETypeCode.Int32:
-                            result = Convert.ToInt32(inputValue);
-                            return result;
-                        case ETypeCode.Int64:
-                            result = Convert.ToInt64(inputValue);
-                            return result;
-                        case ETypeCode.UInt16:
-                            result = Convert.ToUInt16(inputValue);
-                            return result;
-                        case ETypeCode.UInt32:
-                            result = Convert.ToUInt32(inputValue);
-                            return result;
-                        case ETypeCode.UInt64:
-                            result = Convert.ToUInt64(inputValue);
-                            return result;
-                        case ETypeCode.Double:
-                            result = Convert.ToDouble(inputValue);
-                            return result;
-                        case ETypeCode.Decimal:
-                            result = Convert.ToDecimal(inputValue);
-                            return result;
-                        case ETypeCode.Single:
-                            result = Convert.ToSingle(inputValue);
-                            return result;
-                        case ETypeCode.Binary:
-                            throw new DataTypeParseException("Binary type convertion not supported.");
-                        default:
-                            throw new DataTypeParseException("Unsupported datatype");
+                        return HexToByteArray(inputString);
                     }
-                } catch(Exception ex)
-                {
-                    throw new DataTypeParseException("Cannot convert value " + inputValue + " from numeric to " + tryDataType + ".  " + ex.Message);
-                }
-            }
-
-            if (tryBasicType == EBasicType.Boolean && inputBasicType == EBasicType.Numeric)
-            {
-                try
-                {
-                    result = Convert.ToBoolean(inputValue);
-                } catch(Exception ex)
-                {
-                    throw new DataTypeParseException("Cannot convert value " + inputValue + " from numeric to boolean.  " + ex.Message);
-                }
-            }
-
-            if (tryBasicType == EBasicType.Numeric && inputBasicType == EBasicType.Date)
-            {
-                try
-                {
-                    result = ((DateTime)inputValue).Ticks;
-                }
-                catch (Exception ex)
-                {
-                    throw new DataTypeParseException("Cannot convert value " + inputValue + " from date to numeric.  " + ex.Message);
-                }
-            }
-
-            if (tryBasicType == EBasicType.Date && inputBasicType == EBasicType.Numeric)
-            {
-                try
-                {
-                    result = new DateTime(Convert.ToInt64(inputValue));
-                }
-                catch (Exception ex)
-                {
-                    throw new DataTypeParseException("Cannot convert value " + inputValue + " from numeric to date.  " + ex.Message);
-                }
-            }
-
-            if (result == null && tryBasicType == EBasicType.Date && inputBasicType != EBasicType.String)
-            {
-                throw new DataTypeParseException("Cannot convert value " + inputValue + " to " + tryDataType);
-            }
-
-            if (result == null)
-            {
-                string value;
-
-                if (inputBasicType != EBasicType.String)
-                    value = inputValue.ToString();
-                else
-                    value = (string)inputValue;
-
-                bool returnValue;
-                switch (tryDataType)
-                {
-                    case ETypeCode.Byte:
-                        returnValue = byte.TryParse(value, out var byteResult);
-                        if (returnValue == false)
-                            throw new DataTypeParseException("The value " + value + " could not be converted to a byte.");
-
-                        result = byteResult;
-                        break;
-                    case ETypeCode.Int16:
-                        returnValue = short.TryParse(value, out var int16Result);
-                        if (returnValue == false)
-                            throw new DataTypeParseException("The value " + value + " could not be converted to a Int16.");
-                        result = int16Result;
-                        break;
-                    case ETypeCode.Int32:
-                        returnValue = int.TryParse(value, out var int32Result);
-                        if (returnValue == false)
-                            throw new DataTypeParseException("The value " + value + " could not be converted to a Int32.");
-                        result = int32Result;
-                        break;
-                    case ETypeCode.Int64:
-                        returnValue = long.TryParse(value, out var int64Result);
-                        if (returnValue == false)
-                            throw new DataTypeParseException("The value " + value + " could not be converted to a Int64.");
-                        result = int64Result;
-                        break;
-                    case ETypeCode.UInt16:
-                        returnValue = ushort.TryParse(value, out var uint16Result);
-                        if (returnValue == false)
-                            throw new DataTypeParseException("The value " + value + " could not be converted to a UInt16.");
-                        result = uint16Result;
-                        break;
-                    case ETypeCode.UInt32:
-                        returnValue = uint.TryParse(value, out var uint32Result);
-                        if (returnValue == false)
-                            throw new DataTypeParseException("The value " + value + " could not be converted to a UInt32.");
-                        result = uint32Result;
-                        break;
-                    case ETypeCode.UInt64:
-                        returnValue = ulong.TryParse(value, out var uint64Result);
-                        if (returnValue == false)
-                            throw new DataTypeParseException("The value " + value + " could not be converted to a Int64.");
-                        result = uint64Result;
-                        break;
-                    case ETypeCode.Double:
-                        returnValue = double.TryParse(value, out var doubleResult);
-                        if (returnValue == false)
-                            throw new DataTypeParseException("The value " + value + " could not be converted to a Double.");
-                        result = doubleResult;
-                        break;
-                    case ETypeCode.Decimal:
-                        returnValue = decimal.TryParse(value, out var decimalResult);
-                        if (returnValue == false)
-                            throw new DataTypeParseException("The value " + value + " could not be converted to a Decimal.");
-                        result = decimalResult;
-                        break;
-                    case ETypeCode.Single:
-                        returnValue = float.TryParse(value, out var singleResult);
-                        if (returnValue == false)
-                            throw new DataTypeParseException("The value " + value + " could not be converted to a Single.");
-                        result = singleResult;
-                        break;
-                    case ETypeCode.SByte:
-                        returnValue = sbyte.TryParse(value, out var sbyteResult);
-                        if (returnValue == false)
-                            throw new DataTypeParseException("The value " + value + " could not be converted to a SByte.");
-                        result = sbyteResult;
-                        break;
-                    case ETypeCode.String:
-                    case ETypeCode.Xml:
-                    case ETypeCode.Json:
-                    case ETypeCode.Text:
-                        result = value;
-                        break;
-                    case ETypeCode.Guid:
-                        returnValue = Guid.TryParse(value, out var guidResult);
-                        if (returnValue == false)
-                            throw new DataTypeParseException("The value " + value + " could not be converted to a Guid.");
-                        result = guidResult;
-                        break;
-                    case ETypeCode.Boolean:
-                        returnValue = bool.TryParse(value, out var booleanResult);
-                        if (returnValue == false)
-                        {
-                            returnValue = short.TryParse(value, out int16Result);
-                            if (returnValue == false)
-                            {
-                                throw new DataTypeParseException("The value " + value + " could not be converted to a boolean.");
-                            }
-                            switch (int16Result)
-                            {
-                                case 0:
-                                    result = false;
-                                    break;
-                                case 1:
-                                case -1:
-                                    result = true;
-                                    break;
-                                default:
-                                    throw new DataTypeParseException("The value " + value + " could not be converted to a boolean.");
-                            }
-                        }
-                        else
-                            result = booleanResult;
-                        break;
-                    case ETypeCode.DateTime:
-                        returnValue = DateTime.TryParse(value, out var dateTimeResult);
-                        if (returnValue == false)
-                            throw new DataTypeParseException("The value " + value + " could not be converted to a DataTime.");
-                        result = dateTimeResult;
-                        break;
-                    case ETypeCode.Time:
-                        returnValue = TimeSpan.TryParse(value, out var timeResult);
-                        if (returnValue == false)
-                            throw new DataTypeParseException("The value " + value + " could not be converted to a DataTime.");
-                        result = timeResult;
-                        break;
-                    case ETypeCode.Binary:
-                        if (value != null)
-                        {
-                            result = HexToByteArray(value.ToString());
+                    throw new DataTypeParseException("Binary type convertion not supported.");
+                case ETypeCode.Byte:
+                    return Convert.ToByte(inputValue);
+                case ETypeCode.SByte:
+                    return Convert.ToSByte(inputValue);
+                case ETypeCode.UInt16:
+                    return Convert.ToUInt16(inputValue);
+                case ETypeCode.UInt32:
+                    return Convert.ToUInt32(inputValue);
+                case ETypeCode.UInt64:
+                    return Convert.ToUInt64(inputValue);
+                case ETypeCode.Int16:
+                    return Convert.ToInt16(inputValue);
+                case ETypeCode.Int32:
+                    return Convert.ToInt32(inputValue);
+                case ETypeCode.Int64:
+                    return Convert.ToInt64(inputValue);
+                case ETypeCode.Decimal:
+                    return Convert.ToDecimal(inputValue);
+                case ETypeCode.Double:
+                    return Convert.ToDouble(inputValue);
+                case ETypeCode.Single:
+                    return Convert.ToSingle(inputValue);
+                case ETypeCode.String:
+                    string stringResult;
+                    switch (inputValue)
+                    {
+                        case byte[] byteValue:
+                            stringResult = ByteArrayToHex(byteValue);
                             break;
-                        }
-                        throw new DataTypeParseException("The value " + value + " could not be converted to binary.");
-                    default:
-                        throw new DataTypeParseException("Cannot convert value " + inputValue + " from to " + tryDataType + ".");
-                }
+                        case string stringValue:
+                            stringResult = stringValue;
+                            break;
+                        default:
+                            stringResult = inputValue.ToString();
+                            break;
+                    }
+
+                    if (maxLength != null && stringResult != null && stringResult.Length > maxLength)
+                    {
+                        throw new DataTypeParseException("The string " + inputValue + " exceeds the maximum length of " + maxLength);
+                    }
+                    return stringResult;             
+                case ETypeCode.Boolean:
+                    switch (inputValue)
+                    {
+                        case string stringValue:
+                            var parsed = bool.TryParse(stringValue, out var parsedResult);
+                            if (parsed)
+                            {
+                                return parsedResult;
+                            }
+
+                            parsed = int.TryParse(stringValue, out var numberResult);
+                            if (parsed)
+                            {
+                                return Convert.ToBoolean(numberResult);
+                            }
+                            else
+                            {
+                                throw new FormatException("String was not recognized as a valid Boolean");
+                            }
+
+                            default:
+                                return Convert.ToBoolean(inputValue);
+                    }
+                    
+                case ETypeCode.DateTime:
+                    return Convert.ToDateTime(inputValue);
+                case ETypeCode.Time:
+                    return TimeSpan.Parse(inputValue.ToString());
+                case ETypeCode.Guid:
+                    return Guid.Parse(inputValue.ToString());
+                case ETypeCode.Unknown:
+                    break;
+                case ETypeCode.Json:
+                case ETypeCode.Xml:
+                case ETypeCode.Text:
+                    return inputValue.ToString();
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(tryDataType), tryDataType, null);
             }
 
-            return result;
+            throw new ArgumentOutOfRangeException(nameof(tryDataType), tryDataType, null);
+
+//            if (tryDataType == ETypeCode.String)
+//            {
+//                if (inputValue is byte[] byteValue)
+//                {
+//                    result = ByteArrayToHex(byteValue);
+//                }
+//                else
+//                {
+//                    result = inputValue is DBNull ? null : inputValue.ToString();
+//                }
+//
+//                if (maxLength != null && result != null && ((string)result).Length > maxLength)
+//                {
+//                    throw new DataTypeParseException("The string " + inputValue + " exceeds the maximum length of " + maxLength);
+//                }
+//                return result;
+//            }
+//
+//            if(tryDataType == ETypeCode.Text || tryDataType == ETypeCode.Xml || tryDataType == ETypeCode.Json)
+//            {
+//                result = inputValue is DBNull ? null : inputValue.ToString();
+//                return result;
+//            }
+//
+//            if (tryDataType == ETypeCode.Unknown)
+//            {
+//                return inputValue;
+//            }
+//
+//            if (inputValue is DBNull)
+//            {
+//                return inputValue;
+//            }
+//
+//            var inputType = GetTypeCode(inputValue.GetType());
+//
+//            if (tryDataType == inputType)
+//            {
+//                result = inputValue;
+//                return result;
+//            }
+//
+//            var tryBasicType = GetBasicType(tryDataType);
+//            var inputBasicType = GetBasicType(inputType);
+//
+//            if (tryBasicType == EBasicType.Numeric && (inputBasicType == EBasicType.Numeric))
+//            {
+//                try
+//                {
+//                    switch (tryDataType)
+//                    {
+//                        case ETypeCode.Byte:
+//                            result = Convert.ToByte(inputValue);
+//                            return result;
+//                        case ETypeCode.SByte:
+//                            result = Convert.ToSByte(inputValue);
+//                            return result;
+//                        case ETypeCode.Int16:
+//                            result = Convert.ToInt16(inputValue);
+//                            return result;
+//                        case ETypeCode.Int32:
+//                            result = Convert.ToInt32(inputValue);
+//                            return result;
+//                        case ETypeCode.Int64:
+//                            result = Convert.ToInt64(inputValue);
+//                            return result;
+//                        case ETypeCode.UInt16:
+//                            result = Convert.ToUInt16(inputValue);
+//                            return result;
+//                        case ETypeCode.UInt32:
+//                            result = Convert.ToUInt32(inputValue);
+//                            return result;
+//                        case ETypeCode.UInt64:
+//                            result = Convert.ToUInt64(inputValue);
+//                            return result;
+//                        case ETypeCode.Double:
+//                            result = Convert.ToDouble(inputValue);
+//                            return result;
+//                        case ETypeCode.Decimal:
+//                            result = Convert.ToDecimal(inputValue);
+//                            return result;
+//                        case ETypeCode.Single:
+//                            result = Convert.ToSingle(inputValue);
+//                            return result;
+//                        case ETypeCode.Binary:
+//                            throw new DataTypeParseException("Binary type convertion not supported.");
+//                        default:
+//                            throw new DataTypeParseException("Unsupported datatype");
+//                    }
+//                } catch(Exception ex)
+//                {
+//                    throw new DataTypeParseException("Cannot convert value " + inputValue + " from numeric to " + tryDataType + ".  " + ex.Message);
+//                }
+//            }
+//
+//            if (tryBasicType == EBasicType.Boolean && inputBasicType == EBasicType.Numeric)
+//            {
+//                try
+//                {
+//                    result = Convert.ToBoolean(inputValue);
+//                } catch(Exception ex)
+//                {
+//                    throw new DataTypeParseException("Cannot convert value " + inputValue + " from numeric to boolean.  " + ex.Message);
+//                }
+//            }
+//
+//            if (tryBasicType == EBasicType.Numeric && inputBasicType == EBasicType.Date)
+//            {
+//                try
+//                {
+//                    result = ((DateTime)inputValue).Ticks;
+//                }
+//                catch (Exception ex)
+//                {
+//                    throw new DataTypeParseException("Cannot convert value " + inputValue + " from date to numeric.  " + ex.Message);
+//                }
+//            }
+//
+//            if (tryBasicType == EBasicType.Date && inputBasicType == EBasicType.Numeric)
+//            {
+//                try
+//                {
+//                    result = new DateTime(Convert.ToInt64(inputValue));
+//                }
+//                catch (Exception ex)
+//                {
+//                    throw new DataTypeParseException("Cannot convert value " + inputValue + " from numeric to date.  " + ex.Message);
+//                }
+//            }
+//
+//            if (result == null && tryBasicType == EBasicType.Date && inputBasicType != EBasicType.String)
+//            {
+//                throw new DataTypeParseException("Cannot convert value " + inputValue + " to " + tryDataType);
+//            }
+//
+//            if (result == null)
+//            {
+//                string value;
+//
+//                if (inputBasicType != EBasicType.String)
+//                    value = inputValue.ToString();
+//                else
+//                    value = (string)inputValue;
+//
+//                bool returnValue;
+//                switch (tryDataType)
+//                {
+//                    case ETypeCode.Byte:
+//                        returnValue = byte.TryParse(value, out var byteResult);
+//                        if (returnValue == false)
+//                            throw new DataTypeParseException("The value " + value + " could not be converted to a byte.");
+//
+//                        result = byteResult;
+//                        break;
+//                    case ETypeCode.Int16:
+//                        returnValue = short.TryParse(value, out var int16Result);
+//                        if (returnValue == false)
+//                            throw new DataTypeParseException("The value " + value + " could not be converted to a Int16.");
+//                        result = int16Result;
+//                        break;
+//                    case ETypeCode.Int32:
+//                        returnValue = int.TryParse(value, out var int32Result);
+//                        if (returnValue == false)
+//                            throw new DataTypeParseException("The value " + value + " could not be converted to a Int32.");
+//                        result = int32Result;
+//                        break;
+//                    case ETypeCode.Int64:
+//                        returnValue = long.TryParse(value, out var int64Result);
+//                        if (returnValue == false)
+//                            throw new DataTypeParseException("The value " + value + " could not be converted to a Int64.");
+//                        result = int64Result;
+//                        break;
+//                    case ETypeCode.UInt16:
+//                        returnValue = ushort.TryParse(value, out var uint16Result);
+//                        if (returnValue == false)
+//                            throw new DataTypeParseException("The value " + value + " could not be converted to a UInt16.");
+//                        result = uint16Result;
+//                        break;
+//                    case ETypeCode.UInt32:
+//                        returnValue = uint.TryParse(value, out var uint32Result);
+//                        if (returnValue == false)
+//                            throw new DataTypeParseException("The value " + value + " could not be converted to a UInt32.");
+//                        result = uint32Result;
+//                        break;
+//                    case ETypeCode.UInt64:
+//                        returnValue = ulong.TryParse(value, out var uint64Result);
+//                        if (returnValue == false)
+//                            throw new DataTypeParseException("The value " + value + " could not be converted to a Int64.");
+//                        result = uint64Result;
+//                        break;
+//                    case ETypeCode.Double:
+//                        returnValue = double.TryParse(value, out var doubleResult);
+//                        if (returnValue == false)
+//                            throw new DataTypeParseException("The value " + value + " could not be converted to a Double.");
+//                        result = doubleResult;
+//                        break;
+//                    case ETypeCode.Decimal:
+//                        returnValue = decimal.TryParse(value, out var decimalResult);
+//                        if (returnValue == false)
+//                            throw new DataTypeParseException("The value " + value + " could not be converted to a Decimal.");
+//                        result = decimalResult;
+//                        break;
+//                    case ETypeCode.Single:
+//                        returnValue = float.TryParse(value, out var singleResult);
+//                        if (returnValue == false)
+//                            throw new DataTypeParseException("The value " + value + " could not be converted to a Single.");
+//                        result = singleResult;
+//                        break;
+//                    case ETypeCode.SByte:
+//                        returnValue = sbyte.TryParse(value, out var sbyteResult);
+//                        if (returnValue == false)
+//                            throw new DataTypeParseException("The value " + value + " could not be converted to a SByte.");
+//                        result = sbyteResult;
+//                        break;
+//                    case ETypeCode.String:
+//                    case ETypeCode.Xml:
+//                    case ETypeCode.Json:
+//                    case ETypeCode.Text:
+//                        result = value;
+//                        break;
+//                    case ETypeCode.Guid:
+//                        returnValue = Guid.TryParse(value, out var guidResult);
+//                        if (returnValue == false)
+//                            throw new DataTypeParseException("The value " + value + " could not be converted to a Guid.");
+//                        result = guidResult;
+//                        break;
+//                    case ETypeCode.Boolean:
+//                        returnValue = bool.TryParse(value, out var booleanResult);
+//                        if (returnValue == false)
+//                        {
+//                            returnValue = short.TryParse(value, out int16Result);
+//                            if (returnValue == false)
+//                            {
+//                                throw new DataTypeParseException("The value " + value + " could not be converted to a boolean.");
+//                            }
+//                            switch (int16Result)
+//                            {
+//                                case 0:
+//                                    result = false;
+//                                    break;
+//                                case 1:
+//                                case -1:
+//                                    result = true;
+//                                    break;
+//                                default:
+//                                    throw new DataTypeParseException("The value " + value + " could not be converted to a boolean.");
+//                            }
+//                        }
+//                        else
+//                            result = booleanResult;
+//                        break;
+//                    case ETypeCode.DateTime:
+//                        returnValue = DateTime.TryParse(value, out var dateTimeResult);
+//                        if (returnValue == false)
+//                            throw new DataTypeParseException("The value " + value + " could not be converted to a DataTime.");
+//                        result = dateTimeResult;
+//                        break;
+//                    case ETypeCode.Time:
+//                        returnValue = TimeSpan.TryParse(value, out var timeResult);
+//                        if (returnValue == false)
+//                            throw new DataTypeParseException("The value " + value + " could not be converted to a DataTime.");
+//                        result = timeResult;
+//                        break;
+//                    case ETypeCode.Binary:
+//                        if (value != null)
+//                        {
+//                            result = HexToByteArray(value);
+//                            break;
+//                        }
+//                        throw new DataTypeParseException("The value " + value + " could not be converted to binary.");
+//                    default:
+//                        throw new DataTypeParseException("Cannot convert value " + inputValue + " from to " + tryDataType + ".");
+//                }
+//            }
+//
+//            return result;
         }
 
         public static object Add(ETypeCode typeCode,  object value1, object value2)
