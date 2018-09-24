@@ -28,7 +28,8 @@ namespace Dexih.Utils.DataType
             Date,
             Time,
             Boolean,
-            Binary
+            Binary,
+            Enum
         }
 
         [JsonConverter(typeof(StringEnumConverter))]
@@ -58,7 +59,8 @@ namespace Dexih.Utils.DataType
             Guid,
             Unknown,
             Json,
-            Xml
+            Xml,
+            Enum
         }
 
 
@@ -210,6 +212,8 @@ namespace Dexih.Utils.DataType
         /// <returns>ETypeCode</returns>
         public static ETypeCode GetTypeCode(Type dataType)
         {
+            if (dataType.IsEnum)
+                return ETypeCode.Enum;
             if (dataType == typeof(byte) || dataType == typeof(byte?)) // || dataType == typeof(byte&))
                 return ETypeCode.Byte;
             if (dataType == typeof(sbyte) || dataType == typeof(sbyte?))
@@ -252,57 +256,42 @@ namespace Dexih.Utils.DataType
         {
             switch (value)
             {
-                case byte byteValue:
+                case Enum _:
+                    return ETypeCode.Enum;
+                case byte _:
                     return ETypeCode.Byte;
-                    break;
-                case sbyte sbyteValue:
+                case sbyte _:
                     return ETypeCode.SByte;
-                    break;
-                case ushort uint16Value:
+                case ushort _:
                     return ETypeCode.UInt16;
-                    break;
-                case uint uint32Value:
+                case uint _:
                     return ETypeCode.UInt32;
-                    break;
-                case ulong uint64Value:
+                case ulong _:
                     return ETypeCode.UInt64;
-                    break;
-                case short int16Value:
+                case short _:
                     return ETypeCode.Int16;
-                    break;
-                case int int32Value:
+                case int _:
                     return ETypeCode.Int32;
-                    break;
-                case long int64Value:
+                case long _:
                     return ETypeCode.Int64;
-                    break;
-                case decimal decimalValue:
+                case decimal _:
                     return ETypeCode.Decimal;
-                    break;
-                case double doubleValue:
+                case double _:
                     return ETypeCode.Double;
-                    break;
-                case float singleValue:
+                case float _:
                     return ETypeCode.Single;
-                    break;
-                case string stringValue:
+                case string _:
                     return ETypeCode.String;
-                    break;
-                case bool boolValue:
+                case bool _:
                     return ETypeCode.Boolean;
-                    break;
-                case DateTime datetimeValue:
+                case DateTime _:
                     return ETypeCode.DateTime;
-                    break;
-                case TimeSpan timeValue:
+                case TimeSpan _:
                     return ETypeCode.Time;
-                    break;
-                case Guid guidValue:
+                case Guid _:
                     return ETypeCode.Guid;
-                    break;
-                case byte[] binaryValue:
+                case byte[] _:
                     return ETypeCode.Binary;
-                    break;
             }
 
             return ETypeCode.Unknown;
