@@ -4,6 +4,8 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Reflection.Metadata;
 using System.Threading.Tasks;
+using System.Xml;
+using Newtonsoft.Json.Linq;
 using Xunit;
 using Xunit.Abstractions;
 using static Dexih.Utils.DataType.DataType;
@@ -155,8 +157,6 @@ namespace Dexih.Utils.DataType.Tests
         [InlineData(ETypeCode.Single, 1.1, 1.09, ECompareResult.Greater)]
         [InlineData(ETypeCode.Single, 1.09, 1.09, ECompareResult.Equal)]
         [InlineData(ETypeCode.Single, 1.09, 1.1, ECompareResult.Less)]
-        [InlineData(ETypeCode.Xml, "01", "001", ECompareResult.Greater)]
-        [InlineData(ETypeCode.Json, "01", "001", ECompareResult.Greater)]
         [InlineData(ETypeCode.String, "01", "001", ECompareResult.Greater)]
         [InlineData(ETypeCode.String, "01", "01", ECompareResult.Equal)]
         [InlineData(ETypeCode.String, "001", "01", ECompareResult.Less)]
@@ -202,8 +202,6 @@ namespace Dexih.Utils.DataType.Tests
         [InlineData(ETypeCode.Int64, "-2", (Int64)(-2))]
         [InlineData(ETypeCode.Double, -2.123, (Double)(-2.123))]
         [InlineData(ETypeCode.Double, "-2.123 ", (Double)(-2.123))]
-        [InlineData(ETypeCode.Xml, 01, "1")]
-        [InlineData(ETypeCode.Json, 01, "1")]
         [InlineData(ETypeCode.String, 01, "1")]
         [InlineData(ETypeCode.String, true, "True")]
         [InlineData(ETypeCode.Text, 01, "1")]
@@ -236,6 +234,28 @@ namespace Dexih.Utils.DataType.Tests
             new object[] { ETypeCode.String, "123".ToCharArray(), "123"}
                     
         };
+
+        [Fact]
+        public void DataType_TryParse_XML()
+        {
+            var result = TryParse(ETypeCode.Xml, "<note>hi there</note>");
+            Assert.IsType<XmlDocument>(result);
+
+            var xmldoc = (XmlDocument) result;
+            Assert.Equal("hi there", xmldoc.FirstChild.InnerText);
+        }
+
+        [Fact]
+        public void DataType_TryParse_Json()
+        {
+            var result = TryParse(ETypeCode.Json, "{\"note\": \"hi there\"}");
+            Assert.IsType<JObject>(result);
+
+            var token = (JObject) result;
+
+            Assert.Equal("hi there", token["note"]);
+        }
+
 
         //values that should throw a parse error
         [Theory]

@@ -460,9 +460,11 @@ namespace Dexih.Utils.DataType
                     return typeof(float);
                 case ETypeCode.Char:
                     return typeof(char[]);
-                case ETypeCode.String:
                 case ETypeCode.Xml:
+                    return typeof(XmlDocument);
                 case ETypeCode.Json:
+                    return typeof(JObject);
+                case ETypeCode.String:
                 case ETypeCode.Text:
                     return typeof(string);
                 case ETypeCode.Boolean:
