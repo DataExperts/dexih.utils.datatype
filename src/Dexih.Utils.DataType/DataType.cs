@@ -263,6 +263,16 @@ namespace Dexih.Utils.DataType
             {
                 if (dataType.IsArray)
                 {
+                    if (dataType == typeof(byte[]))
+                    {
+                        return ETypeCode.Binary;
+                    }
+
+                    if (dataType == typeof(char[]))
+                    {
+                        return ETypeCode.Char;
+                    }
+                    
                     rank = dataType.GetArrayRank();
                     dataType = dataType.GetElementType();
                 }
