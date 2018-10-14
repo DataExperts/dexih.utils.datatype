@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.Reflection.Metadata;
 using System.Threading.Tasks;
 using Xunit;
@@ -61,9 +62,41 @@ namespace Dexih.Utils.DataType.Tests
         [InlineData(typeof(DateTime), ETypeCode.DateTime)]
         [InlineData(typeof(TimeSpan), ETypeCode.Time)]
         [InlineData(typeof(Guid), ETypeCode.Guid)]
+        [InlineData(typeof(byte[]), ETypeCode.Binary)]
+        [InlineData(typeof(Int32?), ETypeCode.Int32)]
+        [InlineData(typeof(char[]), ETypeCode.Char)]
         public void DataType_GetTypeCode(Type dataType, ETypeCode expectedTypeCode)
         {
             Assert.Equal(expectedTypeCode, DataType.GetTypeCode(dataType));
+        }
+        
+        [Theory]
+        [InlineData(typeof(Byte), true)]
+        [InlineData(typeof(SByte), true)]
+        [InlineData(typeof(UInt16), true)]
+        [InlineData(typeof(UInt32), true)]
+        [InlineData(typeof(UInt64), true)]
+        [InlineData(typeof(Int16), true)]
+        [InlineData(typeof(Int32), true)]
+        [InlineData(typeof(Int64), true)]
+        [InlineData(typeof(Int64?), true)]
+        [InlineData(typeof(Decimal), true)]
+        [InlineData(typeof(Double), true)]
+        [InlineData(typeof(Single), true)]
+        [InlineData(typeof(String), true)]
+        [InlineData(typeof(Boolean), true)]
+        [InlineData(typeof(DateTime), true)]
+        [InlineData(typeof(TimeSpan), true)]
+        [InlineData(typeof(Guid), true)]
+        [InlineData(typeof(int[]), false)]
+        [InlineData(typeof(string[]), false)]
+        [InlineData(typeof(Point), false)]
+        [InlineData(typeof(Int32?), true)]
+        [InlineData(typeof(char[]), true)]
+        [InlineData(typeof(byte[]), true)]
+        public void DataType_IsSimple(Type dataType, bool result)
+        {
+            Assert.Equal(result, DataType.IsSimple(dataType));
         }
 
         [Theory]
@@ -147,6 +180,8 @@ namespace Dexih.Utils.DataType.Tests
             var result = DataType.Compare(dataType, inputValue, compareValue);
             Assert.Equal(expectedResult, result);
         }
+        
+
 
         [Theory]
         [InlineData(ETypeCode.Byte, 2, (Byte)2)]
@@ -179,34 +214,28 @@ namespace Dexih.Utils.DataType.Tests
         [InlineData(ETypeCode.Boolean, "0", false)]
         [InlineData(ETypeCode.Boolean, 0, false)]
         [InlineData(ETypeCode.Unknown, "123", "123")]
-        [MemberData("OtherDataTypes")]
+        [MemberData(nameof(OtherParseDataTypes))]
         public void DataType_TryParse(ETypeCode dataType, object inputValue, object expectedValue)
         {
             var result = DataType.TryParse(dataType, inputValue);
             Assert.Equal(expectedValue, result);
         }
 
-        public static IEnumerable<object[]> OtherDataTypes
+        public static IEnumerable<object[]> OtherParseDataTypes => new[]
         {
-            get
-            {
-                return new[]
-                {
-                new object[] { ETypeCode.Decimal, -2.123, (Decimal)(-2.123)},
-                new object[] { ETypeCode.Decimal, "-2.123", (Decimal)(-2.123)},
-                new object[] { ETypeCode.DateTime, "2001-01-01", new DateTime(2001,01,01)},
-                new object[] { ETypeCode.DateTime, "2001-01-01T12:59:59", new DateTime(2001,01,01, 12, 59, 59)},
-                new object[] { ETypeCode.Time, "12:59:59", new TimeSpan(12, 59, 59)},
-                new object[] { ETypeCode.Guid, "6d5bba83-e71b-4ce1-beb8-006085a0a77d", new Guid("6d5bba83-e71b-4ce1-beb8-006085a0a77d")},
-                new object[] { ETypeCode.Guid, "6d5bba83-e71b-4ce1-beb8-006085a0a77d", new Guid("6d5bba83-e71b-4ce1-beb8-006085a0a77d")},
-                new object[] { ETypeCode.Binary, "61626364", new byte[] { 0x61, 0x62, 0x63, 0x64 }},
-                new object[] { ETypeCode.String, new byte[] { 0x61, 0x62, 0x63, 0x64 }, "61626364"} 
+            new object[] { ETypeCode.Decimal, -2.123, (Decimal)(-2.123)},
+            new object[] { ETypeCode.Decimal, "-2.123", (Decimal)(-2.123)},
+            new object[] { ETypeCode.DateTime, "2001-01-01", new DateTime(2001,01,01)},
+            new object[] { ETypeCode.DateTime, "2001-01-01T12:59:59", new DateTime(2001,01,01, 12, 59, 59)},
+            new object[] { ETypeCode.Time, "12:59:59", new TimeSpan(12, 59, 59)},
+            new object[] { ETypeCode.Guid, "6d5bba83-e71b-4ce1-beb8-006085a0a77d", new Guid("6d5bba83-e71b-4ce1-beb8-006085a0a77d")},
+            new object[] { ETypeCode.Guid, "6d5bba83-e71b-4ce1-beb8-006085a0a77d", new Guid("6d5bba83-e71b-4ce1-beb8-006085a0a77d")},
+            new object[] { ETypeCode.Binary, "61626364", new byte[] { 0x61, 0x62, 0x63, 0x64 }},
+            new object[] { ETypeCode.String, new byte[] { 0x61, 0x62, 0x63, 0x64 }, "61626364"},
+            new object[] { ETypeCode.Char, "123", "123".ToCharArray()},
+            new object[] { ETypeCode.String, "123".ToCharArray(), "123"}
                     
-                };
-
-            }
-
-        }
+        };
 
         //values that should throw a parse error
         [Theory]
@@ -308,6 +337,52 @@ namespace Dexih.Utils.DataType.Tests
                     {
                         a.CompareTo(b);
                     }
+                }
+            });
+
+
+            Timer("DataType.IsSimple (int)", () =>
+            {
+                var type = typeof(int);
+                for(var i = 0; i< iterations; i++)
+                {
+                    var value = DataType.IsSimple(type);
+                }
+            });
+            
+            Timer("DataType.IsSimple (int?)", () =>
+            {
+                var type = typeof(int?);
+                for(var i = 0; i< iterations; i++)
+                {
+                    var value = DataType.IsSimple(type);
+                }
+            });
+
+            Timer("DataType.IsSimple (int[])", () =>
+            {
+                var type = typeof(int[]);
+                for(var i = 0; i< iterations; i++)
+                {
+                    var value = DataType.IsSimple(type);
+                }
+            });
+
+            Timer("DataType.IsSimple (string)", () =>
+            {
+                var type = typeof(int);
+                for(var i = 0; i< iterations; i++)
+                {
+                    var value = DataType.IsSimple(type);
+                }
+            });
+
+            Timer("DataType.GetTypeCode(string)", () =>
+            {
+                var type = typeof(string);
+                for(var i = 0; i< iterations; i++)
+                {
+                    var value = DataType.GetTypeCode(type);
                 }
             });
             
