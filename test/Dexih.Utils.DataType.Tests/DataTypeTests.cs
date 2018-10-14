@@ -67,7 +67,7 @@ namespace Dexih.Utils.DataType.Tests
         [InlineData(typeof(char[]), ETypeCode.Char)]
         public void DataType_GetTypeCode(Type dataType, ETypeCode expectedTypeCode)
         {
-            Assert.Equal(expectedTypeCode, DataType.GetTypeCode(dataType));
+            Assert.Equal(expectedTypeCode, DataType.GetTypeCode(dataType, out _));
         }
         
         [Theory]
@@ -382,7 +382,7 @@ namespace Dexih.Utils.DataType.Tests
                 var type = typeof(string);
                 for(var i = 0; i< iterations; i++)
                 {
-                    var value = DataType.GetTypeCode(type);
+                    var value = DataType.GetTypeCode(type, out _);
                 }
             });
             
