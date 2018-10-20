@@ -11,6 +11,12 @@ namespace Dexih.Utils.DataType
         bool Equal(T a, T b);
         bool GreaterThan(T a, T b);
         bool LessThan(T a, T b);
+        bool GreaterThanEqual(T a, T b);
+        bool LessThanEqual(T a, T b);
+        string ToString(T a);
+        T TryParse(object value);
+        DataType.ETypeCode TypeCode { get; }
+        
 
     }
 }
