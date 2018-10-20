@@ -331,7 +331,6 @@ namespace Dexih.Utils.DataType
                 }
 
                 return ETypeCode.Unknown;
-                break;
             }
         }
 
