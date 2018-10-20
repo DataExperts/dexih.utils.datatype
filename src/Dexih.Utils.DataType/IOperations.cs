@@ -9,6 +9,7 @@ namespace Dexih.Utils.DataType
         T Negate(T a);
         T One { get; }
         T Zero { get; }
+        T Two { get; }
         int Sign(T a);
         bool Equal(T a, T b);
         bool GreaterThan(T a, T b);
