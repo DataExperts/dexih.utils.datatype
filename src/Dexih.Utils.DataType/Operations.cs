@@ -43,6 +43,8 @@ namespace Dexih.Utils.DataType
             public byte Subtract(byte a, byte b) { return unchecked((byte)(a - b)); }
             public byte Multiply(byte a, byte b) { return unchecked((byte)(a * b)); }
             public byte Divide(byte a, byte b) { return unchecked((byte)(a / b)); }
+            public int Sign(byte a) { return 1; }
+            public byte Negate(byte a) { throw new OverflowException("Can not negate an unsigned number."); }       
         }
 
         class DoubleOperations : IOperations<double>
@@ -51,6 +53,8 @@ namespace Dexih.Utils.DataType
             public double Subtract(double a, double b) { return a - b; }
             public double Multiply(double a, double b) { return a * b; }
             public double Divide(double a, double b) { return a / b; }
+            public int Sign(double a) { return Math.Sign(a); }
+            public double Negate(double a) { return a * -1; }       
         }
         
         class SingleOperations : IOperations<Single>
@@ -59,6 +63,8 @@ namespace Dexih.Utils.DataType
             public Single Subtract(Single a, Single b) { return a - b; }
             public Single Multiply(Single a, Single b) { return a * b; }
             public Single Divide(Single a, Single b) { return a / b; }
+            public int Sign(Single a) { return Math.Sign(a); }
+            public Single Negate(Single a) { return a * -1; }       
         }
         
         class DecimalOperations : IOperations<decimal>
@@ -67,6 +73,8 @@ namespace Dexih.Utils.DataType
             public decimal Subtract(decimal a, decimal b) { return a - b; }
             public decimal Multiply(decimal a, decimal b) { return a * b; }
             public decimal Divide(decimal a, decimal b) { return a / b; }
+            public int Sign(decimal a) { return Math.Sign(a); }
+            public decimal Negate(decimal a) { return a * -1; }       
         }
         
         class Int16Operations : IOperations<Int16>
@@ -75,6 +83,8 @@ namespace Dexih.Utils.DataType
             public Int16 Subtract(Int16 a, Int16 b) { return unchecked((Int16)(a - b)); }
             public Int16 Multiply(Int16 a, Int16 b) { return unchecked((Int16)(a * b)); }
             public Int16 Divide(Int16 a, Int16 b) { return unchecked((Int16)(a / b)); }
+            public int Sign(Int16 a) { return Math.Sign(a); }
+            public Int16 Negate(Int16 a) { return unchecked((Int16)(a * -1)); }       
         }
         
         class Int32Operations : IOperations<Int32>
@@ -83,6 +93,8 @@ namespace Dexih.Utils.DataType
             public Int32 Subtract(Int32 a, Int32 b) { return a - b; }
             public Int32 Multiply(Int32 a, Int32 b) { return a * b; }
             public Int32 Divide(Int32 a, Int32 b) { return a / b; }
+            public Int32 Sign(Int32 a) { return Math.Sign(a); }
+            public Int32 Negate(Int32 a) { return a * -1; }       
         }
         
         class Int64Operations : IOperations<Int64>
@@ -91,6 +103,8 @@ namespace Dexih.Utils.DataType
             public Int64 Subtract(Int64 a, Int64 b) { return a - b; }
             public Int64 Multiply(Int64 a, Int64 b) { return a * b; }
             public Int64 Divide(Int64 a, Int64 b) { return a / b; }
+            public int Sign(Int64 a) { return Math.Sign(a); }
+            public Int64 Negate(Int64 a) { return a * -1; }       
         }
         
         class UInt16Operations : IOperations<UInt16>
@@ -99,6 +113,8 @@ namespace Dexih.Utils.DataType
             public UInt16 Subtract(UInt16 a, UInt16 b) { return unchecked((UInt16)(a - b)); }
             public UInt16 Multiply(UInt16 a, UInt16 b) { return unchecked((UInt16)(a * b)); }
             public UInt16 Divide(UInt16 a, UInt16 b) { return unchecked((UInt16)(a / b)); }
+            public int Sign(UInt16 a) { return 1; }
+            public UInt16 Negate(UInt16 a) { throw new OverflowException("Can not negate an unsigned number."); }       
         }
         
         class UInt32Operations : IOperations<UInt32>
@@ -107,6 +123,8 @@ namespace Dexih.Utils.DataType
             public UInt32 Subtract(UInt32 a, UInt32 b) { return a - b; }
             public UInt32 Multiply(UInt32 a, UInt32 b) { return a * b; }
             public UInt32 Divide(UInt32 a, UInt32 b) { return a / b; }
+            public int Sign(UInt32 a) { return 1; }
+            public UInt32 Negate(UInt32 a) { throw new OverflowException("Can not negate an unsigned number."); }       
         }
         
         class UInt64Operations : IOperations<UInt64>
@@ -115,6 +133,8 @@ namespace Dexih.Utils.DataType
             public UInt64 Subtract(UInt64 a, UInt64 b) { return a - b; }
             public UInt64 Multiply(UInt64 a, UInt64 b) { return a * b; }
             public UInt64 Divide(UInt64 a, UInt64 b) { return a / b; }
+            public int Sign(UInt64 a) { return 1; }
+            public UInt64 Negate(UInt64 a) { throw new OverflowException("Can not negate an unsigned number."); }       
         }
         
         class SByteOperations : IOperations<SByte>
@@ -123,6 +143,8 @@ namespace Dexih.Utils.DataType
             public SByte Subtract(SByte a, SByte b) { return unchecked((SByte)(a - b)); }
             public SByte Multiply(SByte a, SByte b) { return unchecked((SByte)(a * b)); }
             public SByte Divide(SByte a, SByte b) { return unchecked((SByte)(a / b)); }
+            public int Sign(SByte a) { return Math.Sign(a); }
+            public SByte Negate(SByte a) { return unchecked((SByte)(a * -1)); }       
         }
     }
 }
