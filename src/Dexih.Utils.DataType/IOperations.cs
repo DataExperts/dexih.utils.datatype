@@ -7,6 +7,8 @@ namespace Dexih.Utils.DataType
         T Multiply(T a, T b);
         T Divide(T a, T b);
         T Negate(T a);
+        T One { get; }
+        T Zero { get; }
         int Sign(T a);
         bool Equal(T a, T b);
         bool GreaterThan(T a, T b);

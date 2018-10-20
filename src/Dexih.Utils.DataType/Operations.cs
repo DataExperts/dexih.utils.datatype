@@ -53,7 +53,6 @@ namespace Dexih.Utils.DataType
                     break;
                 case TypeCode.String:
                     return (IOperations<T>) new StringOperations();
-                    break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -68,7 +67,9 @@ namespace Dexih.Utils.DataType
             public bool Multiply(bool a, bool b)  => throw new OverflowException("Can not multiply a boolean.");
             public bool Divide(bool a, bool b)  => throw new OverflowException("Can not divide a boolean.");
             public int Sign(bool a)  => throw new OverflowException("Can not get the sign of a boolean.");
-            public bool Negate(bool a)  => throw new OverflowException("Can not negate a boolean.");    
+            public bool Negate(bool a)  => throw new OverflowException("Can not negate a boolean.");
+            public bool Zero => false;
+            public bool One => true;
             public bool Equal(bool a, bool b) => a == b;
             public bool GreaterThan(bool a, bool b) => a.CompareTo(b) == 1;
             public bool LessThan(bool a, bool b) => a.CompareTo(b) == -1;
@@ -111,6 +112,8 @@ namespace Dexih.Utils.DataType
             public byte Divide(byte a, byte b) { return unchecked((byte)(a / b)); }
             public int Sign(byte a) { return 1; }
             public byte Negate(byte a) { throw new OverflowException("Can not negate an unsigned number."); }
+            public byte Zero => 0;
+            public byte One => 1;
             public bool Equal(byte a, byte b) => a == b;
             public bool GreaterThan(byte a, byte b) => a > b;
             public bool LessThan(byte a, byte b) => a < b;
@@ -129,6 +132,8 @@ namespace Dexih.Utils.DataType
             public double Divide(double a, double b) { return a / b; }
             public int Sign(double a) { return Math.Sign(a); }
             public double Negate(double a) { return a * -1; }       
+            public double Zero => 0;
+            public double One => 1;
             public bool Equal(double a, double b) => a == b;
             public bool GreaterThan(double a, double b) => a > b;
             public bool LessThan(double a, double b) => a < b;
@@ -146,7 +151,9 @@ namespace Dexih.Utils.DataType
             public float Multiply(float a, float b) { return a * b; }
             public float Divide(float a, float b) { return a / b; }
             public int Sign(float a) { return Math.Sign(a); }
-            public float Negate(float a) { return a * -1; }       
+            public float Negate(float a) { return a * -1; }    
+            public float Zero => 0;
+            public float One => 1;
             public bool Equal(float a, float b) => a == b;
             public bool GreaterThan(float a, float b) => a > b;
             public bool LessThan(float a, float b) => a < b;
@@ -165,6 +172,8 @@ namespace Dexih.Utils.DataType
             public decimal Divide(decimal a, decimal b) { return a / b; }
             public int Sign(decimal a) { return Math.Sign(a); }
             public decimal Negate(decimal a) { return a * -1; }       
+            public decimal Zero => 0;
+            public decimal One => 1;
             public bool Equal(decimal a, decimal b) => a == b;
             public bool GreaterThan(decimal a, decimal b) => a > b;
             public bool LessThan(decimal a, decimal b) => a < b;
@@ -183,6 +192,8 @@ namespace Dexih.Utils.DataType
             public short Divide(short a, short b) { return unchecked((short)(a / b)); }
             public int Sign(short a) { return Math.Sign(a); }
             public short Negate(short a) { return unchecked((short)(a * -1)); }       
+            public short Zero => 0;
+            public short One => 1;
             public bool Equal(short a, short b) => a == b;
             public bool GreaterThan(short a, short b) => a > b;
             public bool LessThan(short a, short b) => a < b;
@@ -201,6 +212,8 @@ namespace Dexih.Utils.DataType
             public int Divide(int a, int b) { return a / b; }
             public int Sign(int a) { return Math.Sign(a); }
             public int Negate(int a) { return a * -1; }       
+            public int Zero => 0;
+            public int One => 1;
             public bool Equal(int a, int b) => a == b;
             public bool GreaterThan(int a, int b) => a > b;
             public bool LessThan(int a, int b) => a < b;
@@ -219,6 +232,8 @@ namespace Dexih.Utils.DataType
             public long Divide(long a, long b) { return a / b; }
             public int Sign(long a) { return Math.Sign(a); }
             public long Negate(long a) { return a * -1; }       
+            public long Zero => 0;
+            public long One => 1;
             public bool Equal(long a, long b) => a == b;
             public bool GreaterThan(long a, long b) => a > b;
             public bool LessThan(long a, long b) => a < b;
@@ -237,6 +252,8 @@ namespace Dexih.Utils.DataType
             public ushort Divide(ushort a, ushort b) { return unchecked((ushort)(a / b)); }
             public int Sign(ushort a) { return 1; }
             public ushort Negate(ushort a) { throw new OverflowException("Can not negate an unsigned number."); }       
+            public ushort Zero => 0;
+            public ushort One => 1;
             public bool Equal(ushort a, ushort b) => a == b;
             public bool GreaterThan(ushort a, ushort b) => a > b;
             public bool LessThan(ushort a, ushort b) => a < b;
@@ -255,6 +272,8 @@ namespace Dexih.Utils.DataType
             public uint Divide(uint a, uint b) { return a / b; }
             public int Sign(uint a) { return 1; }
             public uint Negate(uint a) { throw new OverflowException("Can not negate an unsigned number."); }       
+            public uint Zero => 0;
+            public uint One => 1;
             public bool Equal(uint a, uint b) => a == b;
             public bool GreaterThan(uint a, uint b) => a > b;
             public bool LessThan(uint a, uint b) => a < b;
@@ -273,6 +292,8 @@ namespace Dexih.Utils.DataType
             public ulong Divide(ulong a, ulong b) { return a / b; }
             public int Sign(ulong a) { return 1; }
             public ulong Negate(ulong a) { throw new OverflowException("Can not negate an unsigned number."); }       
+            public ulong Zero => 0;
+            public ulong One => 1;
             public bool Equal(ulong a, ulong b) => a == b;
             public bool GreaterThan(ulong a, ulong b) => a > b;
             public bool LessThan(ulong a, ulong b) => a < b;
@@ -291,6 +312,8 @@ namespace Dexih.Utils.DataType
             public sbyte Divide(sbyte a, sbyte b) { return unchecked((sbyte)(a / b)); }
             public int Sign(sbyte a) { return Math.Sign(a); }
             public sbyte Negate(sbyte a) { return unchecked((sbyte)(a * -1)); }       
+            public sbyte Zero => 0;
+            public sbyte One => 1;
             public bool Equal(sbyte a, sbyte b) => a == b;
             public bool GreaterThan(sbyte a, sbyte b) => a > b;
             public bool LessThan(sbyte a, sbyte b) => a < b;
@@ -309,6 +332,8 @@ namespace Dexih.Utils.DataType
             public DateTime Divide(DateTime a, DateTime b)  => throw new OverflowException("Can not divide a dates.");
             public int Sign(DateTime a)  => throw new OverflowException("Can not get the sign of a dates.");
             public DateTime Negate(DateTime a)  => throw new OverflowException("Can not negate a dates.");    
+            public DateTime Zero => throw new OverflowException("");
+            public DateTime One => throw new OverflowException("");
             public bool Equal(DateTime a, DateTime b) => a == b;
             public bool GreaterThan(DateTime a, DateTime b) => a > b;
             public bool LessThan(DateTime a, DateTime b) => a < b;
@@ -327,6 +352,8 @@ namespace Dexih.Utils.DataType
             public TimeSpan Divide(TimeSpan a, TimeSpan b)  => throw new OverflowException("Can not divide a dates.");
             public int Sign(TimeSpan a)  => throw new OverflowException("Can not get the sign of a dates.");
             public TimeSpan Negate(TimeSpan a)  => throw new OverflowException("Can not negate a dates.");    
+            public TimeSpan Zero => throw new OverflowException("");
+            public TimeSpan One => throw new OverflowException("");
             public bool Equal(TimeSpan a, TimeSpan b) => a == b;
             public bool GreaterThan(TimeSpan a, TimeSpan b) => a > b;
             public bool LessThan(TimeSpan a, TimeSpan b) => a < b;
@@ -352,6 +379,8 @@ namespace Dexih.Utils.DataType
             public Guid Divide(Guid a, Guid b)  => throw new OverflowException("Can not divide a dates.");
             public int Sign(Guid a)  => throw new OverflowException("Can not get the sign of a dates.");
             public Guid Negate(Guid a)  => throw new OverflowException("Can not negate a dates.");    
+            public Guid Zero  => throw new OverflowException("");
+            public Guid One  => throw new OverflowException("");
             public bool Equal(Guid a, Guid b) => a == b;
             public bool GreaterThan(Guid a, Guid b) => a.CompareTo(b) == 1;
             public bool LessThan(Guid a, Guid b) => a.CompareTo(b) == -1;
@@ -370,6 +399,8 @@ namespace Dexih.Utils.DataType
             public byte[] Divide(byte[] a, byte[] b)  => throw new OverflowException("Can not divide a dates.");
             public int Sign(byte[] a)  => throw new OverflowException("Can not get the sign of a dates.");
             public byte[] Negate(byte[] a)  => throw new OverflowException("Can not negate a dates.");    
+            public byte[] Zero => throw new OverflowException("");
+            public byte[] One => throw new OverflowException("");
             public bool Equal(byte[] a, byte[] b) => a.SequenceEqual(b);
             public bool GreaterThan(byte[] a, byte[] b)
             {
@@ -435,6 +466,8 @@ namespace Dexih.Utils.DataType
             public char[] Divide(char[] a, char[] b)  => throw new OverflowException("Can not divide chars.");
             public int Sign(char[] a)  => throw new OverflowException("Can not get the sign of chars.");
             public char[] Negate(char[] a)  => throw new OverflowException("Can not negate a dates.");    
+            public char[] Zero => "0".ToCharArray();
+            public char[] One =>  "1".ToCharArray();
             public bool Equal(char[] a, char[] b) => a.SequenceEqual(b);
 
             public bool GreaterThan(char[] a, char[] b)
@@ -502,6 +535,8 @@ namespace Dexih.Utils.DataType
             public JToken Divide(JToken a, JToken b)  => throw new OverflowException("Can not divide a dates.");
             public int Sign(JToken a)  => throw new OverflowException("Can not get the sign of a dates.");
             public JToken Negate(JToken a)  => throw new OverflowException("Can not negate a dates.");    
+            public JToken Zero  => throw new OverflowException("");
+            public JToken One  => throw new OverflowException("");
             public bool Equal(JToken a, JToken b) => throw new OverflowException("Can not compare json.");
             public bool GreaterThan(JToken a, JToken b) => throw new OverflowException("Can not compare json.");
             public bool LessThan(JToken a, JToken b) => throw new OverflowException("Can not compare json.");
@@ -531,6 +566,8 @@ namespace Dexih.Utils.DataType
             public XmlDocument Divide(XmlDocument a, XmlDocument b)  => throw new OverflowException("Can not divide a dates.");
             public int Sign(XmlDocument a)  => throw new OverflowException("Can not get the sign of a dates.");
             public XmlDocument Negate(XmlDocument a)  => throw new OverflowException("Can not negate a dates.");    
+            public XmlDocument Zero => throw new OverflowException("");
+            public XmlDocument One => throw new OverflowException("");
             public bool Equal(XmlDocument a, XmlDocument b) => throw new OverflowException("Can not compare xml.");
             public bool GreaterThan(XmlDocument a, XmlDocument b) => throw new OverflowException("Can not compare xml.");
             public bool LessThan(XmlDocument a, XmlDocument b) => throw new OverflowException("Can not compare xml.");
@@ -562,6 +599,8 @@ namespace Dexih.Utils.DataType
             public String Divide(String a, String b)  => throw new OverflowException("Can not divide a dates.");
             public int Sign(String a)  => throw new OverflowException("Can not get the sign of a dates.");
             public String Negate(String a)  => throw new OverflowException("Can not negate a dates.");    
+            public String Zero => "0";
+            public String One => "1";
             public bool Equal(String a, String b) => a == b;
             public bool GreaterThan(String a, String b) => String.Compare(a,b) == 1;
             public bool LessThan(String a, String b) => String.Compare(a,b) == -1;
