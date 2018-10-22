@@ -2,21 +2,12 @@ using System;
 using System.Data;
 using System.Linq.Expressions;
 using System.Net.NetworkInformation;
+using System.Runtime.CompilerServices;
 using System.Xml;
 using Newtonsoft.Json.Linq;
 
 namespace Dexih.Utils.DataType
 {
-    /// <summary>
-    /// Result of a data comparison
-    /// </summary>
-    public enum ECompareResult
-    {
-        Less = -1,
-        Equal = 0,
-        Greater = 1
-    }
-    
     public static class Operations
     {
         internal static readonly Type[] ConvertTypes = {
@@ -80,10 +71,11 @@ namespace Dexih.Utils.DataType
         public static bool GreaterThanOrEqual<T>(T a, T b) => Operations<T>.GreaterThanOrEqual.Value(a, b);
         public static bool LessThanOrEqual<T>(T a, T b) => Operations<T>.LessThanOrEqual.Value(a, b);
         public static bool Equal<T>(T a, T b) => Operations<T>.Equal.Value(a, b);
+        public static bool Equal<T>(object a, object b) => Operations<T>.EqualObject.Value(a, b);
         public static string ToString<T>(T a) => Operations<T>.ToString(a);
         public static T Parse<T>(object a) => Operations<T>.Parse(a);
-        public static ECompareResult Compare<T>(T inputValue, T compareTo) => Operations<T>.Compare.Value(inputValue, compareTo);
-        public static ECompareResult Compare<T>(object inputValue, object compareTo) => Operations<T>.CompareObject.Value(inputValue, compareTo);
+        public static int Compare<T>(T inputValue, T compareTo) => Operations<T>.Compare.Value(inputValue, compareTo);
+        public static int Compare<T>(object inputValue, object compareTo) => Operations<T>.CompareObject.Value(inputValue, compareTo);
 
         public static object Parse(DataType.ETypeCode typeCode, object inputValue)
         {
@@ -144,14 +136,108 @@ namespace Dexih.Utils.DataType
                     throw new ArgumentOutOfRangeException(nameof(typeCode), typeCode, null);
             }
         }
-
-        public static ECompareResult Compare(object inputValue, object compareTo)
+        
+        public static bool Equal(object inputValue, object compareTo)
         {
             if ((inputValue == null || inputValue == DBNull.Value) && (compareTo == null || compareTo == DBNull.Value))
-                return ECompareResult.Equal;
+                return true;
 
             if (inputValue == null || inputValue == DBNull.Value || compareTo == null || compareTo == DBNull.Value)
-                return (inputValue == null || inputValue is DBNull) ? ECompareResult.Less : ECompareResult.Greater;
+                return false;
+
+            var type = inputValue.GetType();
+            if (type == ConvertTypes[ConvertTypeBool]) return Equal<bool>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeSbyte]) return Equal<sbyte>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeByte]) return Equal<byte>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeShort]) return Equal<short>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeUShort]) return Equal<ushort>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeInt]) return Equal<int>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeUint]) return Equal<uint>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeLong]) return Equal<long>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeULong]) return Equal<ulong>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeFloat]) return Equal<float>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeDouble]) return Equal<double>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeDecimal]) return Equal<decimal>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeDateTime]) return Equal<DateTime>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeString]) return Equal<string>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeByteArray]) return Equal<byte[]>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeCharArray]) return Equal<char[]>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeJToken]) return Equal<JToken>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeXmlDocument]) return Equal<XmlDocument>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeTimeSpan]) return Equal<TimeSpan>(inputValue, compareTo);
+
+            throw new ArgumentOutOfRangeException(nameof(type), inputValue, null);
+        }
+
+
+        public static bool Equal(DataType.ETypeCode typeCode, object value1, object value2)
+        {
+            if ((value1 == null || value1 == DBNull.Value) && (value2 == null || value2 == DBNull.Value))
+                return true;
+
+            if (value1 == null || value1 == DBNull.Value || value2 == null || value2 == DBNull.Value)
+                return false;
+            
+            switch (typeCode)
+            {
+                case DataType.ETypeCode.Binary:
+                    return Equal<byte[]>(value1, value2);
+                case DataType.ETypeCode.Byte:
+                    return Equal<byte>(value1, value2);
+                case DataType.ETypeCode.SByte:
+                    return Equal<sbyte>(value1, value2);
+                case DataType.ETypeCode.UInt16:
+                    return Equal<ushort>(value1, value2);
+                case DataType.ETypeCode.UInt32:
+                    return Equal<uint>(value1, value2);
+                case DataType.ETypeCode.UInt64:
+                    return Equal<ulong>(value1, value2);
+                case DataType.ETypeCode.Int16:
+                    return Equal<short>(value1, value2);
+                case DataType.ETypeCode.Int32:
+                    return Equal<int>(value1, value2);
+                case DataType.ETypeCode.Int64:
+                    return Equal<long>(value1, value2);
+                case DataType.ETypeCode.Decimal:
+                    return Equal<decimal>(value1, value2);
+                case DataType.ETypeCode.Double:
+                    return Equal<double>(value1, value2);
+                case DataType.ETypeCode.Single:
+                    return Equal<float>(value1, value2);
+                case DataType.ETypeCode.String:
+                    return Equal<string>(value1, value2);
+                case DataType.ETypeCode.Text:
+                    return Equal<string>(value1, value2);
+                case DataType.ETypeCode.Boolean:
+                    return Equal<bool>(value1, value2);
+                case DataType.ETypeCode.DateTime:
+                    return Equal<DateTime>(value1, value2);
+                case DataType.ETypeCode.Time:
+                    return Equal<TimeSpan>(value1, value2);
+                case DataType.ETypeCode.Guid:
+                    return Equal<Guid>(value1, value2);
+                case DataType.ETypeCode.Unknown:
+                    return Equal<string>(value1, value2);
+                case DataType.ETypeCode.Json:
+                    return Equal<JToken>(value1, value2);
+                case DataType.ETypeCode.Xml:
+                    return Equal<XmlDocument>(value1, value2);
+                case DataType.ETypeCode.Enum:
+                    return Equal<int>(value1, value2);
+                case DataType.ETypeCode.Char:
+                    return Equal<char[]>(value1, value2);
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(typeCode), typeCode, null);
+            }
+        }
+
+        public static int Compare(object inputValue, object compareTo)
+        {
+            if ((inputValue == null || inputValue == DBNull.Value) && (compareTo == null || compareTo == DBNull.Value))
+                return 0;
+
+            if (inputValue == null || inputValue == DBNull.Value || compareTo == null || compareTo == DBNull.Value)
+                return (inputValue == null || inputValue is DBNull) ? -1 : 1;
 
             var type = inputValue.GetType();
             if (type == ConvertTypes[ConvertTypeBool]) return Compare<bool>(inputValue, compareTo);
@@ -178,13 +264,13 @@ namespace Dexih.Utils.DataType
         }
 
 
-        public static ECompareResult Compare(DataType.ETypeCode typeCode, object inputValue, object compareTo)
+        public static int Compare(DataType.ETypeCode typeCode, object inputValue, object compareTo)
         {
             if ((inputValue == null || inputValue == DBNull.Value) && (compareTo == null || compareTo == DBNull.Value))
-                return ECompareResult.Equal;
+                return 0;
 
             if (inputValue == null || inputValue == DBNull.Value || compareTo == null || compareTo == DBNull.Value)
-                return (inputValue == null || inputValue is DBNull) ? ECompareResult.Less : ECompareResult.Greater;
+                return (inputValue == null || inputValue is DBNull) ? -1 : 1;
             
             switch (typeCode)
             {
@@ -257,12 +343,13 @@ namespace Dexih.Utils.DataType
         public static readonly Lazy<Func<T, T, bool>> GreaterThanOrEqual = CreateGreaterThanOrEqual();
         public static readonly Lazy<Func<T, T, bool>> LessThanOrEqual = CreateLessThanOrEqual();
         public static readonly Lazy<Func<T, T, bool>> Equal = CreateEqual();
+        public static readonly Lazy<Func<object, object, bool>> EqualObject = CreateEqualObject();
         public new static readonly Func<T, string> ToString = CreateToString();
         public static readonly Func<object, T> Parse = CreateParse();
         public static readonly T Zero = default;
         
-        public static readonly Lazy<Func<T, T, ECompareResult>> Compare = CreateCompare();
-        public static readonly Lazy<Func<object, object, ECompareResult>> CompareObject = CreateCompareObject();
+        public static readonly Lazy<Func<T, T, int>> Compare = CreateCompare();
+        public static readonly Lazy<Func<object, object, int>> CompareObject = CreateCompareObject();
 
         public static bool IsNumericType(Type type)
         {   
@@ -336,30 +423,55 @@ namespace Dexih.Utils.DataType
             }
         }
         
-        private static Lazy<Func<T, T, ECompareResult>> CreateCompare()
+        private static Lazy<Func<T, T, int>> CreateCompare()
         {
+//            var type = typeof(T);
+//            if (typeof(IComparable).IsAssignableFrom(type))
+//            {
+//                var p1 = Expression.Parameter(typeof(T), "p1");
+//                var p2 = Expression.Parameter(typeof(T), "p2");
+//
+//
+//                var exp = Expression.Lambda<Func<T, T, int>>(
+//                        Expression.Condition(Expression.LessThan(p1, p2), Expression.Constant(-1),
+//                            Expression.Condition(Expression.GreaterThan(p1, p2), Expression.Constant(1),
+//                                Expression.Constant(0))), p1, p2)
+//                    .Compile();
+//                return new Lazy<Func<T, T, int>>(() => exp);
+//            }
+//            else
+//            {
+//                return new Lazy<Func<T, T, int>>(() => throw new InvalidCastException($"The data type {typeof(T)} is not supported for comparisons."));
+//            }
+            
+            
             var type = typeof(T);
             if (typeof(IComparable).IsAssignableFrom(type))
             {
-                ECompareResult Compare(T a, T b)
+                int Compare(T a, T b)
                 {
-                    return (ECompareResult) ((IComparable) a).CompareTo((IComparable) b);
+                    return (int) ((IComparable) a).CompareTo((IComparable) b);
                 }
                 
-                return new Lazy<Func<T, T, ECompareResult>>(() => Compare);
+                return new Lazy<Func<T, T, int>>(() => Compare);
             }
             else
             {
-                return new Lazy<Func<T, T, ECompareResult>>(() => throw new InvalidCastException($"The data type {typeof(T)} is not supported for comparisons."));
+                return new Lazy<Func<T, T, int>>(() => throw new InvalidCastException($"The data type {typeof(T)} is not supported for comparisons."));
             }
         }
         
-        private static Lazy<Func<object, object, ECompareResult>> CreateCompareObject()
+        public static int CompareMethod(T a, T b)
+        {
+            return (int) ((IComparable) a).CompareTo((IComparable) b);
+        }
+        
+        private static Lazy<Func<object, object, int>> CreateCompareObject()
         {
             var type = typeof(T);
             if (typeof(IComparable).IsAssignableFrom(type))
             {
-                ECompareResult Compare(object a, object b)
+                int Compare(object a, object b)
                 {
                     T inputValue, compareTo;
 
@@ -381,14 +493,14 @@ namespace Dexih.Utils.DataType
                         compareTo = Parse(b);
                     }
                     
-                    return (ECompareResult) ((IComparable) inputValue).CompareTo((IComparable) compareTo);
+                    return (int) ((IComparable) inputValue).CompareTo((IComparable) compareTo);
                 }
                 
-                return new Lazy<Func<object, object, ECompareResult>>(() => Compare);
+                return new Lazy<Func<object, object, int>>(() => Compare);
             }
             else
             {
-                return new Lazy<Func<object, object, ECompareResult>>(() => throw new InvalidCastException($"The data type {typeof(T)} is not supported for comparisons."));
+                return new Lazy<Func<object, object, int>>(() => throw new InvalidCastException($"The data type {typeof(T)} is not supported for comparisons."));
             }
         }
         
@@ -416,6 +528,45 @@ namespace Dexih.Utils.DataType
                 return new Lazy<Func<T, T, bool>>(() => throw new InvalidCastException($"The data type {typeof(T)} is not supported for comparisons."));
             }
         }
+        
+        private static Lazy<Func<object, object, bool>> CreateEqualObject()
+        {
+            var type = typeof(T);
+            if (typeof(IComparable).IsAssignableFrom(type))
+            {
+                bool Equal(object a, object b)
+                {
+                    T value1, value2;
+
+                    if (type == a.GetType())
+                    {
+                        value1 = (T) a;
+                    }
+                    else
+                    {
+                        value1 = Parse(a);
+                    }
+                    
+                    if (type == b.GetType())
+                    {
+                        value2 = (T) b;
+                    }
+                    else
+                    {
+                        value2 = Parse(b);
+                    }
+                    
+                    return ((IComparable) value1).Equals((IComparable) value2);
+                }
+                
+                return new Lazy<Func<object, object, bool>>(() => Equal);
+            }
+            else
+            {
+                return new Lazy<Func<object, object, bool>>(() => throw new InvalidCastException($"The data type {typeof(T)} is not supported for comparisons."));
+            }
+        }
+
         
         private static Lazy<Func<T, T, bool>> CreateGreaterThan()
         {

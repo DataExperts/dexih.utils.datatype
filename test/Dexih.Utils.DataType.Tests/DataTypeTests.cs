@@ -124,61 +124,127 @@ namespace Dexih.Utils.DataType.Tests
         }
 
         [Theory]
-        [InlineData(ETypeCode.Byte, 2, 1, ECompareResult.Greater)]
-        [InlineData(ETypeCode.Byte, 1, 1, ECompareResult.Equal)]
-        [InlineData(ETypeCode.Byte, 1, 2, ECompareResult.Less)]
-        [InlineData(ETypeCode.SByte, 2, 1, ECompareResult.Greater)]
-        [InlineData(ETypeCode.SByte, 1, 1, ECompareResult.Equal)]
-        [InlineData(ETypeCode.SByte, 1, 2, ECompareResult.Less)]
-        [InlineData(ETypeCode.UInt16, 2, 1, ECompareResult.Greater)]
-        [InlineData(ETypeCode.UInt16, 1, 1, ECompareResult.Equal)]
-        [InlineData(ETypeCode.UInt16, 1, 2, ECompareResult.Less)]
-        [InlineData(ETypeCode.UInt32, 2, 1, ECompareResult.Greater)]
-        [InlineData(ETypeCode.UInt32, 1, 1, ECompareResult.Equal)]
-        [InlineData(ETypeCode.UInt32, 1, 2, ECompareResult.Less)]
-        [InlineData(ETypeCode.UInt64, 2, 1, ECompareResult.Greater)]
-        [InlineData(ETypeCode.UInt64, 1, 1, ECompareResult.Equal)]
-        [InlineData(ETypeCode.UInt64, 1, 2, ECompareResult.Less)]
-        [InlineData(ETypeCode.Int16, 2, 1, ECompareResult.Greater)]
-        [InlineData(ETypeCode.Int16, 1, 1, ECompareResult.Equal)]
-        [InlineData(ETypeCode.Int16, 1, 2, ECompareResult.Less)]
-        [InlineData(ETypeCode.Int32, 2, 1, ECompareResult.Greater)]
-        [InlineData(ETypeCode.Int32, 1, 1, ECompareResult.Equal)]
-        [InlineData(ETypeCode.Int32, 1, 2, ECompareResult.Less)]
-        [InlineData(ETypeCode.Int64, 2, 1, ECompareResult.Greater)]
-        [InlineData(ETypeCode.Int64, 1, 1, ECompareResult.Equal)]
-        [InlineData(ETypeCode.Int64, 1, 2, ECompareResult.Less)]
-        [InlineData(ETypeCode.Decimal, 1.1, 1.09, ECompareResult.Greater)]
-        [InlineData(ETypeCode.Decimal, 1.09, 1.09, ECompareResult.Equal)]
-        [InlineData(ETypeCode.Decimal, 1.09, 1.1, ECompareResult.Less)]
-        [InlineData(ETypeCode.Double, 1.1, 1.09, ECompareResult.Greater)]
-        [InlineData(ETypeCode.Double, 1.09, 1.09, ECompareResult.Equal)]
-        [InlineData(ETypeCode.Double, 1.09, 1.1, ECompareResult.Less)]
-        [InlineData(ETypeCode.Single, 1.1, 1.09, ECompareResult.Greater)]
-        [InlineData(ETypeCode.Single, 1.09, 1.09, ECompareResult.Equal)]
-        [InlineData(ETypeCode.Single, 1.09, 1.1, ECompareResult.Less)]
-        [InlineData(ETypeCode.String, "01", "001", ECompareResult.Greater)]
-        [InlineData(ETypeCode.String, "01", "01", ECompareResult.Equal)]
-        [InlineData(ETypeCode.String, "001", "01", ECompareResult.Less)]
-        [InlineData(ETypeCode.Text, "01", "001", ECompareResult.Greater)]
-        [InlineData(ETypeCode.Text, "01", "01", ECompareResult.Equal)]
-        [InlineData(ETypeCode.Text, "001", "01", ECompareResult.Less)]
-        [InlineData(ETypeCode.Boolean, true, false, ECompareResult.Greater)]
-        [InlineData(ETypeCode.Boolean, true, true, ECompareResult.Equal)]
-        [InlineData(ETypeCode.Boolean, false, true, ECompareResult.Less)]
-        [InlineData(ETypeCode.DateTime, "2001-01-01", "2000-12-31", ECompareResult.Greater)]
-        [InlineData(ETypeCode.DateTime, "2001-01-01", "2001-01-01", ECompareResult.Equal)]
-        [InlineData(ETypeCode.DateTime, "2000-01-02", "2000-01-03", ECompareResult.Less)]
-        [InlineData(ETypeCode.Time, "00:01:00", "00:00:59", ECompareResult.Greater)]
-        [InlineData(ETypeCode.Time, "00:00:59", "00:00:59", ECompareResult.Equal)]
-        [InlineData(ETypeCode.Time, "00:01:00", "00:01:01", ECompareResult.Less)]
-        [InlineData(ETypeCode.Guid, "6d5bba83-e71b-4ce1-beb8-006085a0a77d", "6d5bba83-e71b-4ce1-beb8-006085a0a77c", ECompareResult.Greater)]
-        [InlineData(ETypeCode.Guid, "6d5bba83-e71b-4ce1-beb8-006085a0a77c", "6d5bba83-e71b-4ce1-beb8-006085a0a77c", ECompareResult.Equal)]
-        [InlineData(ETypeCode.Guid, "6d5bba83-e71b-4ce1-beb8-006085a0a77c", "6d5bba83-e71b-4ce1-beb8-006085a0a77d", ECompareResult.Less)]
-        public void DataType_Compare(ETypeCode dataType, object inputValue, object compareValue, ECompareResult expectedResult)
+        [InlineData(ETypeCode.Byte, 2, 1, 1)]
+        [InlineData(ETypeCode.Byte, 1, 1, 0)]
+        [InlineData(ETypeCode.Byte, 1, 2, -1)]
+        [InlineData(ETypeCode.SByte, 2, 1, 1)]
+        [InlineData(ETypeCode.SByte, 1, 1, 0)]
+        [InlineData(ETypeCode.SByte, 1, 2, -1)]
+        [InlineData(ETypeCode.UInt16, 2, 1, 1)]
+        [InlineData(ETypeCode.UInt16, 1, 1, 0)]
+        [InlineData(ETypeCode.UInt16, 1, 2, -1)]
+        [InlineData(ETypeCode.UInt32, 2, 1, 1)]
+        [InlineData(ETypeCode.UInt32, 1, 1, 0)]
+        [InlineData(ETypeCode.UInt32, 1, 2, -1)]
+        [InlineData(ETypeCode.UInt64, 2, 1, 1)]
+        [InlineData(ETypeCode.UInt64, 1, 1, 0)]
+        [InlineData(ETypeCode.UInt64, 1, 2, -1)]
+        [InlineData(ETypeCode.Int16, 2, 1, 1)]
+        [InlineData(ETypeCode.Int16, 1, 1, 0)]
+        [InlineData(ETypeCode.Int16, 1, 2, -1)]
+        [InlineData(ETypeCode.Int32, 2, 1, 1)]
+        [InlineData(ETypeCode.Int32, 1, 1, 0)]
+        [InlineData(ETypeCode.Int32, 1, 2, -1)]
+        [InlineData(ETypeCode.Int64, 2, 1, 1)]
+        [InlineData(ETypeCode.Int64, 1, 1, 0)]
+        [InlineData(ETypeCode.Int64, 1, 2, -1)]
+        [InlineData(ETypeCode.Decimal, 1.1, 1.09, 1)]
+        [InlineData(ETypeCode.Decimal, 1.09, 1.09, 0)]
+        [InlineData(ETypeCode.Decimal, 1.09, 1.1, -1)]
+        [InlineData(ETypeCode.Double, 1.1, 1.09, 1)]
+        [InlineData(ETypeCode.Double, 1.09, 1.09, 0)]
+        [InlineData(ETypeCode.Double, 1.09, 1.1, -1)]
+        [InlineData(ETypeCode.Single, 1.1, 1.09, 1)]
+        [InlineData(ETypeCode.Single, 1.09, 1.09, 0)]
+        [InlineData(ETypeCode.Single, 1.09, 1.1, -1)]
+        [InlineData(ETypeCode.String, "01", "001", 1)]
+        [InlineData(ETypeCode.String, "01", "01", 0)]
+        [InlineData(ETypeCode.String, "001", "01", -1)]
+        [InlineData(ETypeCode.Text, "01", "001", 1)]
+        [InlineData(ETypeCode.Text, "01", "01", 0)]
+        [InlineData(ETypeCode.Text, "001", "01", -1)]
+        [InlineData(ETypeCode.Boolean, true, false, 1)]
+        [InlineData(ETypeCode.Boolean, true, true, 0)]
+        [InlineData(ETypeCode.Boolean, false, true, -1)]
+        [InlineData(ETypeCode.DateTime, "2001-01-01", "2000-12-31", 1)]
+        [InlineData(ETypeCode.DateTime, "2001-01-01", "2001-01-01", 0)]
+        [InlineData(ETypeCode.DateTime, "2000-01-02", "2000-01-03", -1)]
+        [InlineData(ETypeCode.Time, "00:01:00", "00:00:59", 1)]
+        [InlineData(ETypeCode.Time, "00:00:59", "00:00:59", 0)]
+        [InlineData(ETypeCode.Time, "00:01:00", "00:01:01", -1)]
+        [InlineData(ETypeCode.Guid, "6d5bba83-e71b-4ce1-beb8-006085a0a77d", "6d5bba83-e71b-4ce1-beb8-006085a0a77c", 1)]
+        [InlineData(ETypeCode.Guid, "6d5bba83-e71b-4ce1-beb8-006085a0a77c", "6d5bba83-e71b-4ce1-beb8-006085a0a77c", 0)]
+        [InlineData(ETypeCode.Guid, "6d5bba83-e71b-4ce1-beb8-006085a0a77c", "6d5bba83-e71b-4ce1-beb8-006085a0a77d", -1)]
+        public void DataType_Compare(ETypeCode dataType, object inputValue, object compareValue, int expectedResult)
         {
             var result = Operations.Compare(dataType, inputValue, compareValue);
             Assert.Equal(expectedResult, result);
+            
+            result = Operations.Compare(inputValue, compareValue);
+            Assert.Equal(expectedResult, result);
+
+        }
+        
+         [Theory]
+        [InlineData(ETypeCode.Byte, 2, 1, false)]
+        [InlineData(ETypeCode.Byte, 1, 1, true)]
+        [InlineData(ETypeCode.Byte, 1, 2, false)]
+        [InlineData(ETypeCode.SByte, 2, 1, false)]
+        [InlineData(ETypeCode.SByte, 1, 1, true)]
+        [InlineData(ETypeCode.SByte, 1, 2, false)]
+        [InlineData(ETypeCode.UInt16, 2, 1, false)]
+        [InlineData(ETypeCode.UInt16, 1, 1, true)]
+        [InlineData(ETypeCode.UInt16, 1, 2, false)]
+        [InlineData(ETypeCode.UInt32, 2, 1, false)]
+        [InlineData(ETypeCode.UInt32, 1, 1, true)]
+        [InlineData(ETypeCode.UInt32, 1, 2, false)]
+        [InlineData(ETypeCode.UInt64, 2, 1, false)]
+        [InlineData(ETypeCode.UInt64, 1, 1, true)]
+        [InlineData(ETypeCode.UInt64, 1, 2, false)]
+        [InlineData(ETypeCode.Int16, 2, 1, false)]
+        [InlineData(ETypeCode.Int16, 1, 1, true)]
+        [InlineData(ETypeCode.Int16, 1, 2, false)]
+        [InlineData(ETypeCode.Int32, 2, 1, false)]
+        [InlineData(ETypeCode.Int32, 1, 1, true)]
+        [InlineData(ETypeCode.Int32, 1, 2, false)]
+        [InlineData(ETypeCode.Int64, 2, 1, false)]
+        [InlineData(ETypeCode.Int64, 1, 1, true)]
+        [InlineData(ETypeCode.Int64, 1, 2, false)]
+        [InlineData(ETypeCode.Decimal, 1.1, 1.09, false)]
+        [InlineData(ETypeCode.Decimal, 1.09, 1.09, true)]
+        [InlineData(ETypeCode.Decimal, 1.09, 1.1, false)]
+        [InlineData(ETypeCode.Double, 1.1, 1.09, false)]
+        [InlineData(ETypeCode.Double, 1.09, 1.09, true)]
+        [InlineData(ETypeCode.Double, 1.09, 1.1, false)]
+        [InlineData(ETypeCode.Single, 1.1, 1.09, false)]
+        [InlineData(ETypeCode.Single, 1.09, 1.09, true)]
+        [InlineData(ETypeCode.Single, 1.09, 1.1, false)]
+        [InlineData(ETypeCode.String, "01", "001", false)]
+        [InlineData(ETypeCode.String, "01", "01", true)]
+        [InlineData(ETypeCode.String, "001", "01", false)]
+        [InlineData(ETypeCode.Text, "01", "001", false)]
+        [InlineData(ETypeCode.Text, "01", "01", true)]
+        [InlineData(ETypeCode.Text, "001", "01", false)]
+        [InlineData(ETypeCode.Boolean, true, false, false)]
+        [InlineData(ETypeCode.Boolean, true, true, true)]
+        [InlineData(ETypeCode.Boolean, false, true, false)]
+        [InlineData(ETypeCode.DateTime, "2001-01-01", "2000-12-31", false)]
+        [InlineData(ETypeCode.DateTime, "2001-01-01", "2001-01-01", true)]
+        [InlineData(ETypeCode.DateTime, "2000-01-02", "2000-01-03", false)]
+        [InlineData(ETypeCode.Time, "00:01:00", "00:00:59", false)]
+        [InlineData(ETypeCode.Time, "00:00:59", "00:00:59", true)]
+        [InlineData(ETypeCode.Time, "00:01:00", "00:01:01", false)]
+        [InlineData(ETypeCode.Guid, "6d5bba83-e71b-4ce1-beb8-006085a0a77d", "6d5bba83-e71b-4ce1-beb8-006085a0a77c", false)]
+        [InlineData(ETypeCode.Guid, "6d5bba83-e71b-4ce1-beb8-006085a0a77c", "6d5bba83-e71b-4ce1-beb8-006085a0a77c", true)]
+        [InlineData(ETypeCode.Guid, "6d5bba83-e71b-4ce1-beb8-006085a0a77c", "6d5bba83-e71b-4ce1-beb8-006085a0a77d", false)]
+        public void DataType_Equal(ETypeCode dataType, object inputValue, object compareValue, bool expectedResult)
+        {
+            var result = Operations.Equal(dataType, inputValue, compareValue);
+            Assert.Equal(expectedResult, result);
+            
+            result = Operations.Equal(inputValue, compareValue);
+            Assert.Equal(expectedResult, result);
+
         }
 
         [Theory]
@@ -232,6 +298,8 @@ namespace Dexih.Utils.DataType.Tests
             new object[] { ETypeCode.String, "123".ToCharArray(), "123"}
                     
         };
+        
+        
 
         [Fact]
         public void DataType_TryParse_XML()
@@ -381,24 +449,89 @@ namespace Dexih.Utils.DataType.Tests
 
         [Theory]
         [InlineData(10000000)]
-        public void ComparePerformance(long iterations)
+        public void CompareArithmeticPerformance(long iterations)
         {
+            var a = 2;
+            var b = 3;
 
-            Timer("Compare integers baseline", () =>
+            // 4ms
+            Timer("Add - Baseline", () =>
             {
-                for(var i = 0; i< iterations; i++)
+                for (var i = 0; i < iterations; i++)
                 {
-                    var a = 2;
-                    var b = 3;
-                    if (a.GetType() == b.GetType())
-                    {
-                        a.CompareTo(b);
-                    }
+                    var c = a + b;
                 }
             });
 
+           // 33ms
+            Timer("Add - Func", () =>
+            {
+                var add = Operations<int>.Add.Value;
+                for (var i = 0; i < iterations; i++)
+                {
+                    var c = add(a, b);
+                }
+            });
 
-            Timer("DataType.IsSimple (int)", () =>
+            // 33ms
+            Timer("Add - Operations", () =>
+            {
+                for (var i = 0; i < iterations; i++)
+                {
+                    var c = Operations.Add(a, b);
+                }
+            });
+            
+        }
+
+        [Theory]
+        [InlineData(10000000)]
+        public void Compare_Performance(long iterations)
+        {
+            var a = 2;
+            var b = 3;
+
+            Timer("Compare integers baseline", () =>
+            {
+                for (var i = 0; i < iterations; i++)
+                {
+                    var c = a.CompareTo(b);
+                }
+            });
+
+            Timer("Compare - func", () =>
+            {
+                var comp = Operations<int>.Compare.Value;
+                for (var i = 0; i < iterations; i++)
+                {
+                    var c = comp(a, b);
+                }
+            });
+
+            Timer("Compare - 1", () =>
+            {
+                for (var i = 0; i < iterations; i++)
+                {
+                    var c = Operations.Compare(a, b);
+                }
+            });
+            
+            Timer("Compare - object", () =>
+            {
+                for (var i = 0; i < iterations; i++)
+                {
+                    var c = Operations.Compare((object)a, (object)b);
+                }
+            });
+
+        }
+
+        [Theory]
+        [InlineData(10000000)]
+        public void DataType_Performance(long iterations)
+        {
+
+        Timer("DataType.IsSimple (int)", () =>
             {
                 var type = typeof(int);
                 for(var i = 0; i< iterations; i++)

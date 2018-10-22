@@ -49,7 +49,7 @@ namespace Dexih.Utils.DataType.Tests
         
         [Theory]
         [InlineData(10000000)]
-        public void ComparePerformance(long iterations)
+        public void CompareAddPerformance(long iterations)
         {
             var a = 123;
             var b = 234;
