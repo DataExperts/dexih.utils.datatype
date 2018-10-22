@@ -295,7 +295,9 @@ namespace Dexih.Utils.DataType.Tests
             new object[] { ETypeCode.Binary, "61626364", new byte[] { 0x61, 0x62, 0x63, 0x64 }},
             new object[] { ETypeCode.String, new byte[] { 0x61, 0x62, 0x63, 0x64 }, "61626364"},
             new object[] { ETypeCode.Char, "123", "123".ToCharArray()},
-            new object[] { ETypeCode.String, "123".ToCharArray(), "123"}
+            new object[] { ETypeCode.String, "123".ToCharArray(), "123"},
+            new object[] { ETypeCode.String, new[] {1,2,3}, "[1,2,3]"},
+            new object[] { ETypeCode.String, new[] {"a", "b", "c"}, "[\"a\",\"b\",\"c\"]"}
                     
         };
         
@@ -352,7 +354,7 @@ namespace Dexih.Utils.DataType.Tests
         }
 
         [Fact]
-        public void DataType_Substract()
+        public void DataType_Subtract()
         {
             Assert.Equal(2, Operations.Subtract(5, 3));
             Assert.Equal(2d, Operations.Subtract(5d, 3d));

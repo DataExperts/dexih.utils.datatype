@@ -4,6 +4,7 @@ using System.Linq.Expressions;
 using System.Net.NetworkInformation;
 using System.Runtime.CompilerServices;
 using System.Xml;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Dexih.Utils.DataType
@@ -864,6 +865,10 @@ namespace Dexih.Utils.DataType
                 else if (value is char[] charArray)
                 {
                     return (T) (object) new string(charArray);
+                }
+                else if (!DataType.IsSimple(value.GetType()))
+                {
+                    return (T) (object) JsonConvert.SerializeObject(value);
                 }
                 else
                 {
