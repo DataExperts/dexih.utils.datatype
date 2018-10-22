@@ -72,6 +72,7 @@ namespace Dexih.Utils.DataType
         public static T Add<T>(T a, T b) => Operations<T>.Add.Value(a,b);
         public static T Subtract<T>(T a, T b) => Operations<T>.Subtract.Value(a, b);
         public static T Divide<T>(T a, T b) => Operations<T>.Divide.Value(a, b);
+        public static T DivideInt<T>(T a, int b) => Operations<T>.DivideInt.Value(a, b);
         public static T Multiply<T>(T a, T b) => Operations<T>.Multiply.Value(a, b);
         public static T Negate<T>(T a) => Operations<T>.Negate.Value(a);
         public static bool GreaterThan<T>(T a, T b) => Operations<T>.GreaterThan.Value(a, b);
@@ -248,6 +249,7 @@ namespace Dexih.Utils.DataType
         public static readonly Lazy<Func<T, T, T>> Subtract = CreateExpressionNumeric(Expression.Subtract);
         public static readonly Lazy<Func<T, T, T>> Multiply = CreateExpressionNumeric(Expression.Multiply);
         public static readonly Lazy<Func<T, T, T>> Divide = CreateExpressionNumeric(Expression.Divide);
+        public static readonly Lazy<Func<T, int, T>> DivideInt = CreateDivideInt();
         public static readonly Lazy<Func<T, T>> Negate = CreateExpressionNegate();
         
         public static readonly Lazy<Func<T, T, bool>> GreaterThan = CreateGreaterThan();
@@ -293,6 +295,22 @@ namespace Dexih.Utils.DataType
             else
             {
                 return new Lazy<Func<T, T, T>>(() => throw new InvalidCastException($"The data type {typeof(T)} is not numeric."));
+            }
+        }
+        
+        private static Lazy<Func<T, int, T>> CreateDivideInt()
+        {
+            if (IsNumericType(typeof(T)))
+            {
+                var p1 = Expression.Parameter(typeof(T), "p1");
+                var p2 = Expression.Parameter(typeof(int), "p2");
+                var conv = Expression.Convert(p2, typeof(T));
+                var exp = Expression.Lambda<Func<T, int, T>>(Expression.Divide(p1, conv), p1, p2).Compile();
+                return new Lazy<Func<T, int, T>>(() => exp);
+            }
+            else
+            {
+                return new Lazy<Func<T, int, T>>(() => throw new InvalidCastException($"The data type {typeof(T)} is not numeric."));
             }
         }
         

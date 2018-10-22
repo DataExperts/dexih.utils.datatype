@@ -275,6 +275,46 @@ namespace Dexih.Utils.DataType.Tests
             Assert.ThrowsAny<Exception>( () => Operations.Parse(dataType, inputValue));
         }
 
+        [Fact]
+        public void DataType_Add()
+        {
+            Assert.Equal(8, Operations.Add(3, 5));
+            Assert.Equal(8d, Operations.Add(3d, 5d));
+            Assert.Equal(8L, Operations.Add(3L, 5L));
+        }
+
+        [Fact]
+        public void DataType_Substract()
+        {
+            Assert.Equal(2, Operations.Subtract(5, 3));
+            Assert.Equal(2d, Operations.Subtract(5d, 3d));
+            Assert.Equal(2L, Operations.Subtract(5L, 3L));
+        }
+
+        [Fact]
+        public void DataType_Multiply()
+        {
+            Assert.Equal(15, Operations.Multiply(3, 5));
+            Assert.Equal(15d, Operations.Multiply(3d, 5d));
+            Assert.Equal(15L, Operations.Multiply(3L, 5L));
+        }
+
+        [Fact]
+        public void DataType_Divude()
+        {
+            Assert.Equal(4, Operations.Divide(8, 2));
+            Assert.Equal(4.5d, Operations.Divide(9d, 2d));
+            Assert.Equal(4L, Operations.Divide(8L, 2L));
+        }
+
+        [Fact]
+        public void DataType_DivideInt()
+        {
+            Assert.Equal(4, Operations.DivideInt(8, 2));
+            Assert.Equal(4.5d, Operations.DivideInt(9d, 2));
+            Assert.Equal(4L, Operations.DivideInt(8L, 2));
+        }
+
 //        [Theory]
 //        [InlineData(ETypeCode.UInt16, (ushort)5, (ushort) 3, (ushort) 8)]
 //        [InlineData(ETypeCode.UInt32, (uint)5, (uint) 3, (uint) 8)]
