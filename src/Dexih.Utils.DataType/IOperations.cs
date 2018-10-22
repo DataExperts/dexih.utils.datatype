@@ -1,3 +1,5 @@
+using System;
+
 namespace Dexih.Utils.DataType
 {
     public interface IOperations<T>
@@ -19,6 +21,8 @@ namespace Dexih.Utils.DataType
         string ToString(T a);
         T TryParse(object value);
         DataType.ETypeCode TypeCode { get; }
+        
+        Func<T, T, T> AddTest { get; }
         
 
     }

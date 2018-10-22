@@ -177,11 +177,9 @@ namespace Dexih.Utils.DataType.Tests
         [InlineData(ETypeCode.Guid, "6d5bba83-e71b-4ce1-beb8-006085a0a77c", "6d5bba83-e71b-4ce1-beb8-006085a0a77d", ECompareResult.Less)]
         public void DataType_Compare(ETypeCode dataType, object inputValue, object compareValue, ECompareResult expectedResult)
         {
-            var result = DataType.Compare(dataType, inputValue, compareValue);
+            var result = Operations.Compare(dataType, inputValue, compareValue);
             Assert.Equal(expectedResult, result);
         }
-        
-
 
         [Theory]
         [InlineData(ETypeCode.Byte, 2, (Byte)2)]
@@ -215,7 +213,7 @@ namespace Dexih.Utils.DataType.Tests
         [MemberData(nameof(OtherParseDataTypes))]
         public void DataType_TryParse(ETypeCode dataType, object inputValue, object expectedValue)
         {
-            var result = DataType.TryParse(dataType, inputValue);
+            var result = Operations.Parse(dataType, inputValue);
             Assert.Equal(expectedValue, result);
         }
 
@@ -238,7 +236,7 @@ namespace Dexih.Utils.DataType.Tests
         [Fact]
         public void DataType_TryParse_XML()
         {
-            var result = TryParse(ETypeCode.Xml, "<note>hi there</note>");
+            var result = Operations.Parse(ETypeCode.Xml, "<note>hi there</note>");
             Assert.IsType<XmlDocument>(result);
 
             var xmldoc = (XmlDocument) result;
@@ -248,7 +246,7 @@ namespace Dexih.Utils.DataType.Tests
         [Fact]
         public void DataType_TryParse_Json()
         {
-            var result = TryParse(ETypeCode.Json, "{\"note\": \"hi there\"}");
+            var result = Operations.Parse(ETypeCode.Json, "{\"note\": \"hi there\"}");
             Assert.IsType<JObject>(result);
 
             var token = (JObject) result;
@@ -259,80 +257,79 @@ namespace Dexih.Utils.DataType.Tests
 
         //values that should throw a parse error
         [Theory]
-        [InlineData(ETypeCode.Byte, -1, 0)]
-        [InlineData(ETypeCode.SByte, -200, 0)]
-        [InlineData(ETypeCode.UInt16, -1, 0)]
-        [InlineData(ETypeCode.UInt32, -1, 0)]
-        [InlineData(ETypeCode.UInt64, -1, 0)]
-        [InlineData(ETypeCode.Int16, Int16.MaxValue + 1, 0)]
-        [InlineData(ETypeCode.Int32, "a123", 0)]
-        [InlineData(ETypeCode.Int64, "123a", 0)]
-        [InlineData(ETypeCode.Double, "123a", 0)]
-        [InlineData(ETypeCode.String, "12345", 4)]
-        [InlineData(ETypeCode.Decimal, "123a", 0)]
-        [InlineData(ETypeCode.DateTime, "2001-01-32", 0)]
-        [InlineData(ETypeCode.Time, "12:70:00", 0)]
-        [InlineData(ETypeCode.Guid, "asdfadsf", 0)]
-        public void DataType_TryParse_False(ETypeCode dataType, object inputValue, int maxLength = 0)
+        [InlineData(ETypeCode.Byte, -1)]
+        [InlineData(ETypeCode.SByte, -200)]
+        [InlineData(ETypeCode.UInt16, -1)]
+        [InlineData(ETypeCode.UInt32, -1)]
+        [InlineData(ETypeCode.UInt64, -1)]
+        [InlineData(ETypeCode.Int16, Int16.MaxValue + 1)]
+        [InlineData(ETypeCode.Int32, "a123")]
+        [InlineData(ETypeCode.Int64, "123a")]
+        [InlineData(ETypeCode.Double, "123a")]
+        [InlineData(ETypeCode.Decimal, "123a")]
+        [InlineData(ETypeCode.DateTime, "2001-01-32")]
+        [InlineData(ETypeCode.Time, "12:70:00")]
+        [InlineData(ETypeCode.Guid, "asdfadsf")]
+        public void DataType_TryParse_False(ETypeCode dataType, object inputValue)
         {
-            Assert.ThrowsAny<Exception>( () => DataType.TryParse(dataType, inputValue, maxLength));
+            Assert.ThrowsAny<Exception>( () => Operations.Parse(dataType, inputValue));
         }
 
-        [Theory]
-        [InlineData(ETypeCode.UInt16, (ushort)5, (ushort) 3, (ushort) 8)]
-        [InlineData(ETypeCode.UInt32, (uint)5, (uint) 3, (uint) 8)]
-        [InlineData(ETypeCode.UInt64, (ulong)5, (ulong) 3, (ulong) 8)]
-        [InlineData(ETypeCode.Int16, (short)5, (short) 3, (short) 8)]
-        [InlineData(ETypeCode.Int32, (int)5, (int) 3, (int) 8)]
-        [InlineData(ETypeCode.Int64, (long)5, (long) 3, (long) 8)]
-        [InlineData(ETypeCode.Double, (double)5, (double) 3, (double) 8)]
-        //[InlineData(ETypeCode.Decimal, (decimal)5, (decimal) 3, (decimal) 8)]
-        public void DataType_Add(ETypeCode dataType, object value1, object value2, object expected)
-        {
-            Assert.Equal(expected, DataType.Add(dataType, value1, value2));
-        }
-        
-        [Theory]
-        [InlineData(ETypeCode.UInt16, (ushort)5, (ushort) 3, (ushort) 2)]
-        [InlineData(ETypeCode.UInt32, (uint)5, (uint) 3, (uint) 2)]
-        [InlineData(ETypeCode.UInt64, (ulong)5, (ulong) 3, (ulong) 2)]
-        [InlineData(ETypeCode.Int16, (short)5, (short) 3, (short) 2)]
-        [InlineData(ETypeCode.Int32, (int)5, (int) 3, (int) 2)]
-        [InlineData(ETypeCode.Int64, (long)5, (long) 3, (long) 2)]
-        [InlineData(ETypeCode.Double, (double)5, (double) 3, (double) 2)]
-        //[InlineData(ETypeCode.Decimal, (decimal)5, (decimal) 3, (decimal) 8)]
-        public void DataType_Subtract(ETypeCode dataType, object value1, object value2, object expected)
-        {
-            Assert.Equal(expected, DataType.Subtract(dataType, value1, value2));
-        }
-        
-        [Theory]
-        [InlineData(ETypeCode.UInt16, (ushort)5, (ushort) 3, (ushort) 15)]
-        [InlineData(ETypeCode.UInt32, (uint)5, (uint) 3, (uint) 15)]
-        [InlineData(ETypeCode.UInt64, (ulong)5, (ulong) 3, (ulong) 15)]
-        [InlineData(ETypeCode.Int16, (short)5, (short) 3, (short) 15)]
-        [InlineData(ETypeCode.Int32, (int)5, (int) 3, (int) 15)]
-        [InlineData(ETypeCode.Int64, (long)5, (long) 3, (long) 15)]
-        [InlineData(ETypeCode.Double, (double)5, (double) 3, (double) 15)]
-        //[InlineData(ETypeCode.Decimal, (decimal)5, (decimal) 3, (decimal) 8)]
-        public void DataType_Multiply(ETypeCode dataType, object value1, object value2, object expected)
-        {
-            Assert.Equal(expected, DataType.Multiply(dataType, value1, value2));
-        }
-        
-        [Theory]
-        [InlineData(ETypeCode.UInt16, (ushort)6, (ushort) 3, (ushort) 2)]
-        [InlineData(ETypeCode.UInt32, (uint)6, (uint) 3, (uint) 2)]
-        [InlineData(ETypeCode.UInt64, (ulong)6, (ulong) 3, (ulong) 2)]
-        [InlineData(ETypeCode.Int16, (short)6, (short) 3, (short) 2)]
-        [InlineData(ETypeCode.Int32, (int)6, (int) 3, (int) 2)]
-        [InlineData(ETypeCode.Int64, (long)6, (long) 3, (long) 2)]
-        [InlineData(ETypeCode.Double, (double)6, (double) 3, (double) 2)]
-        //[InlineData(ETypeCode.Decimal, (decimal)5, (decimal) 3, (decimal) 8)]
-        public void DataType_Divide(ETypeCode dataType, object value1, object value2, object expected)
-        {
-            Assert.Equal(expected, DataType.Divide(dataType, value1, value2));
-        }
+//        [Theory]
+//        [InlineData(ETypeCode.UInt16, (ushort)5, (ushort) 3, (ushort) 8)]
+//        [InlineData(ETypeCode.UInt32, (uint)5, (uint) 3, (uint) 8)]
+//        [InlineData(ETypeCode.UInt64, (ulong)5, (ulong) 3, (ulong) 8)]
+//        [InlineData(ETypeCode.Int16, (short)5, (short) 3, (short) 8)]
+//        [InlineData(ETypeCode.Int32, (int)5, (int) 3, (int) 8)]
+//        [InlineData(ETypeCode.Int64, (long)5, (long) 3, (long) 8)]
+//        [InlineData(ETypeCode.Double, (double)5, (double) 3, (double) 8)]
+//        //[InlineData(ETypeCode.Decimal, (decimal)5, (decimal) 3, (decimal) 8)]
+//        public void DataType_Add(ETypeCode dataType, object value1, object value2, object expected)
+//        {
+//            Assert.Equal(expected,  DataType.Add(dataType, value1, value2));
+//        }
+//        
+//        [Theory]
+//        [InlineData(ETypeCode.UInt16, (ushort)5, (ushort) 3, (ushort) 2)]
+//        [InlineData(ETypeCode.UInt32, (uint)5, (uint) 3, (uint) 2)]
+//        [InlineData(ETypeCode.UInt64, (ulong)5, (ulong) 3, (ulong) 2)]
+//        [InlineData(ETypeCode.Int16, (short)5, (short) 3, (short) 2)]
+//        [InlineData(ETypeCode.Int32, (int)5, (int) 3, (int) 2)]
+//        [InlineData(ETypeCode.Int64, (long)5, (long) 3, (long) 2)]
+//        [InlineData(ETypeCode.Double, (double)5, (double) 3, (double) 2)]
+//        //[InlineData(ETypeCode.Decimal, (decimal)5, (decimal) 3, (decimal) 8)]
+//        public void DataType_Subtract(ETypeCode dataType, object value1, object value2, object expected)
+//        {
+//            Assert.Equal(expected, DataType.Subtract(dataType, value1, value2));
+//        }
+//        
+//        [Theory]
+//        [InlineData(ETypeCode.UInt16, (ushort)5, (ushort) 3, (ushort) 15)]
+//        [InlineData(ETypeCode.UInt32, (uint)5, (uint) 3, (uint) 15)]
+//        [InlineData(ETypeCode.UInt64, (ulong)5, (ulong) 3, (ulong) 15)]
+//        [InlineData(ETypeCode.Int16, (short)5, (short) 3, (short) 15)]
+//        [InlineData(ETypeCode.Int32, (int)5, (int) 3, (int) 15)]
+//        [InlineData(ETypeCode.Int64, (long)5, (long) 3, (long) 15)]
+//        [InlineData(ETypeCode.Double, (double)5, (double) 3, (double) 15)]
+//        //[InlineData(ETypeCode.Decimal, (decimal)5, (decimal) 3, (decimal) 8)]
+//        public void DataType_Multiply(ETypeCode dataType, object value1, object value2, object expected)
+//        {
+//            Assert.Equal(expected, DataType.Multiply(dataType, value1, value2));
+//        }
+//        
+//        [Theory]
+//        [InlineData(ETypeCode.UInt16, (ushort)6, (ushort) 3, (ushort) 2)]
+//        [InlineData(ETypeCode.UInt32, (uint)6, (uint) 3, (uint) 2)]
+//        [InlineData(ETypeCode.UInt64, (ulong)6, (ulong) 3, (ulong) 2)]
+//        [InlineData(ETypeCode.Int16, (short)6, (short) 3, (short) 2)]
+//        [InlineData(ETypeCode.Int32, (int)6, (int) 3, (int) 2)]
+//        [InlineData(ETypeCode.Int64, (long)6, (long) 3, (long) 2)]
+//        [InlineData(ETypeCode.Double, (double)6, (double) 3, (double) 2)]
+//        //[InlineData(ETypeCode.Decimal, (decimal)5, (decimal) 3, (decimal) 8)]
+//        public void DataType_Divide(ETypeCode dataType, object value1, object value2, object expected)
+//        {
+//            Assert.Equal(expected, DataType.Divide(dataType, value1, value2));
+//        }
 
         public void Timer(string name, Action action)
         {
@@ -406,12 +403,69 @@ namespace Dexih.Utils.DataType.Tests
                 }
             });
             
-//
+
+//            Timer("DataType.Compare Integers Old", () =>
+//            {
+//                for(var i = 0; i< iterations; i++)
+//                {
+//                    var value = DataType.Compare(null ,(object)1, 2);
+//                }
+//            });
+//            
+//            Timer("DataType.Compare Nulls Old", () =>
+//            {
+//                for(var i = 0; i< iterations; i++)
+//                {
+//                    var value = DataType.Compare(null ,(object)null, null);
+//                }
+//            });
+//            
+//            Timer("DataType.Compare DbNulls Old", () =>
+//            {
+//                for(var i = 0; i< iterations; i++)
+//                {
+//                    var value = DataType.Compare(null ,(object)DBNull.Value, null);
+//                }
+//            });
+//            
+//            Timer("DataType.Compare Integer/Decimal Old", () =>
+//            {
+//                for(var i = 0; i< iterations; i++)
+//                {
+//                    var value =DataType.Compare(null ,(object)2, 2d);
+//                }
+//            });
+//            
+//            Timer("DataType.Compare Integer/String Old", () =>
+//            {
+//                for(var i = 0; i< iterations; i++)
+//                {
+//                    var value = DataType.Compare(null ,(object)2, "2");
+//                }
+//            });
+//            
+//            Timer("DataType.Compare String/Intege Oldr", () =>
+//            {
+//                for(var i = 0; i< iterations; i++)
+//                {
+//                    var value =DataType.Compare(null ,(object)2, "2");
+//                }
+//            });
+//            
+//            
+//            Timer("Compare dec-dec  Old", () =>
+//            {
+//                for(var i = 0; i< iterations; i++)
+//                {
+//                    var value = DataType.Compare(null ,(object)1.1, 2.2);
+//                }
+//            });
+            
             Timer("DataType.Compare Integers", () =>
             {
                 for(var i = 0; i< iterations; i++)
                 {
-                    var value = DataType.Compare(null, 1, 2);
+                    var value = Operations.Compare((object)1, 2);
                 }
             });
             
@@ -419,7 +473,7 @@ namespace Dexih.Utils.DataType.Tests
             {
                 for(var i = 0; i< iterations; i++)
                 {
-                    var value = DataType.Compare(null, null, null);
+                    var value = Operations.Compare((object)null, null);
                 }
             });
             
@@ -427,7 +481,7 @@ namespace Dexih.Utils.DataType.Tests
             {
                 for(var i = 0; i< iterations; i++)
                 {
-                    var value = DataType.Compare(null, DBNull.Value, null);
+                    var value = Operations.Compare((object)DBNull.Value, null);
                 }
             });
             
@@ -435,7 +489,7 @@ namespace Dexih.Utils.DataType.Tests
             {
                 for(var i = 0; i< iterations; i++)
                 {
-                    var value = DataType.Compare(null, 2, 2d);
+                    var value = Operations.Compare((object)2, 2d);
                 }
             });
             
@@ -443,7 +497,7 @@ namespace Dexih.Utils.DataType.Tests
             {
                 for(var i = 0; i< iterations; i++)
                 {
-                    var value = DataType.Compare(null, 2, "2");
+                    var value = Operations.Compare((object)2, "2");
                 }
             });
             
@@ -451,18 +505,18 @@ namespace Dexih.Utils.DataType.Tests
             {
                 for(var i = 0; i< iterations; i++)
                 {
-                    var value = DataType.Compare(null, 2, "2");
+                    var value = Operations.Compare((object)2, "2");
                 }
             });
             
-//            
-//            Timer("Compare dec-dec", () =>
-//            {
-//                for(var i = 0; i< iterations; i++)
-//                {
-//                    var value = DataType.Compare(1.1, 2.2);
-//                }
-//            });
+            
+            Timer("Compare dec-dec", () =>
+            {
+                for(var i = 0; i< iterations; i++)
+                {
+                    var value = Operations.Compare((object)1.1, 2.2);
+                }
+            });
         }
     }
 }

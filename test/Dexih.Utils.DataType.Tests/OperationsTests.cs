@@ -1,5 +1,7 @@
 using System;
 using System.Diagnostics;
+using System.Linq;
+using System.Linq.Expressions;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -22,27 +24,27 @@ namespace Dexih.Utils.DataType.Tests
             _output.WriteLine($"Test \"{name}\" completed in {time}ms");
         }
         
-        [Fact]
-        void Operations_Test()
-        {
-            var intOperations = Operations<int>.Default;
-            var result = intOperations.Add(2, 5);
-            
-            Assert.Equal(7, result);
-        }
-
-        [Fact]
-        void CharArray_Test()
-        {
-            var charOperations = Operations<char[]>.Default;
-
-            var a = "123".ToCharArray();
-            var b = "1234".ToCharArray();
-            
-            Assert.True(charOperations.Equal(a, "123".ToCharArray()));
-            Assert.True((charOperations.GreaterThan(a,b)));
-            Assert.True((charOperations.LessThan(b,a)));
-        }
+//        [Fact]
+//        void Operations_Test()
+//        {
+//            var intOperations = Operations<int>.Default;
+//            var result = intOperations.Add(2, 5);
+//            
+//            Assert.Equal(7, result);
+//        }
+//
+//        [Fact]
+//        void CharArray_Test()
+//        {
+//            var charOperations = Operations<char[]>.Default;
+//
+//            var a = "123".ToCharArray();
+//            var b = "1234".ToCharArray();
+//            
+//            Assert.True(charOperations.Equal(a, "123".ToCharArray()));
+//            Assert.True((charOperations.GreaterThan(a,b)));
+//            Assert.True((charOperations.LessThan(b,a)));
+//        }
         
         
         [Theory]
@@ -64,21 +66,86 @@ namespace Dexih.Utils.DataType.Tests
             
             Timer("Add using operations", () =>
             {
-                var intOps =  Operations<int>.Default;
                 for(var i = 0; i< iterations; i++)
                 {
-                    var c = intOps.Add(a,b);
+                    var c = Operations.Add(a, b);
                 }
             });
 
-                
-            Timer("Add using datatype", () =>
+            
+            
+            Timer("Add using func", () =>
+            {
+                var p1 = Expression.Parameter(typeof(int), "p1");
+                var p2 = Expression.Parameter(typeof(int), "p2");
+                var add = Expression.Lambda<Func<int, int, int>>(Expression.Add(p1, p2), p1, p2).Compile();
+                for(var i = 0; i< iterations; i++)
+                {
+                    var c = add(a, b);
+                }
+            });
+            
+            Timer("Add using generic math", () =>
             {
                 for(var i = 0; i< iterations; i++)
                 {
-                    var c = DataType.Add(DataType.ETypeCode.Int32, a, b);
+                    var c = Generic.Math.GenericMath.Add(a, b);
                 }
             });
+
+         
+
         }
+        
+        [Theory]
+        [InlineData(10000000)]
+        public void CompareParsePerformance(long iterations)
+        {
+            var values = new object[] {1.23d, 123, "1.23", 123L};
+
+            Timer("Parse Raw", () =>
+            {
+                for(var i = 0; i< iterations; i++)
+                {
+                    values.Select(Convert.ToDecimal).ToArray();
+                }
+            });
+
+
+//            Timer("Parse Old", () =>
+//            {
+//                for(var i = 0; i< iterations; i++)
+//                {
+//                    values.Select(c=> DataType.TryParse(DataType.ETypeCode.Decimal, c)).ToArray();
+//                }
+//            });
+            
+            Timer("Parse Func", () =>
+            {
+                var parse = Operations<decimal>.Parse;
+                for(var i = 0; i< iterations; i++)
+                {
+                    values.Select(parse).ToArray();
+                }
+            });
+
+            Timer("Parse Object", () =>
+            {
+                for(var i = 0; i< iterations; i++)
+                {
+                    values.Select(c=> Operations.Parse(DataType.ETypeCode.Decimal, c)).ToArray();
+                }
+            });
+
+        }
+
+        [Fact]
+        public void ParseTest()
+        {
+            var c = Operations.Parse(DataType.ETypeCode.Decimal, "1.23");
+            
+        }
+
+        
     }
 }
