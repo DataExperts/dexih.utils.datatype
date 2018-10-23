@@ -242,10 +242,25 @@ namespace Dexih.Utils.DataType.Tests
             new object[] { ETypeCode.String, "123".ToCharArray(), "123"},
             new object[] { ETypeCode.String, new[] {1,2,3}, "[1,2,3]"},
             new object[] { ETypeCode.String, new[] {"a", "b", "c"}, "[\"a\",\"b\",\"c\"]"}
-                    
         };
-        
-        
+
+
+        [Fact]
+        public void DataType_Parse_Rank()
+        {
+            var result = Operations.Parse(ETypeCode.Int32, 1, new string[] {"1", "2", "3"});
+            Assert.Equal(new int[] {1,2,3}, result);
+            
+            result = Operations.Parse(typeof(int), 1, new string[] {"1", "2", "3"});
+            Assert.Equal(new int[] {1,2,3}, result);
+
+            result = Operations.Parse(typeof(int[]), new string[] {"1", "2", "3"});
+            Assert.Equal(new int[] {1,2,3}, result);
+
+            result = Operations.Parse(typeof(int[,]), new[] {new[] {"1", "2"},new[] {"3" ,"4"}});
+            Assert.Equal(new[] {new[] {1,2},new[] {3,4}}, result);
+
+        }
 
         [Fact]
         public void DataType_TryParse_XML()

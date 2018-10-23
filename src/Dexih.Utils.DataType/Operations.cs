@@ -160,6 +160,20 @@ namespace Dexih.Utils.DataType
                 return null;
             }
 
+            if (type.IsArray && type != typeof(byte[]) && type != typeof(char[]))
+            {
+                var elementType = type.GetElementType();
+                var rank = type.GetArrayRank();
+                var inputArray = (object[]) inputValue;
+                var returnValue = new object[inputArray.Length];
+                for (var i = 0; i < inputArray.Length; i++)
+                {
+                    returnValue[i] = Parse(elementType, rank -1, inputArray[i]);
+                }
+
+                return returnValue;
+            }
+
             if (type == ConvertTypes[ConvertTypeBool]) return Parse<bool>(inputValue);
             if (type == ConvertTypes[ConvertTypeSbyte]) return Parse<sbyte>(inputValue);
             if (type == ConvertTypes[ConvertTypeByte]) return Parse<byte>(inputValue);
@@ -183,6 +197,54 @@ namespace Dexih.Utils.DataType
             throw new ArgumentOutOfRangeException(nameof(type), inputValue, null);
         }
 
+        public static object Parse(DataType.ETypeCode tryDataType, int rank, object inputValue)
+        {
+            if (rank == 0)
+            {
+                return Parse(tryDataType, inputValue);
+            }
+
+            var type = inputValue.GetType();
+            if (type.IsArray && type != typeof(byte[]) && type != typeof(char[]))
+            {
+                var inputArray = (object[]) inputValue;
+                var returnValue = new object[inputArray.Length];
+                for (var i = 0; i < inputArray.Length; i++)
+                {
+                    returnValue[i] = Parse(tryDataType, rank -1, inputArray[i]);
+                }
+
+                return returnValue;
+            }
+            
+            return Parse(tryDataType, inputValue);
+        }
+
+        
+        public static object Parse(Type tryType, int rank, object inputValue)
+        {
+            if (rank == 0)
+            {
+                return Parse(tryType, inputValue);
+            }
+
+            var type = inputValue.GetType();
+            if (type.IsArray && type != typeof(byte[]) && type != typeof(char[]))
+            {
+                var inputArray = (object[]) inputValue;
+                var returnValue = new object[inputArray.Length];
+                for (var i = 0; i < inputArray.Length; i++)
+                {
+                    returnValue[i] = Parse(tryType, rank -1, inputArray[i]);
+                }
+
+                return returnValue;
+            }
+            
+            return Parse(type, inputValue);
+        }
+
+        
         public static bool Equal(object inputValue, object compareTo)
         {
             var type = inputValue?.GetType();
@@ -748,7 +810,7 @@ namespace Dexih.Utils.DataType
             }
         }            
 
-                public static object Multiply(object a, object b)
+        public static object Multiply(object a, object b)
         {
             var type = a?.GetType();
             return Multiply(type, a, b);
@@ -835,7 +897,7 @@ namespace Dexih.Utils.DataType
             }
         }            
 
-                public static object Divide(object a, object b)
+        public static object Divide(object a, object b)
         {
             var type = a?.GetType();
             return Divide(type, a, b);
@@ -922,7 +984,7 @@ namespace Dexih.Utils.DataType
             }
         }            
 
-                public static object Add(object a, object b)
+        public static object Add(object a, object b)
         {
             var type = a?.GetType();
             return Add(type, a, b);
