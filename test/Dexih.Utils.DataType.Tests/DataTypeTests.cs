@@ -310,7 +310,7 @@ namespace Dexih.Utils.DataType.Tests
         }
 
         [Fact]
-        public void DataType_Add()
+        public void DataType_Add1()
         {
             Assert.Equal(8, Operations.Add(3, 5));
             Assert.Equal(8d, Operations.Add(3d, 5d));
@@ -318,7 +318,7 @@ namespace Dexih.Utils.DataType.Tests
         }
 
         [Fact]
-        public void DataType_Subtract()
+        public void DataType_Subtract1()
         {
             Assert.Equal(2, Operations.Subtract(5, 3));
             Assert.Equal(2d, Operations.Subtract(5d, 3d));
@@ -326,7 +326,7 @@ namespace Dexih.Utils.DataType.Tests
         }
 
         [Fact]
-        public void DataType_Multiply()
+        public void DataType_Multiply1()
         {
             Assert.Equal(15, Operations.Multiply(3, 5));
             Assert.Equal(15d, Operations.Multiply(3d, 5d));
@@ -334,7 +334,7 @@ namespace Dexih.Utils.DataType.Tests
         }
 
         [Fact]
-        public void DataType_Divide()
+        public void DataType_Divide1()
         {
             Assert.Equal(4, Operations.Divide(8, 2));
             Assert.Equal(4.5d, Operations.Divide(9d, 2d));
@@ -342,68 +342,68 @@ namespace Dexih.Utils.DataType.Tests
         }
 
         [Fact]
-        public void DataType_DivideInt()
+        public void DataType_DivideInt1()
         {
             Assert.Equal(4, Operations.DivideInt(8, 2));
             Assert.Equal(4.5d, Operations.DivideInt(9d, 2));
             Assert.Equal(4L, Operations.DivideInt(8L, 2));
         }
         
-//        [Theory]
-//        [InlineData(ETypeCode.UInt16, (ushort)5, (ushort) 3, (ushort) 8)]
-//        [InlineData(ETypeCode.UInt32, (uint)5, (uint) 3, (uint) 8)]
-//        [InlineData(ETypeCode.UInt64, (ulong)5, (ulong) 3, (ulong) 8)]
-//        [InlineData(ETypeCode.Int16, (short)5, (short) 3, (short) 8)]
-//        [InlineData(ETypeCode.Int32, (int)5, (int) 3, (int) 8)]
-//        [InlineData(ETypeCode.Int64, (long)5, (long) 3, (long) 8)]
-//        [InlineData(ETypeCode.Double, (double)5, (double) 3, (double) 8)]
-//        //[InlineData(ETypeCode.Decimal, (decimal)5, (decimal) 3, (decimal) 8)]
-//        public void DataType_Add(ETypeCode dataType, object value1, object value2, object expected)
-//        {
-//            Assert.Equal(expected,  DataType.Add(dataType, value1, value2));
-//        }
-//        
-//        [Theory]
-//        [InlineData(ETypeCode.UInt16, (ushort)5, (ushort) 3, (ushort) 2)]
-//        [InlineData(ETypeCode.UInt32, (uint)5, (uint) 3, (uint) 2)]
-//        [InlineData(ETypeCode.UInt64, (ulong)5, (ulong) 3, (ulong) 2)]
-//        [InlineData(ETypeCode.Int16, (short)5, (short) 3, (short) 2)]
-//        [InlineData(ETypeCode.Int32, (int)5, (int) 3, (int) 2)]
-//        [InlineData(ETypeCode.Int64, (long)5, (long) 3, (long) 2)]
-//        [InlineData(ETypeCode.Double, (double)5, (double) 3, (double) 2)]
-//        //[InlineData(ETypeCode.Decimal, (decimal)5, (decimal) 3, (decimal) 8)]
-//        public void DataType_Subtract(ETypeCode dataType, object value1, object value2, object expected)
-//        {
-//            Assert.Equal(expected, DataType.Subtract(dataType, value1, value2));
-//        }
-//        
-//        [Theory]
-//        [InlineData(ETypeCode.UInt16, (ushort)5, (ushort) 3, (ushort) 15)]
-//        [InlineData(ETypeCode.UInt32, (uint)5, (uint) 3, (uint) 15)]
-//        [InlineData(ETypeCode.UInt64, (ulong)5, (ulong) 3, (ulong) 15)]
-//        [InlineData(ETypeCode.Int16, (short)5, (short) 3, (short) 15)]
-//        [InlineData(ETypeCode.Int32, (int)5, (int) 3, (int) 15)]
-//        [InlineData(ETypeCode.Int64, (long)5, (long) 3, (long) 15)]
-//        [InlineData(ETypeCode.Double, (double)5, (double) 3, (double) 15)]
-//        //[InlineData(ETypeCode.Decimal, (decimal)5, (decimal) 3, (decimal) 8)]
-//        public void DataType_Multiply(ETypeCode dataType, object value1, object value2, object expected)
-//        {
-//            Assert.Equal(expected, DataType.Multiply(dataType, value1, value2));
-//        }
-//        
-//        [Theory]
-//        [InlineData(ETypeCode.UInt16, (ushort)6, (ushort) 3, (ushort) 2)]
-//        [InlineData(ETypeCode.UInt32, (uint)6, (uint) 3, (uint) 2)]
-//        [InlineData(ETypeCode.UInt64, (ulong)6, (ulong) 3, (ulong) 2)]
-//        [InlineData(ETypeCode.Int16, (short)6, (short) 3, (short) 2)]
-//        [InlineData(ETypeCode.Int32, (int)6, (int) 3, (int) 2)]
-//        [InlineData(ETypeCode.Int64, (long)6, (long) 3, (long) 2)]
-//        [InlineData(ETypeCode.Double, (double)6, (double) 3, (double) 2)]
-//        //[InlineData(ETypeCode.Decimal, (decimal)5, (decimal) 3, (decimal) 8)]
-//        public void DataType_Divide(ETypeCode dataType, object value1, object value2, object expected)
-//        {
-//            Assert.Equal(expected, DataType.Divide(dataType, value1, value2));
-//        }
+        [Theory]
+        [InlineData(ETypeCode.UInt16, (ushort)5, (ushort) 3, (ushort) 8)]
+        [InlineData(ETypeCode.UInt32, (uint)5, (uint) 3, (uint) 8)]
+        [InlineData(ETypeCode.UInt64, (ulong)5, (ulong) 3, (ulong) 8)]
+        [InlineData(ETypeCode.Int16, (short)5, (short) 3, (short) 8)]
+        [InlineData(ETypeCode.Int32, (int)5, (int) 3, (int) 8)]
+        [InlineData(ETypeCode.Int64, (long)5, (long) 3, (long) 8)]
+        [InlineData(ETypeCode.Double, (double)5, (double) 3, (double) 8)]
+        //[InlineData(ETypeCode.Decimal, (decimal)5, (decimal) 3, (decimal) 8)]
+        public void DataType_Add(ETypeCode dataType, object value1, object value2, object expected)
+        {
+            Assert.Equal(expected,  Operations.Add(dataType, value1, value2));
+        }
+        
+        [Theory]
+        [InlineData(ETypeCode.UInt16, (ushort)5, (ushort) 3, (ushort) 2)]
+        [InlineData(ETypeCode.UInt32, (uint)5, (uint) 3, (uint) 2)]
+        [InlineData(ETypeCode.UInt64, (ulong)5, (ulong) 3, (ulong) 2)]
+        [InlineData(ETypeCode.Int16, (short)5, (short) 3, (short) 2)]
+        [InlineData(ETypeCode.Int32, (int)5, (int) 3, (int) 2)]
+        [InlineData(ETypeCode.Int64, (long)5, (long) 3, (long) 2)]
+        [InlineData(ETypeCode.Double, (double)5, (double) 3, (double) 2)]
+        //[InlineData(ETypeCode.Decimal, (decimal)5, (decimal) 3, (decimal) 8)]
+        public void DataType_Subtract(ETypeCode dataType, object value1, object value2, object expected)
+        {
+            Assert.Equal(expected, Operations.Subtract(dataType, value1, value2));
+        }
+        
+        [Theory]
+        [InlineData(ETypeCode.UInt16, (ushort)5, (ushort) 3, (ushort) 15)]
+        [InlineData(ETypeCode.UInt32, (uint)5, (uint) 3, (uint) 15)]
+        [InlineData(ETypeCode.UInt64, (ulong)5, (ulong) 3, (ulong) 15)]
+        [InlineData(ETypeCode.Int16, (short)5, (short) 3, (short) 15)]
+        [InlineData(ETypeCode.Int32, (int)5, (int) 3, (int) 15)]
+        [InlineData(ETypeCode.Int64, (long)5, (long) 3, (long) 15)]
+        [InlineData(ETypeCode.Double, (double)5, (double) 3, (double) 15)]
+        //[InlineData(ETypeCode.Decimal, (decimal)5, (decimal) 3, (decimal) 8)]
+        public void DataType_Multiply(ETypeCode dataType, object value1, object value2, object expected)
+        {
+            Assert.Equal(expected, Operations.Multiply(dataType, value1, value2));
+        }
+        
+        [Theory]
+        [InlineData(ETypeCode.UInt16, (ushort)6, (ushort) 3, (ushort) 2)]
+        [InlineData(ETypeCode.UInt32, (uint)6, (uint) 3, (uint) 2)]
+        [InlineData(ETypeCode.UInt64, (ulong)6, (ulong) 3, (ulong) 2)]
+        [InlineData(ETypeCode.Int16, (short)6, (short) 3, (short) 2)]
+        [InlineData(ETypeCode.Int32, (int)6, (int) 3, (int) 2)]
+        [InlineData(ETypeCode.Int64, (long)6, (long) 3, (long) 2)]
+        [InlineData(ETypeCode.Double, (double)6, (double) 3, (double) 2)]
+        //[InlineData(ETypeCode.Decimal, (decimal)5, (decimal) 3, (decimal) 8)]
+        public void DataType_Divide(ETypeCode dataType, object value1, object value2, object expected)
+        {
+            Assert.Equal(expected, Operations.Divide(dataType, value1, value2));
+        }
 
         public void Timer(string name, Action action)
         {

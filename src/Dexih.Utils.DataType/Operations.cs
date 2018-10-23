@@ -1,9 +1,11 @@
 using System;
 using System.ComponentModel;
 using System.Data;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Net.NetworkInformation;
 using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
 using System.Xml;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -63,16 +65,27 @@ namespace Dexih.Utils.DataType
         
         public static T Add<T>(T a, T b) => Operations<T>.Add.Value(a,b);
         public static T Subtract<T>(T a, T b) => Operations<T>.Subtract.Value(a, b);
+        public static object Subtract<T>(object a, object b) => Operations<object>.Subtract.Value(a, b);
         public static T Divide<T>(T a, T b) => Operations<T>.Divide.Value(a, b);
+        public static object Divide<T>(object a, object b) => Operations<object>.Divide.Value(a, b);
         public static T DivideInt<T>(T a, int b) => Operations<T>.DivideInt.Value(a, b);
+        public static object DivideInt<T>(object a, int b) => Operations<object>.DivideInt.Value(a, b);
         public static T Multiply<T>(T a, T b) => Operations<T>.Multiply.Value(a, b);
+        public static object Multiply<T>(object a, object b) => Operations<object>.Multiply.Value(a, b);
         public static T Negate<T>(T a) => Operations<T>.Negate.Value(a);
+        public static object Negate<T>(object a) => Operations<object>.Negate.Value(a);
         public static T Increment<T>(T a) => Operations<T>.Increment.Value(a);
+        public static object Increment<T>(object a) => Operations<object>.Increment.Value(a);
         public static T Decrement<T>(T a) => Operations<T>.Decrement.Value(a);
+        public static object Decrement<T>(object a) => Operations<object>.Decrement.Value(a);
         public static bool GreaterThan<T>(T a, T b) => Operations<T>.GreaterThan.Value(a, b);
+        public static bool GreaterThan<T>(object a, object b) => Operations<object>.GreaterThan.Value(a, b);
+        public static bool LessThan<T>(object a, object b) => Operations<object>.LessThan.Value(a, b);
         public static bool LessThan<T>(T a, T b) => Operations<T>.LessThan.Value(a, b);
+        public static bool GreaterThanOrEqual<T>(object a, object b) => Operations<object>.GreaterThanOrEqual.Value(a, b);
         public static bool GreaterThanOrEqual<T>(T a, T b) => Operations<T>.GreaterThanOrEqual.Value(a, b);
         public static bool LessThanOrEqual<T>(T a, T b) => Operations<T>.LessThanOrEqual.Value(a, b);
+        public static bool LessThanOrEqual<T>(object a, object b) => Operations<object>.LessThanOrEqual.Value(a, b);
         public static bool Equal<T>(T a, T b) => Operations<T>.Equal.Value(a, b);
         public static bool Equal<T>(object a, object b) => Operations<object>.Equal.Value(a, b);
         public static string ToString<T>(T a) => Operations<T>.ToString.Value(a);
@@ -268,6 +281,1080 @@ namespace Dexih.Utils.DataType
             }
         }
 
+        public static bool GreaterThan(object inputValue, object compareTo)
+        {
+            var type = inputValue?.GetType();
+            return GreaterThan(type, inputValue, compareTo);
+        }
+        
+        public static bool GreaterThan(Type type, object inputValue, object compareTo)
+        {
+            if (inputValue == null || inputValue == DBNull.Value || compareTo == null || compareTo == DBNull.Value)
+                return false;
+
+            if (type == ConvertTypes[ConvertTypeBool]) return GreaterThan<bool>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeSbyte]) return GreaterThan<sbyte>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeByte]) return GreaterThan<byte>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeShort]) return GreaterThan<short>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeUShort]) return GreaterThan<ushort>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeInt]) return GreaterThan<int>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeUint]) return GreaterThan<uint>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeLong]) return GreaterThan<long>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeULong]) return GreaterThan<ulong>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeFloat]) return GreaterThan<float>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeDouble]) return GreaterThan<double>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeDecimal]) return GreaterThan<decimal>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeDateTime]) return GreaterThan<DateTime>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeString]) return GreaterThan<string>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeByteArray]) return GreaterThan<byte[]>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeCharArray]) return GreaterThan<char[]>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeJToken]) return GreaterThan<JToken>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeXmlDocument]) return GreaterThan<XmlDocument>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeTimeSpan]) return GreaterThan<TimeSpan>(inputValue, compareTo);
+
+            throw new ArgumentOutOfRangeException(nameof(type), inputValue, null);
+        }
+
+        public static bool GreaterThan(DataType.ETypeCode typeCode, object value1, object value2)
+        {
+            if (value1 == null || value1 == DBNull.Value || value2 == null || value2 == DBNull.Value)
+                return false;
+            
+            switch (typeCode)
+            {
+                case DataType.ETypeCode.Binary:
+                    return GreaterThan<byte[]>(value1, value2);
+                case DataType.ETypeCode.Byte:
+                    return GreaterThan<byte>(value1, value2);
+                case DataType.ETypeCode.SByte:
+                    return GreaterThan<sbyte>(value1, value2);
+                case DataType.ETypeCode.UInt16:
+                    return GreaterThan<ushort>(value1, value2);
+                case DataType.ETypeCode.UInt32:
+                    return GreaterThan<uint>(value1, value2);
+                case DataType.ETypeCode.UInt64:
+                    return GreaterThan<ulong>(value1, value2);
+                case DataType.ETypeCode.Int16:
+                    return GreaterThan<short>(value1, value2);
+                case DataType.ETypeCode.Int32:
+                    return GreaterThan<int>(value1, value2);
+                case DataType.ETypeCode.Int64:
+                    return GreaterThan<long>(value1, value2);
+                case DataType.ETypeCode.Decimal:
+                    return GreaterThan<decimal>(value1, value2);
+                case DataType.ETypeCode.Double:
+                    return GreaterThan<double>(value1, value2);
+                case DataType.ETypeCode.Single:
+                    return GreaterThan<float>(value1, value2);
+                case DataType.ETypeCode.String:
+                    return GreaterThan<string>(value1, value2);
+                case DataType.ETypeCode.Text:
+                    return GreaterThan<string>(value1, value2);
+                case DataType.ETypeCode.Boolean:
+                    return GreaterThan<bool>(value1, value2);
+                case DataType.ETypeCode.DateTime:
+                    return GreaterThan<DateTime>(value1, value2);
+                case DataType.ETypeCode.Time:
+                    return GreaterThan<TimeSpan>(value1, value2);
+                case DataType.ETypeCode.Guid:
+                    return GreaterThan<Guid>(value1, value2);
+                case DataType.ETypeCode.Unknown:
+                    return GreaterThan<string>(value1, value2);
+                case DataType.ETypeCode.Json:
+                    return GreaterThan<JToken>(value1, value2);
+                case DataType.ETypeCode.Xml:
+                    return GreaterThan<XmlDocument>(value1, value2);
+                case DataType.ETypeCode.Enum:
+                    return GreaterThan<int>(value1, value2);
+                case DataType.ETypeCode.Char:
+                    return GreaterThan<char[]>(value1, value2);
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(typeCode), typeCode, null);
+            }
+        }
+
+        public static bool GreaterThanOrEqual(object inputValue, object compareTo)
+        {
+            var type = inputValue?.GetType();
+            return GreaterThanOrEqual(type, inputValue, compareTo);
+        }
+        
+        public static bool GreaterThanOrEqual(Type type, object inputValue, object compareTo)
+        {
+            if ((inputValue == null || inputValue == DBNull.Value) && (compareTo == null || compareTo == DBNull.Value))
+                return true;
+
+            if (inputValue == null || inputValue == DBNull.Value || compareTo == null || compareTo == DBNull.Value)
+                return false;
+
+            if (type == ConvertTypes[ConvertTypeBool]) return GreaterThanOrEqual<bool>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeSbyte]) return GreaterThanOrEqual<sbyte>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeByte]) return GreaterThanOrEqual<byte>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeShort]) return GreaterThanOrEqual<short>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeUShort]) return GreaterThanOrEqual<ushort>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeInt]) return GreaterThanOrEqual<int>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeUint]) return GreaterThanOrEqual<uint>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeLong]) return GreaterThanOrEqual<long>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeULong]) return GreaterThanOrEqual<ulong>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeFloat]) return GreaterThanOrEqual<float>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeDouble]) return GreaterThanOrEqual<double>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeDecimal]) return GreaterThanOrEqual<decimal>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeDateTime]) return GreaterThanOrEqual<DateTime>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeString]) return GreaterThanOrEqual<string>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeByteArray]) return GreaterThanOrEqual<byte[]>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeCharArray]) return GreaterThanOrEqual<char[]>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeJToken]) return GreaterThanOrEqual<JToken>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeXmlDocument]) return GreaterThanOrEqual<XmlDocument>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeTimeSpan]) return GreaterThanOrEqual<TimeSpan>(inputValue, compareTo);
+
+            throw new ArgumentOutOfRangeException(nameof(type), inputValue, null);
+        }
+
+        public static bool GreaterThanOrEqual(DataType.ETypeCode typeCode, object value1, object value2)
+        {
+            if ((value1 == null || value1 == DBNull.Value) && (value2 == null || value2 == DBNull.Value))
+                return true;
+
+            if (value1 == null || value1 == DBNull.Value || value2 == null || value2 == DBNull.Value)
+                return false;
+            
+            switch (typeCode)
+            {
+                case DataType.ETypeCode.Binary:
+                    return GreaterThanOrEqual<byte[]>(value1, value2);
+                case DataType.ETypeCode.Byte:
+                    return GreaterThanOrEqual<byte>(value1, value2);
+                case DataType.ETypeCode.SByte:
+                    return GreaterThanOrEqual<sbyte>(value1, value2);
+                case DataType.ETypeCode.UInt16:
+                    return GreaterThanOrEqual<ushort>(value1, value2);
+                case DataType.ETypeCode.UInt32:
+                    return GreaterThanOrEqual<uint>(value1, value2);
+                case DataType.ETypeCode.UInt64:
+                    return GreaterThanOrEqual<ulong>(value1, value2);
+                case DataType.ETypeCode.Int16:
+                    return GreaterThanOrEqual<short>(value1, value2);
+                case DataType.ETypeCode.Int32:
+                    return GreaterThanOrEqual<int>(value1, value2);
+                case DataType.ETypeCode.Int64:
+                    return GreaterThanOrEqual<long>(value1, value2);
+                case DataType.ETypeCode.Decimal:
+                    return GreaterThanOrEqual<decimal>(value1, value2);
+                case DataType.ETypeCode.Double:
+                    return GreaterThanOrEqual<double>(value1, value2);
+                case DataType.ETypeCode.Single:
+                    return GreaterThanOrEqual<float>(value1, value2);
+                case DataType.ETypeCode.String:
+                    return GreaterThanOrEqual<string>(value1, value2);
+                case DataType.ETypeCode.Text:
+                    return GreaterThanOrEqual<string>(value1, value2);
+                case DataType.ETypeCode.Boolean:
+                    return GreaterThanOrEqual<bool>(value1, value2);
+                case DataType.ETypeCode.DateTime:
+                    return GreaterThanOrEqual<DateTime>(value1, value2);
+                case DataType.ETypeCode.Time:
+                    return GreaterThanOrEqual<TimeSpan>(value1, value2);
+                case DataType.ETypeCode.Guid:
+                    return GreaterThanOrEqual<Guid>(value1, value2);
+                case DataType.ETypeCode.Unknown:
+                    return GreaterThanOrEqual<string>(value1, value2);
+                case DataType.ETypeCode.Json:
+                    return GreaterThanOrEqual<JToken>(value1, value2);
+                case DataType.ETypeCode.Xml:
+                    return GreaterThanOrEqual<XmlDocument>(value1, value2);
+                case DataType.ETypeCode.Enum:
+                    return GreaterThanOrEqual<int>(value1, value2);
+                case DataType.ETypeCode.Char:
+                    return GreaterThanOrEqual<char[]>(value1, value2);
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(typeCode), typeCode, null);
+            }
+        }
+
+        public static bool LessThan(object inputValue, object compareTo)
+        {
+            var type = inputValue?.GetType();
+            return LessThan(type, inputValue, compareTo);
+        }
+        
+        public static bool LessThan(Type type, object inputValue, object compareTo)
+        {
+            if (inputValue == null || inputValue == DBNull.Value || compareTo == null || compareTo == DBNull.Value)
+                return false;
+
+            if (type == ConvertTypes[ConvertTypeBool]) return LessThan<bool>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeSbyte]) return LessThan<sbyte>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeByte]) return LessThan<byte>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeShort]) return LessThan<short>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeUShort]) return LessThan<ushort>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeInt]) return LessThan<int>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeUint]) return LessThan<uint>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeLong]) return LessThan<long>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeULong]) return LessThan<ulong>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeFloat]) return LessThan<float>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeDouble]) return LessThan<double>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeDecimal]) return LessThan<decimal>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeDateTime]) return LessThan<DateTime>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeString]) return LessThan<string>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeByteArray]) return LessThan<byte[]>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeCharArray]) return LessThan<char[]>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeJToken]) return LessThan<JToken>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeXmlDocument]) return LessThan<XmlDocument>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeTimeSpan]) return LessThan<TimeSpan>(inputValue, compareTo);
+
+            throw new ArgumentOutOfRangeException(nameof(type), inputValue, null);
+        }
+
+        public static bool LessThan(DataType.ETypeCode typeCode, object value1, object value2)
+        {
+            if (value1 == null || value1 == DBNull.Value || value2 == null || value2 == DBNull.Value)
+                return false;
+            
+            switch (typeCode)
+            {
+                case DataType.ETypeCode.Binary:
+                    return LessThan<byte[]>(value1, value2);
+                case DataType.ETypeCode.Byte:
+                    return LessThan<byte>(value1, value2);
+                case DataType.ETypeCode.SByte:
+                    return LessThan<sbyte>(value1, value2);
+                case DataType.ETypeCode.UInt16:
+                    return LessThan<ushort>(value1, value2);
+                case DataType.ETypeCode.UInt32:
+                    return LessThan<uint>(value1, value2);
+                case DataType.ETypeCode.UInt64:
+                    return LessThan<ulong>(value1, value2);
+                case DataType.ETypeCode.Int16:
+                    return LessThan<short>(value1, value2);
+                case DataType.ETypeCode.Int32:
+                    return LessThan<int>(value1, value2);
+                case DataType.ETypeCode.Int64:
+                    return LessThan<long>(value1, value2);
+                case DataType.ETypeCode.Decimal:
+                    return LessThan<decimal>(value1, value2);
+                case DataType.ETypeCode.Double:
+                    return LessThan<double>(value1, value2);
+                case DataType.ETypeCode.Single:
+                    return LessThan<float>(value1, value2);
+                case DataType.ETypeCode.String:
+                    return LessThan<string>(value1, value2);
+                case DataType.ETypeCode.Text:
+                    return LessThan<string>(value1, value2);
+                case DataType.ETypeCode.Boolean:
+                    return LessThan<bool>(value1, value2);
+                case DataType.ETypeCode.DateTime:
+                    return LessThan<DateTime>(value1, value2);
+                case DataType.ETypeCode.Time:
+                    return LessThan<TimeSpan>(value1, value2);
+                case DataType.ETypeCode.Guid:
+                    return LessThan<Guid>(value1, value2);
+                case DataType.ETypeCode.Unknown:
+                    return LessThan<string>(value1, value2);
+                case DataType.ETypeCode.Json:
+                    return LessThan<JToken>(value1, value2);
+                case DataType.ETypeCode.Xml:
+                    return LessThan<XmlDocument>(value1, value2);
+                case DataType.ETypeCode.Enum:
+                    return LessThan<int>(value1, value2);
+                case DataType.ETypeCode.Char:
+                    return LessThan<char[]>(value1, value2);
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(typeCode), typeCode, null);
+            }
+        }
+
+        public static bool LessThanOrEqual(object inputValue, object compareTo)
+        {
+            var type = inputValue?.GetType();
+            return LessThanOrEqual(type, inputValue, compareTo);
+        }
+        
+        public static bool LessThanOrEqual(Type type, object inputValue, object compareTo)
+        {
+            if ((inputValue == null || inputValue == DBNull.Value) && (compareTo == null || compareTo == DBNull.Value))
+                return true;
+
+            if (inputValue == null || inputValue == DBNull.Value || compareTo == null || compareTo == DBNull.Value)
+                return false;
+
+            if (type == ConvertTypes[ConvertTypeBool]) return LessThanOrEqual<bool>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeSbyte]) return LessThanOrEqual<sbyte>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeByte]) return LessThanOrEqual<byte>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeShort]) return LessThanOrEqual<short>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeUShort]) return LessThanOrEqual<ushort>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeInt]) return LessThanOrEqual<int>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeUint]) return LessThanOrEqual<uint>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeLong]) return LessThanOrEqual<long>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeULong]) return LessThanOrEqual<ulong>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeFloat]) return LessThanOrEqual<float>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeDouble]) return LessThanOrEqual<double>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeDecimal]) return LessThanOrEqual<decimal>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeDateTime]) return LessThanOrEqual<DateTime>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeString]) return LessThanOrEqual<string>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeByteArray]) return LessThanOrEqual<byte[]>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeCharArray]) return LessThanOrEqual<char[]>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeJToken]) return LessThanOrEqual<JToken>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeXmlDocument]) return LessThanOrEqual<XmlDocument>(inputValue, compareTo);
+            if (type == ConvertTypes[ConvertTypeTimeSpan]) return LessThanOrEqual<TimeSpan>(inputValue, compareTo);
+
+            throw new ArgumentOutOfRangeException(nameof(type), inputValue, null);
+        }
+
+        public static bool LessThanOrEqual(DataType.ETypeCode typeCode, object value1, object value2)
+        {
+            if ((value1 == null || value1 == DBNull.Value) && (value2 == null || value2 == DBNull.Value))
+                return true;
+
+            if (value1 == null || value1 == DBNull.Value || value2 == null || value2 == DBNull.Value)
+                return false;
+            
+            switch (typeCode)
+            {
+                case DataType.ETypeCode.Binary:
+                    return LessThanOrEqual<byte[]>(value1, value2);
+                case DataType.ETypeCode.Byte:
+                    return LessThanOrEqual<byte>(value1, value2);
+                case DataType.ETypeCode.SByte:
+                    return LessThanOrEqual<sbyte>(value1, value2);
+                case DataType.ETypeCode.UInt16:
+                    return LessThanOrEqual<ushort>(value1, value2);
+                case DataType.ETypeCode.UInt32:
+                    return LessThanOrEqual<uint>(value1, value2);
+                case DataType.ETypeCode.UInt64:
+                    return LessThanOrEqual<ulong>(value1, value2);
+                case DataType.ETypeCode.Int16:
+                    return LessThanOrEqual<short>(value1, value2);
+                case DataType.ETypeCode.Int32:
+                    return LessThanOrEqual<int>(value1, value2);
+                case DataType.ETypeCode.Int64:
+                    return LessThanOrEqual<long>(value1, value2);
+                case DataType.ETypeCode.Decimal:
+                    return LessThanOrEqual<decimal>(value1, value2);
+                case DataType.ETypeCode.Double:
+                    return LessThanOrEqual<double>(value1, value2);
+                case DataType.ETypeCode.Single:
+                    return LessThanOrEqual<float>(value1, value2);
+                case DataType.ETypeCode.String:
+                    return LessThanOrEqual<string>(value1, value2);
+                case DataType.ETypeCode.Text:
+                    return LessThanOrEqual<string>(value1, value2);
+                case DataType.ETypeCode.Boolean:
+                    return LessThanOrEqual<bool>(value1, value2);
+                case DataType.ETypeCode.DateTime:
+                    return LessThanOrEqual<DateTime>(value1, value2);
+                case DataType.ETypeCode.Time:
+                    return LessThanOrEqual<TimeSpan>(value1, value2);
+                case DataType.ETypeCode.Guid:
+                    return LessThanOrEqual<Guid>(value1, value2);
+                case DataType.ETypeCode.Unknown:
+                    return LessThanOrEqual<string>(value1, value2);
+                case DataType.ETypeCode.Json:
+                    return LessThanOrEqual<JToken>(value1, value2);
+                case DataType.ETypeCode.Xml:
+                    return LessThanOrEqual<XmlDocument>(value1, value2);
+                case DataType.ETypeCode.Enum:
+                    return LessThanOrEqual<int>(value1, value2);
+                case DataType.ETypeCode.Char:
+                    return LessThanOrEqual<char[]>(value1, value2);
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(typeCode), typeCode, null);
+            }
+        }
+
+        public static object Subtract(object a, object b)
+        {
+            var type = a?.GetType();
+            return Subtract(type, a, b);
+        }
+        
+        public static object Subtract(Type type, object a, object b)
+        {
+            if (type == ConvertTypes[ConvertTypeBool]) return Subtract<bool>((bool)a, (bool)b);
+            if (type == ConvertTypes[ConvertTypeSbyte]) return Subtract<sbyte>((sbyte)a, (sbyte) b);
+            if (type == ConvertTypes[ConvertTypeByte]) return Subtract<byte>((byte)a, (byte)b);
+            if (type == ConvertTypes[ConvertTypeShort]) return Subtract<short>((short)a, (short)b);
+            if (type == ConvertTypes[ConvertTypeUShort]) return Subtract<ushort>((ushort)a, (ushort)b);
+            if (type == ConvertTypes[ConvertTypeInt]) return Subtract<int>((int)a, (int)b);
+            if (type == ConvertTypes[ConvertTypeUint]) return Subtract<uint>((uint)a, (uint)b);
+            if (type == ConvertTypes[ConvertTypeLong]) return Subtract<long>((long)a, (long)b);
+            if (type == ConvertTypes[ConvertTypeULong]) return Subtract<ulong>((ulong)a, (ulong)b);
+            if (type == ConvertTypes[ConvertTypeFloat]) return Subtract<float>((float)a, (float)b);
+            if (type == ConvertTypes[ConvertTypeDouble]) return Subtract<double>((double)a, (double)b);
+            if (type == ConvertTypes[ConvertTypeDecimal]) return Subtract<decimal>((decimal)a, (decimal)b);
+            if (type == ConvertTypes[ConvertTypeDateTime]) return Subtract<DateTime>((DateTime)a, (DateTime)b);
+            if (type == ConvertTypes[ConvertTypeString]) return Subtract<string>((string)a, (string)b);
+            if (type == ConvertTypes[ConvertTypeByteArray]) return Subtract<byte[]>((byte[])a, (byte[])b);
+            if (type == ConvertTypes[ConvertTypeCharArray]) return Subtract<char[]>((char[])a, (char[])b);
+            if (type == ConvertTypes[ConvertTypeJToken]) return Subtract<JToken>((JToken)a, (JToken)b);
+            if (type == ConvertTypes[ConvertTypeXmlDocument]) return Subtract<XmlDocument>((XmlDocument)a, (XmlDocument)b);
+            if (type == ConvertTypes[ConvertTypeTimeSpan]) return Subtract<TimeSpan>((TimeSpan)a, (TimeSpan)b);
+
+            throw new ArgumentOutOfRangeException(nameof(type), a, null);
+        }
+
+        public static object Subtract(DataType.ETypeCode typeCode, object value1, object value2)
+        {
+           
+            switch (typeCode)
+            {
+                case DataType.ETypeCode.Binary:
+                    return Subtract<bool>((bool)value1, (bool)value2);
+                case DataType.ETypeCode.Byte:
+                    return Subtract<byte>((byte)value1, (byte)value2);
+                case DataType.ETypeCode.SByte:
+                    return Subtract<sbyte>((sbyte)value1, (sbyte)value2);
+                case DataType.ETypeCode.UInt16:
+                    return Subtract<ushort>((ushort)value1, (ushort)value2);
+                case DataType.ETypeCode.UInt32:
+                    return Subtract<uint>((uint)value1, (uint)value2);
+                case DataType.ETypeCode.UInt64:
+                    return Subtract<ulong>((ulong)value1, (ulong)value2);
+                case DataType.ETypeCode.Int16:
+                    return Subtract<short>((short)value1, (short)value2);
+                case DataType.ETypeCode.Int32:
+                    return Subtract<int>((int)value1, (int)value2);
+                case DataType.ETypeCode.Int64:
+                    return Subtract<long>((long)value1, (long)value2);
+                case DataType.ETypeCode.Decimal:
+                    return Subtract<decimal>((decimal)value1, (decimal)value2);
+                case DataType.ETypeCode.Double:
+                    return Subtract<double>((double)value1, (double)value2);
+                case DataType.ETypeCode.Single:
+                    return Subtract<float>((float)value1, (float)value2);
+                case DataType.ETypeCode.String:
+                    return Subtract<string>((string)value1, (string)value2);
+                case DataType.ETypeCode.Text:
+                    return Subtract<string>((string)value1, (string)value2);
+                case DataType.ETypeCode.Boolean:
+                    return Subtract<bool>((bool)value1, (bool)value2);
+                case DataType.ETypeCode.DateTime:
+                    return Subtract<DateTime>((DateTime)value1, (DateTime)value2);
+                case DataType.ETypeCode.Time:
+                    return Subtract<TimeSpan>((TimeSpan)value1, (TimeSpan)value2);
+                case DataType.ETypeCode.Guid:
+                    return Subtract<Guid>((Guid)value1, (Guid)value2);
+                case DataType.ETypeCode.Unknown:
+                    return Subtract<string>((string)value1, (string)value2);
+                case DataType.ETypeCode.Json:
+                    return Subtract<JToken>((JToken)value1, (JToken)value2);
+                case DataType.ETypeCode.Xml:
+                    return Subtract<XmlDocument>((XmlDocument)value1, (XmlDocument)value2);
+                case DataType.ETypeCode.Enum:
+                    return Subtract<int>((int)value1, (int)value2);
+                case DataType.ETypeCode.Char:
+                    return Subtract<char[]>((char[])value1, (char[])value2);
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(typeCode), typeCode, null);
+            }
+        }            
+
+                public static object Multiply(object a, object b)
+        {
+            var type = a?.GetType();
+            return Multiply(type, a, b);
+        }
+        
+        public static object Multiply(Type type, object a, object b)
+        {
+            if (type == ConvertTypes[ConvertTypeBool]) return Multiply<bool>((bool)a, (bool)b);
+            if (type == ConvertTypes[ConvertTypeSbyte]) return Multiply<sbyte>((sbyte)a, (sbyte) b);
+            if (type == ConvertTypes[ConvertTypeByte]) return Multiply<byte>((byte)a, (byte)b);
+            if (type == ConvertTypes[ConvertTypeShort]) return Multiply<short>((short)a, (short)b);
+            if (type == ConvertTypes[ConvertTypeUShort]) return Multiply<ushort>((ushort)a, (ushort)b);
+            if (type == ConvertTypes[ConvertTypeInt]) return Multiply<int>((int)a, (int)b);
+            if (type == ConvertTypes[ConvertTypeUint]) return Multiply<uint>((uint)a, (uint)b);
+            if (type == ConvertTypes[ConvertTypeLong]) return Multiply<long>((long)a, (long)b);
+            if (type == ConvertTypes[ConvertTypeULong]) return Multiply<ulong>((ulong)a, (ulong)b);
+            if (type == ConvertTypes[ConvertTypeFloat]) return Multiply<float>((float)a, (float)b);
+            if (type == ConvertTypes[ConvertTypeDouble]) return Multiply<double>((double)a, (double)b);
+            if (type == ConvertTypes[ConvertTypeDecimal]) return Multiply<decimal>((decimal)a, (decimal)b);
+            if (type == ConvertTypes[ConvertTypeDateTime]) return Multiply<DateTime>((DateTime)a, (DateTime)b);
+            if (type == ConvertTypes[ConvertTypeString]) return Multiply<string>((string)a, (string)b);
+            if (type == ConvertTypes[ConvertTypeByteArray]) return Multiply<byte[]>((byte[])a, (byte[])b);
+            if (type == ConvertTypes[ConvertTypeCharArray]) return Multiply<char[]>((char[])a, (char[])b);
+            if (type == ConvertTypes[ConvertTypeJToken]) return Multiply<JToken>((JToken)a, (JToken)b);
+            if (type == ConvertTypes[ConvertTypeXmlDocument]) return Multiply<XmlDocument>((XmlDocument)a, (XmlDocument)b);
+            if (type == ConvertTypes[ConvertTypeTimeSpan]) return Multiply<TimeSpan>((TimeSpan)a, (TimeSpan)b);
+
+            throw new ArgumentOutOfRangeException(nameof(type), a, null);
+        }
+
+        public static object Multiply(DataType.ETypeCode typeCode, object value1, object value2)
+        {
+           
+            switch (typeCode)
+            {
+                case DataType.ETypeCode.Binary:
+                    return Multiply<bool>((bool)value1, (bool)value2);
+                case DataType.ETypeCode.Byte:
+                    return Multiply<byte>((byte)value1, (byte)value2);
+                case DataType.ETypeCode.SByte:
+                    return Multiply<sbyte>((sbyte)value1, (sbyte)value2);
+                case DataType.ETypeCode.UInt16:
+                    return Multiply<ushort>((ushort)value1, (ushort)value2);
+                case DataType.ETypeCode.UInt32:
+                    return Multiply<uint>((uint)value1, (uint)value2);
+                case DataType.ETypeCode.UInt64:
+                    return Multiply<ulong>((ulong)value1, (ulong)value2);
+                case DataType.ETypeCode.Int16:
+                    return Multiply<short>((short)value1, (short)value2);
+                case DataType.ETypeCode.Int32:
+                    return Multiply<int>((int)value1, (int)value2);
+                case DataType.ETypeCode.Int64:
+                    return Multiply<long>((long)value1, (long)value2);
+                case DataType.ETypeCode.Decimal:
+                    return Multiply<decimal>((decimal)value1, (decimal)value2);
+                case DataType.ETypeCode.Double:
+                    return Multiply<double>((double)value1, (double)value2);
+                case DataType.ETypeCode.Single:
+                    return Multiply<float>((float)value1, (float)value2);
+                case DataType.ETypeCode.String:
+                    return Multiply<string>((string)value1, (string)value2);
+                case DataType.ETypeCode.Text:
+                    return Multiply<string>((string)value1, (string)value2);
+                case DataType.ETypeCode.Boolean:
+                    return Multiply<bool>((bool)value1, (bool)value2);
+                case DataType.ETypeCode.DateTime:
+                    return Multiply<DateTime>((DateTime)value1, (DateTime)value2);
+                case DataType.ETypeCode.Time:
+                    return Multiply<TimeSpan>((TimeSpan)value1, (TimeSpan)value2);
+                case DataType.ETypeCode.Guid:
+                    return Multiply<Guid>((Guid)value1, (Guid)value2);
+                case DataType.ETypeCode.Unknown:
+                    return Multiply<string>((string)value1, (string)value2);
+                case DataType.ETypeCode.Json:
+                    return Multiply<JToken>((JToken)value1, (JToken)value2);
+                case DataType.ETypeCode.Xml:
+                    return Multiply<XmlDocument>((XmlDocument)value1, (XmlDocument)value2);
+                case DataType.ETypeCode.Enum:
+                    return Multiply<int>((int)value1, (int)value2);
+                case DataType.ETypeCode.Char:
+                    return Multiply<char[]>((char[])value1, (char[])value2);
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(typeCode), typeCode, null);
+            }
+        }            
+
+                public static object Divide(object a, object b)
+        {
+            var type = a?.GetType();
+            return Divide(type, a, b);
+        }
+        
+        public static object Divide(Type type, object a, object b)
+        {
+            if (type == ConvertTypes[ConvertTypeBool]) return Divide<bool>((bool)a, (bool)b);
+            if (type == ConvertTypes[ConvertTypeSbyte]) return Divide<sbyte>((sbyte)a, (sbyte) b);
+            if (type == ConvertTypes[ConvertTypeByte]) return Divide<byte>((byte)a, (byte)b);
+            if (type == ConvertTypes[ConvertTypeShort]) return Divide<short>((short)a, (short)b);
+            if (type == ConvertTypes[ConvertTypeUShort]) return Divide<ushort>((ushort)a, (ushort)b);
+            if (type == ConvertTypes[ConvertTypeInt]) return Divide<int>((int)a, (int)b);
+            if (type == ConvertTypes[ConvertTypeUint]) return Divide<uint>((uint)a, (uint)b);
+            if (type == ConvertTypes[ConvertTypeLong]) return Divide<long>((long)a, (long)b);
+            if (type == ConvertTypes[ConvertTypeULong]) return Divide<ulong>((ulong)a, (ulong)b);
+            if (type == ConvertTypes[ConvertTypeFloat]) return Divide<float>((float)a, (float)b);
+            if (type == ConvertTypes[ConvertTypeDouble]) return Divide<double>((double)a, (double)b);
+            if (type == ConvertTypes[ConvertTypeDecimal]) return Divide<decimal>((decimal)a, (decimal)b);
+            if (type == ConvertTypes[ConvertTypeDateTime]) return Divide<DateTime>((DateTime)a, (DateTime)b);
+            if (type == ConvertTypes[ConvertTypeString]) return Divide<string>((string)a, (string)b);
+            if (type == ConvertTypes[ConvertTypeByteArray]) return Divide<byte[]>((byte[])a, (byte[])b);
+            if (type == ConvertTypes[ConvertTypeCharArray]) return Divide<char[]>((char[])a, (char[])b);
+            if (type == ConvertTypes[ConvertTypeJToken]) return Divide<JToken>((JToken)a, (JToken)b);
+            if (type == ConvertTypes[ConvertTypeXmlDocument]) return Divide<XmlDocument>((XmlDocument)a, (XmlDocument)b);
+            if (type == ConvertTypes[ConvertTypeTimeSpan]) return Divide<TimeSpan>((TimeSpan)a, (TimeSpan)b);
+
+            throw new ArgumentOutOfRangeException(nameof(type), a, null);
+        }
+
+        public static object Divide(DataType.ETypeCode typeCode, object value1, object value2)
+        {
+           
+            switch (typeCode)
+            {
+                case DataType.ETypeCode.Binary:
+                    return Divide<bool>((bool)value1, (bool)value2);
+                case DataType.ETypeCode.Byte:
+                    return Divide<byte>((byte)value1, (byte)value2);
+                case DataType.ETypeCode.SByte:
+                    return Divide<sbyte>((sbyte)value1, (sbyte)value2);
+                case DataType.ETypeCode.UInt16:
+                    return Divide<ushort>((ushort)value1, (ushort)value2);
+                case DataType.ETypeCode.UInt32:
+                    return Divide<uint>((uint)value1, (uint)value2);
+                case DataType.ETypeCode.UInt64:
+                    return Divide<ulong>((ulong)value1, (ulong)value2);
+                case DataType.ETypeCode.Int16:
+                    return Divide<short>((short)value1, (short)value2);
+                case DataType.ETypeCode.Int32:
+                    return Divide<int>((int)value1, (int)value2);
+                case DataType.ETypeCode.Int64:
+                    return Divide<long>((long)value1, (long)value2);
+                case DataType.ETypeCode.Decimal:
+                    return Divide<decimal>((decimal)value1, (decimal)value2);
+                case DataType.ETypeCode.Double:
+                    return Divide<double>((double)value1, (double)value2);
+                case DataType.ETypeCode.Single:
+                    return Divide<float>((float)value1, (float)value2);
+                case DataType.ETypeCode.String:
+                    return Divide<string>((string)value1, (string)value2);
+                case DataType.ETypeCode.Text:
+                    return Divide<string>((string)value1, (string)value2);
+                case DataType.ETypeCode.Boolean:
+                    return Divide<bool>((bool)value1, (bool)value2);
+                case DataType.ETypeCode.DateTime:
+                    return Divide<DateTime>((DateTime)value1, (DateTime)value2);
+                case DataType.ETypeCode.Time:
+                    return Divide<TimeSpan>((TimeSpan)value1, (TimeSpan)value2);
+                case DataType.ETypeCode.Guid:
+                    return Divide<Guid>((Guid)value1, (Guid)value2);
+                case DataType.ETypeCode.Unknown:
+                    return Divide<string>((string)value1, (string)value2);
+                case DataType.ETypeCode.Json:
+                    return Divide<JToken>((JToken)value1, (JToken)value2);
+                case DataType.ETypeCode.Xml:
+                    return Divide<XmlDocument>((XmlDocument)value1, (XmlDocument)value2);
+                case DataType.ETypeCode.Enum:
+                    return Divide<int>((int)value1, (int)value2);
+                case DataType.ETypeCode.Char:
+                    return Divide<char[]>((char[])value1, (char[])value2);
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(typeCode), typeCode, null);
+            }
+        }            
+
+                public static object Add(object a, object b)
+        {
+            var type = a?.GetType();
+            return Add(type, a, b);
+        }
+        
+        public static object Add(Type type, object a, object b)
+        {
+            if (type == ConvertTypes[ConvertTypeBool]) return Add<bool>((bool)a, (bool)b);
+            if (type == ConvertTypes[ConvertTypeSbyte]) return Add<sbyte>((sbyte)a, (sbyte) b);
+            if (type == ConvertTypes[ConvertTypeByte]) return Add<byte>((byte)a, (byte)b);
+            if (type == ConvertTypes[ConvertTypeShort]) return Add<short>((short)a, (short)b);
+            if (type == ConvertTypes[ConvertTypeUShort]) return Add<ushort>((ushort)a, (ushort)b);
+            if (type == ConvertTypes[ConvertTypeInt]) return Add<int>((int)a, (int)b);
+            if (type == ConvertTypes[ConvertTypeUint]) return Add<uint>((uint)a, (uint)b);
+            if (type == ConvertTypes[ConvertTypeLong]) return Add<long>((long)a, (long)b);
+            if (type == ConvertTypes[ConvertTypeULong]) return Add<ulong>((ulong)a, (ulong)b);
+            if (type == ConvertTypes[ConvertTypeFloat]) return Add<float>((float)a, (float)b);
+            if (type == ConvertTypes[ConvertTypeDouble]) return Add<double>((double)a, (double)b);
+            if (type == ConvertTypes[ConvertTypeDecimal]) return Add<decimal>((decimal)a, (decimal)b);
+            if (type == ConvertTypes[ConvertTypeDateTime]) return Add<DateTime>((DateTime)a, (DateTime)b);
+            if (type == ConvertTypes[ConvertTypeString]) return Add<string>((string)a, (string)b);
+            if (type == ConvertTypes[ConvertTypeByteArray]) return Add<byte[]>((byte[])a, (byte[])b);
+            if (type == ConvertTypes[ConvertTypeCharArray]) return Add<char[]>((char[])a, (char[])b);
+            if (type == ConvertTypes[ConvertTypeJToken]) return Add<JToken>((JToken)a, (JToken)b);
+            if (type == ConvertTypes[ConvertTypeXmlDocument]) return Add<XmlDocument>((XmlDocument)a, (XmlDocument)b);
+            if (type == ConvertTypes[ConvertTypeTimeSpan]) return Add<TimeSpan>((TimeSpan)a, (TimeSpan)b);
+
+            throw new ArgumentOutOfRangeException(nameof(type), a, null);
+        }
+
+        public static object Add(DataType.ETypeCode typeCode, object value1, object value2)
+        {
+           
+            switch (typeCode)
+            {
+                case DataType.ETypeCode.Binary:
+                    return Add<bool>((bool)value1, (bool)value2);
+                case DataType.ETypeCode.Byte:
+                    return Add<byte>((byte)value1, (byte)value2);
+                case DataType.ETypeCode.SByte:
+                    return Add<sbyte>((sbyte)value1, (sbyte)value2);
+                case DataType.ETypeCode.UInt16:
+                    return Add<ushort>((ushort)value1, (ushort)value2);
+                case DataType.ETypeCode.UInt32:
+                    return Add<uint>((uint)value1, (uint)value2);
+                case DataType.ETypeCode.UInt64:
+                    return Add<ulong>((ulong)value1, (ulong)value2);
+                case DataType.ETypeCode.Int16:
+                    return Add<short>((short)value1, (short)value2);
+                case DataType.ETypeCode.Int32:
+                    return Add<int>((int)value1, (int)value2);
+                case DataType.ETypeCode.Int64:
+                    return Add<long>((long)value1, (long)value2);
+                case DataType.ETypeCode.Decimal:
+                    return Add<decimal>((decimal)value1, (decimal)value2);
+                case DataType.ETypeCode.Double:
+                    return Add<double>((double)value1, (double)value2);
+                case DataType.ETypeCode.Single:
+                    return Add<float>((float)value1, (float)value2);
+                case DataType.ETypeCode.String:
+                    return Add<string>((string)value1, (string)value2);
+                case DataType.ETypeCode.Text:
+                    return Add<string>((string)value1, (string)value2);
+                case DataType.ETypeCode.Boolean:
+                    return Add<bool>((bool)value1, (bool)value2);
+                case DataType.ETypeCode.DateTime:
+                    return Add<DateTime>((DateTime)value1, (DateTime)value2);
+                case DataType.ETypeCode.Time:
+                    return Add<TimeSpan>((TimeSpan)value1, (TimeSpan)value2);
+                case DataType.ETypeCode.Guid:
+                    return Add<Guid>((Guid)value1, (Guid)value2);
+                case DataType.ETypeCode.Unknown:
+                    return Add<string>((string)value1, (string)value2);
+                case DataType.ETypeCode.Json:
+                    return Add<JToken>((JToken)value1, (JToken)value2);
+                case DataType.ETypeCode.Xml:
+                    return Add<XmlDocument>((XmlDocument)value1, (XmlDocument)value2);
+                case DataType.ETypeCode.Enum:
+                    return Add<int>((int)value1, (int)value2);
+                case DataType.ETypeCode.Char:
+                    return Add<char[]>((char[])value1, (char[])value2);
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(typeCode), typeCode, null);
+            }
+        }            
+
+        
+  
+        public static object DivideInt(object a, int b)
+        {
+            var type = a?.GetType();
+            return DivideInt(type, a, b);
+        }
+        
+        public static object DivideInt(Type type, object a, int b)
+        {
+            if (type == ConvertTypes[ConvertTypeBool]) return DivideInt<bool>(a, b);
+            if (type == ConvertTypes[ConvertTypeSbyte]) return DivideInt<sbyte>(a, b);
+            if (type == ConvertTypes[ConvertTypeByte]) return DivideInt<byte>(a, b);
+            if (type == ConvertTypes[ConvertTypeShort]) return DivideInt<short>(a, b);
+            if (type == ConvertTypes[ConvertTypeUShort]) return DivideInt<ushort>(a, b);
+            if (type == ConvertTypes[ConvertTypeInt]) return DivideInt<int>(a, b);
+            if (type == ConvertTypes[ConvertTypeUint]) return DivideInt<uint>(a, b);
+            if (type == ConvertTypes[ConvertTypeLong]) return DivideInt<long>(a, b);
+            if (type == ConvertTypes[ConvertTypeULong]) return DivideInt<ulong>(a, b);
+            if (type == ConvertTypes[ConvertTypeFloat]) return DivideInt<float>(a, b);
+            if (type == ConvertTypes[ConvertTypeDouble]) return DivideInt<double>(a, b);
+            if (type == ConvertTypes[ConvertTypeDecimal]) return DivideInt<decimal>(a, b);
+            if (type == ConvertTypes[ConvertTypeDateTime]) return DivideInt<DateTime>(a, b);
+            if (type == ConvertTypes[ConvertTypeString]) return DivideInt<string>(a, b);
+            if (type == ConvertTypes[ConvertTypeByteArray]) return DivideInt<byte[]>(a, b);
+            if (type == ConvertTypes[ConvertTypeCharArray]) return DivideInt<char[]>(a, b);
+            if (type == ConvertTypes[ConvertTypeJToken]) return DivideInt<JToken>(a, b);
+            if (type == ConvertTypes[ConvertTypeXmlDocument]) return DivideInt<XmlDocument>(a, b);
+            if (type == ConvertTypes[ConvertTypeTimeSpan]) return DivideInt<TimeSpan>(a, b);
+
+            throw new ArgumentOutOfRangeException(nameof(type), a, null);
+        }
+
+        public static object DivideInt(DataType.ETypeCode typeCode, object value1, int value2)
+        {
+            switch (typeCode)
+            {
+                case DataType.ETypeCode.Binary:
+                    return DivideInt<byte[]>(value1, value2);
+                case DataType.ETypeCode.Byte:
+                    return DivideInt<byte>(value1, value2);
+                case DataType.ETypeCode.SByte:
+                    return DivideInt<sbyte>(value1, value2);
+                case DataType.ETypeCode.UInt16:
+                    return DivideInt<ushort>(value1, value2);
+                case DataType.ETypeCode.UInt32:
+                    return DivideInt<uint>(value1, value2);
+                case DataType.ETypeCode.UInt64:
+                    return DivideInt<ulong>(value1, value2);
+                case DataType.ETypeCode.Int16:
+                    return DivideInt<short>(value1, value2);
+                case DataType.ETypeCode.Int32:
+                    return DivideInt<int>(value1, value2);
+                case DataType.ETypeCode.Int64:
+                    return DivideInt<long>(value1, value2);
+                case DataType.ETypeCode.Decimal:
+                    return DivideInt<decimal>(value1, value2);
+                case DataType.ETypeCode.Double:
+                    return DivideInt<double>(value1, value2);
+                case DataType.ETypeCode.Single:
+                    return DivideInt<float>(value1, value2);
+                case DataType.ETypeCode.String:
+                    return DivideInt<string>(value1, value2);
+                case DataType.ETypeCode.Text:
+                    return DivideInt<string>(value1, value2);
+                case DataType.ETypeCode.Boolean:
+                    return DivideInt<bool>(value1, value2);
+                case DataType.ETypeCode.DateTime:
+                    return DivideInt<DateTime>(value1, value2);
+                case DataType.ETypeCode.Time:
+                    return DivideInt<TimeSpan>(value1, value2);
+                case DataType.ETypeCode.Guid:
+                    return DivideInt<Guid>(value1, value2);
+                case DataType.ETypeCode.Unknown:
+                    return DivideInt<string>(value1, value2);
+                case DataType.ETypeCode.Json:
+                    return DivideInt<JToken>(value1, value2);
+                case DataType.ETypeCode.Xml:
+                    return DivideInt<XmlDocument>(value1, value2);
+                case DataType.ETypeCode.Enum:
+                    return DivideInt<int>(value1, value2);
+                case DataType.ETypeCode.Char:
+                    return DivideInt<char[]>(value1, value2);
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(typeCode), typeCode, null);
+            }
+        }            
+
+        public static object Negate(object a)
+        {
+            var type = a?.GetType();
+            return Negate(type, a);
+        }
+        
+        public static object Negate(Type type, object a)
+        {
+            if (type == ConvertTypes[ConvertTypeBool]) return Negate<bool>(a);
+            if (type == ConvertTypes[ConvertTypeSbyte]) return Negate<sbyte>(a);
+            if (type == ConvertTypes[ConvertTypeByte]) return Negate<byte>(a);
+            if (type == ConvertTypes[ConvertTypeShort]) return Negate<short>(a);
+            if (type == ConvertTypes[ConvertTypeUShort]) return Negate<ushort>(a);
+            if (type == ConvertTypes[ConvertTypeInt]) return Negate<int>(a);
+            if (type == ConvertTypes[ConvertTypeUint]) return Negate<uint>(a);
+            if (type == ConvertTypes[ConvertTypeLong]) return Negate<long>(a);
+            if (type == ConvertTypes[ConvertTypeULong]) return Negate<ulong>(a);
+            if (type == ConvertTypes[ConvertTypeFloat]) return Negate<float>(a);
+            if (type == ConvertTypes[ConvertTypeDouble]) return Negate<double>(a);
+            if (type == ConvertTypes[ConvertTypeDecimal]) return Negate<decimal>(a);
+            if (type == ConvertTypes[ConvertTypeDateTime]) return Negate<DateTime>(a);
+            if (type == ConvertTypes[ConvertTypeString]) return Negate<string>(a);
+            if (type == ConvertTypes[ConvertTypeByteArray]) return Negate<byte[]>(a);
+            if (type == ConvertTypes[ConvertTypeCharArray]) return Negate<char[]>(a);
+            if (type == ConvertTypes[ConvertTypeJToken]) return Negate<JToken>(a);
+            if (type == ConvertTypes[ConvertTypeXmlDocument]) return Negate<XmlDocument>(a);
+            if (type == ConvertTypes[ConvertTypeTimeSpan]) return Negate<TimeSpan>(a);
+
+            throw new ArgumentOutOfRangeException(nameof(type), a, null);
+        }
+
+        public static object Negate(DataType.ETypeCode typeCode, object value1)
+        {
+            switch (typeCode)
+            {
+                case DataType.ETypeCode.Binary:
+                    return Negate<byte[]>(value1);
+                case DataType.ETypeCode.Byte:
+                    return Negate<byte>(value1);
+                case DataType.ETypeCode.SByte:
+                    return Negate<sbyte>(value1);
+                case DataType.ETypeCode.UInt16:
+                    return Negate<ushort>(value1);
+                case DataType.ETypeCode.UInt32:
+                    return Negate<uint>(value1);
+                case DataType.ETypeCode.UInt64:
+                    return Negate<ulong>(value1);
+                case DataType.ETypeCode.Int16:
+                    return Negate<short>(value1);
+                case DataType.ETypeCode.Int32:
+                    return Negate<int>(value1);
+                case DataType.ETypeCode.Int64:
+                    return Negate<long>(value1);
+                case DataType.ETypeCode.Decimal:
+                    return Negate<decimal>(value1);
+                case DataType.ETypeCode.Double:
+                    return Negate<double>(value1);
+                case DataType.ETypeCode.Single:
+                    return Negate<float>(value1);
+                case DataType.ETypeCode.String:
+                    return Negate<string>(value1);
+                case DataType.ETypeCode.Text:
+                    return Negate<string>(value1);
+                case DataType.ETypeCode.Boolean:
+                    return Negate<bool>(value1);
+                case DataType.ETypeCode.DateTime:
+                    return Negate<DateTime>(value1);
+                case DataType.ETypeCode.Time:
+                    return Negate<TimeSpan>(value1);
+                case DataType.ETypeCode.Guid:
+                    return Negate<Guid>(value1);
+                case DataType.ETypeCode.Unknown:
+                    return Negate<string>(value1);
+                case DataType.ETypeCode.Json:
+                    return Negate<JToken>(value1);
+                case DataType.ETypeCode.Xml:
+                    return Negate<XmlDocument>(value1);
+                case DataType.ETypeCode.Enum:
+                    return Negate<int>(value1);
+                case DataType.ETypeCode.Char:
+                    return Negate<char[]>(value1);
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(typeCode), typeCode, null);
+            }
+        }            
+
+        public static object Increment(object a)
+        {
+            var type = a?.GetType();
+            return Increment(type, a);
+        }
+        
+        public static object Increment(Type type, object a)
+        {
+            if (type == ConvertTypes[ConvertTypeBool]) return Increment<bool>(a);
+            if (type == ConvertTypes[ConvertTypeSbyte]) return Increment<sbyte>(a);
+            if (type == ConvertTypes[ConvertTypeByte]) return Increment<byte>(a);
+            if (type == ConvertTypes[ConvertTypeShort]) return Increment<short>(a);
+            if (type == ConvertTypes[ConvertTypeUShort]) return Increment<ushort>(a);
+            if (type == ConvertTypes[ConvertTypeInt]) return Increment<int>(a);
+            if (type == ConvertTypes[ConvertTypeUint]) return Increment<uint>(a);
+            if (type == ConvertTypes[ConvertTypeLong]) return Increment<long>(a);
+            if (type == ConvertTypes[ConvertTypeULong]) return Increment<ulong>(a);
+            if (type == ConvertTypes[ConvertTypeFloat]) return Increment<float>(a);
+            if (type == ConvertTypes[ConvertTypeDouble]) return Increment<double>(a);
+            if (type == ConvertTypes[ConvertTypeDecimal]) return Increment<decimal>(a);
+            if (type == ConvertTypes[ConvertTypeDateTime]) return Increment<DateTime>(a);
+            if (type == ConvertTypes[ConvertTypeString]) return Increment<string>(a);
+            if (type == ConvertTypes[ConvertTypeByteArray]) return Increment<byte[]>(a);
+            if (type == ConvertTypes[ConvertTypeCharArray]) return Increment<char[]>(a);
+            if (type == ConvertTypes[ConvertTypeJToken]) return Increment<JToken>(a);
+            if (type == ConvertTypes[ConvertTypeXmlDocument]) return Increment<XmlDocument>(a);
+            if (type == ConvertTypes[ConvertTypeTimeSpan]) return Increment<TimeSpan>(a);
+
+            throw new ArgumentOutOfRangeException(nameof(type), a, null);
+        }
+
+        public static object Increment(DataType.ETypeCode typeCode, object value1)
+        {
+            switch (typeCode)
+            {
+                case DataType.ETypeCode.Binary:
+                    return Increment<byte[]>(value1);
+                case DataType.ETypeCode.Byte:
+                    return Increment<byte>(value1);
+                case DataType.ETypeCode.SByte:
+                    return Increment<sbyte>(value1);
+                case DataType.ETypeCode.UInt16:
+                    return Increment<ushort>(value1);
+                case DataType.ETypeCode.UInt32:
+                    return Increment<uint>(value1);
+                case DataType.ETypeCode.UInt64:
+                    return Increment<ulong>(value1);
+                case DataType.ETypeCode.Int16:
+                    return Increment<short>(value1);
+                case DataType.ETypeCode.Int32:
+                    return Increment<int>(value1);
+                case DataType.ETypeCode.Int64:
+                    return Increment<long>(value1);
+                case DataType.ETypeCode.Decimal:
+                    return Increment<decimal>(value1);
+                case DataType.ETypeCode.Double:
+                    return Increment<double>(value1);
+                case DataType.ETypeCode.Single:
+                    return Increment<float>(value1);
+                case DataType.ETypeCode.String:
+                    return Increment<string>(value1);
+                case DataType.ETypeCode.Text:
+                    return Increment<string>(value1);
+                case DataType.ETypeCode.Boolean:
+                    return Increment<bool>(value1);
+                case DataType.ETypeCode.DateTime:
+                    return Increment<DateTime>(value1);
+                case DataType.ETypeCode.Time:
+                    return Increment<TimeSpan>(value1);
+                case DataType.ETypeCode.Guid:
+                    return Increment<Guid>(value1);
+                case DataType.ETypeCode.Unknown:
+                    return Increment<string>(value1);
+                case DataType.ETypeCode.Json:
+                    return Increment<JToken>(value1);
+                case DataType.ETypeCode.Xml:
+                    return Increment<XmlDocument>(value1);
+                case DataType.ETypeCode.Enum:
+                    return Increment<int>(value1);
+                case DataType.ETypeCode.Char:
+                    return Increment<char[]>(value1);
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(typeCode), typeCode, null);
+            }
+        }       
+        
+        public static object Decrement(object a)
+        {
+            var type = a?.GetType();
+            return Decrement(type, a);
+        }
+        
+        public static object Decrement(Type type, object a)
+        {
+            if (type == ConvertTypes[ConvertTypeBool]) return Decrement<bool>(a);
+            if (type == ConvertTypes[ConvertTypeSbyte]) return Decrement<sbyte>(a);
+            if (type == ConvertTypes[ConvertTypeByte]) return Decrement<byte>(a);
+            if (type == ConvertTypes[ConvertTypeShort]) return Decrement<short>(a);
+            if (type == ConvertTypes[ConvertTypeUShort]) return Decrement<ushort>(a);
+            if (type == ConvertTypes[ConvertTypeInt]) return Decrement<int>(a);
+            if (type == ConvertTypes[ConvertTypeUint]) return Decrement<uint>(a);
+            if (type == ConvertTypes[ConvertTypeLong]) return Decrement<long>(a);
+            if (type == ConvertTypes[ConvertTypeULong]) return Decrement<ulong>(a);
+            if (type == ConvertTypes[ConvertTypeFloat]) return Decrement<float>(a);
+            if (type == ConvertTypes[ConvertTypeDouble]) return Decrement<double>(a);
+            if (type == ConvertTypes[ConvertTypeDecimal]) return Decrement<decimal>(a);
+            if (type == ConvertTypes[ConvertTypeDateTime]) return Decrement<DateTime>(a);
+            if (type == ConvertTypes[ConvertTypeString]) return Decrement<string>(a);
+            if (type == ConvertTypes[ConvertTypeByteArray]) return Decrement<byte[]>(a);
+            if (type == ConvertTypes[ConvertTypeCharArray]) return Decrement<char[]>(a);
+            if (type == ConvertTypes[ConvertTypeJToken]) return Decrement<JToken>(a);
+            if (type == ConvertTypes[ConvertTypeXmlDocument]) return Decrement<XmlDocument>(a);
+            if (type == ConvertTypes[ConvertTypeTimeSpan]) return Decrement<TimeSpan>(a);
+
+            throw new ArgumentOutOfRangeException(nameof(type), a, null);
+        }
+
+        public static object Decrement(DataType.ETypeCode typeCode, object value1)
+        {
+            switch (typeCode)
+            {
+                case DataType.ETypeCode.Binary:
+                    return Decrement<byte[]>(value1);
+                case DataType.ETypeCode.Byte:
+                    return Decrement<byte>(value1);
+                case DataType.ETypeCode.SByte:
+                    return Decrement<sbyte>(value1);
+                case DataType.ETypeCode.UInt16:
+                    return Decrement<ushort>(value1);
+                case DataType.ETypeCode.UInt32:
+                    return Decrement<uint>(value1);
+                case DataType.ETypeCode.UInt64:
+                    return Decrement<ulong>(value1);
+                case DataType.ETypeCode.Int16:
+                    return Decrement<short>(value1);
+                case DataType.ETypeCode.Int32:
+                    return Decrement<int>(value1);
+                case DataType.ETypeCode.Int64:
+                    return Decrement<long>(value1);
+                case DataType.ETypeCode.Decimal:
+                    return Decrement<decimal>(value1);
+                case DataType.ETypeCode.Double:
+                    return Decrement<double>(value1);
+                case DataType.ETypeCode.Single:
+                    return Decrement<float>(value1);
+                case DataType.ETypeCode.String:
+                    return Decrement<string>(value1);
+                case DataType.ETypeCode.Text:
+                    return Decrement<string>(value1);
+                case DataType.ETypeCode.Boolean:
+                    return Decrement<bool>(value1);
+                case DataType.ETypeCode.DateTime:
+                    return Decrement<DateTime>(value1);
+                case DataType.ETypeCode.Time:
+                    return Decrement<TimeSpan>(value1);
+                case DataType.ETypeCode.Guid:
+                    return Decrement<Guid>(value1);
+                case DataType.ETypeCode.Unknown:
+                    return Decrement<string>(value1);
+                case DataType.ETypeCode.Json:
+                    return Decrement<JToken>(value1);
+                case DataType.ETypeCode.Xml:
+                    return Decrement<XmlDocument>(value1);
+                case DataType.ETypeCode.Enum:
+                    return Decrement<int>(value1);
+                case DataType.ETypeCode.Char:
+                    return Decrement<char[]>(value1);
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(typeCode), typeCode, null);
+            }
+        }       
+        
         public static int Compare(object inputValue, object compareTo)
         {
             var type = inputValue?.GetType();
@@ -305,7 +1392,6 @@ namespace Dexih.Utils.DataType
 
             throw new ArgumentOutOfRangeException(nameof(type), inputValue, null);
         }
-
 
         public static int Compare(DataType.ETypeCode typeCode, object inputValue, object compareTo)
         {
@@ -381,11 +1467,12 @@ namespace Dexih.Utils.DataType
         public static readonly Lazy<Func<T, T>> Increment = CreateIncrement();
         public static readonly Lazy<Func<T, T>> Decrement = CreateDecrement();
         
-        public static readonly Lazy<Func<T, T, bool>> GreaterThan = CreateGreaterThan();
-        public static readonly Lazy<Func<T, T, bool>> LessThan = CreateLessThan();
-        public static readonly Lazy<Func<T, T, bool>> GreaterThanOrEqual = CreateGreaterThanOrEqual();
-        public static readonly Lazy<Func<T, T, bool>> LessThanOrEqual = CreateLessThanOrEqual();
-        public static readonly Lazy<Func<T, T, bool>> Equal = CreateEqual();
+        public static readonly Lazy<Func<T, T, bool>> GreaterThan = CreateCondition(Expression.Equal, new[] {1});
+        public static readonly Lazy<Func<T, T, bool>> LessThan = CreateCondition(Expression.Equal, new[] {-1});
+        public static readonly Lazy<Func<T, T, bool>> GreaterThanOrEqual = CreateCondition(Expression.Equal, new[] {0,1});
+        public static readonly Lazy<Func<T, T, bool>> LessThanOrEqual = CreateCondition(Expression.Equal, new[] {0,-1});
+        public static readonly Lazy<Func<T, T, bool>> Equal = CreateCondition(Expression.Equal, new[] {0});
+        
         public new static readonly Lazy<Func<T, string>> ToString = CreateToString();
         public static readonly Lazy<Func<object, T>> Parse = CreateParse();
         public static readonly T Zero = default;
@@ -417,6 +1504,7 @@ namespace Dexih.Utils.DataType
             {
                 var p1 = Expression.Parameter(typeof(T), "p1");
                 var p2 = Expression.Parameter(typeof(T), "p2");
+                    
                 var exp = Expression.Lambda<Func<T, T, T>>(body(p1, p2), p1, p2).Compile();
                 return new Lazy<Func<T, T, T>>(() => exp);
             }
@@ -466,26 +1554,6 @@ namespace Dexih.Utils.DataType
         
         private static Lazy<Func<T, T, int>> CreateCompare()
         {
-//            var type = typeof(T);
-//            if (typeof(IComparable).IsAssignableFrom(type))
-//            {
-//                var p1 = Expression.Parameter(typeof(T), "p1");
-//                var p2 = Expression.Parameter(typeof(T), "p2");
-//
-//
-//                var exp = Expression.Lambda<Func<T, T, int>>(
-//                        Expression.Condition(Expression.LessThan(p1, p2), Expression.Constant(-1),
-//                            Expression.Condition(Expression.GreaterThan(p1, p2), Expression.Constant(1),
-//                                Expression.Constant(0))), p1, p2)
-//                    .Compile();
-//                return new Lazy<Func<T, T, int>>(() => exp);
-//            }
-//            else
-//            {
-//                return new Lazy<Func<T, T, int>>(() => throw new InvalidCastException($"The data type {typeof(T)} is not supported for comparisons."));
-//            }
-            
-            
             var type = typeof(T);
             if (typeof(IComparable).IsAssignableFrom(type))
             {
@@ -527,32 +1595,32 @@ namespace Dexih.Utils.DataType
             }
         }
         
-        private static Lazy<Func<T, T, bool>> CreateEqual()
+        private static Lazy<Func<T, T, bool>> CreateCondition(Func<Expression, Expression, BinaryExpression> body, int[] compareResults)
         {
             var type = typeof(T);
             if (IsBoolSupportedType(type))
             {
                 var p1 = Expression.Parameter(typeof(T), "p1");
                 var p2 = Expression.Parameter(typeof(T), "p2");
-                var exp = Expression.Lambda<Func<T, T, bool>>(Expression.Equal(p1, p2), p1, p2).Compile();
+                var exp = Expression.Lambda<Func<T, T, bool>>(body(p1, p2), p1, p2).Compile();
                 return new Lazy<Func<T, T, bool>>(() => exp);
             }
             else if (typeof(IComparable).IsAssignableFrom(type))
             {
-                bool Equals(T a, T b)
+                bool Condition(T a, T b)
                 {
-                    return ((IComparable) a).CompareTo((IComparable) b) == 0;
+                    return compareResults.Contains(((IComparable) a).CompareTo((IComparable) b));
                 }
                 
-                return new Lazy<Func<T, T, bool>>(() => Equals);
+                return new Lazy<Func<T, T, bool>>(() => Condition);
             }
             else if (type == typeof(object))
             {
-                bool Equals(T a, T b)
+                bool Condition(T a, T b)
                 {
                     if (a.GetType() == b.GetType() && a is IComparable comparable)
                     {
-                        return comparable.CompareTo(b) == 0;
+                        return compareResults.Contains(comparable.CompareTo((IComparable) b));
                     }
 
                     // if types don't match, attempt to convert to common type.
@@ -563,121 +1631,20 @@ namespace Dexih.Utils.DataType
                     if (aTypeCode < bTypeCode)
                     {
                         var a1 = Operations.Parse(bType, a);
-                        return ((IComparable) a1).CompareTo(b) == 0;
+                        return compareResults.Contains(((IComparable) a).CompareTo((IComparable) b));
                     }
 
                     var b1 = Operations.Parse(aType, b);
-                    return ((IComparable) b1).CompareTo(b) == 0;
+                    return compareResults.Contains(((IComparable) a).CompareTo((IComparable) b));
                 }
 
-                return new Lazy<Func<T, T, bool>>(() => Equals);
+                return new Lazy<Func<T, T, bool>>(() => Condition);
             }
             else
             {
                 return new Lazy<Func<T, T, bool>>(() => throw new InvalidCastException($"The data type {typeof(T)} is not supported for comparisons."));
             }
         }
-        
-        private static Lazy<Func<T, T, bool>> CreateGreaterThan()
-        {
-            var type = typeof(T);
-            if (IsBoolSupportedType(type))
-            {
-                var p1 = Expression.Parameter(typeof(T), "p1");
-                var p2 = Expression.Parameter(typeof(T), "p2");
-                var exp = Expression.Lambda<Func<T, T, bool>>(Expression.GreaterThan(p1, p2), p1, p2).Compile();
-                return new Lazy<Func<T, T, bool>>(() => exp);
-            }
-            else if (typeof(IComparable).IsAssignableFrom(type) || type == typeof(object))
-            {
-                bool Compare(T a, T b)
-                {
-                    return ((IComparable) a).CompareTo((IComparable) b) == 1;
-                }
-                
-                return new Lazy<Func<T, T, bool>>(() => Compare);
-            }
-            else
-            {
-                return new Lazy<Func<T, T, bool>>(() => throw new InvalidCastException($"The data type {typeof(T)} is not supported for comparisons."));
-            }
-        }
-
-        private static Lazy<Func<T, T, bool>> CreateLessThan()
-        {
-            var type = typeof(T);
-            if (IsBoolSupportedType(type))
-            {
-                var p1 = Expression.Parameter(typeof(T), "p1");
-                var p2 = Expression.Parameter(typeof(T), "p2");
-                var exp = Expression.Lambda<Func<T, T, bool>>(Expression.LessThan(p1, p2), p1, p2).Compile();
-                return new Lazy<Func<T, T, bool>>(() => exp);
-            }
-            else if (typeof(IComparable).IsAssignableFrom(type) || type == typeof(object))
-            {
-                bool Compare(T a, T b)
-                {
-                    return ((IComparable) a).CompareTo((IComparable) b) == -1;
-                }
-                
-                return new Lazy<Func<T, T, bool>>(() => Compare);
-            }
-            else
-            {
-                return new Lazy<Func<T, T, bool>>(() => throw new InvalidCastException($"The data type {typeof(T)} is not supported for comparisons."));
-            }
-        }
-
-        private static Lazy<Func<T, T, bool>> CreateGreaterThanOrEqual()
-        {
-            var type = typeof(T);
-            if (IsBoolSupportedType(type))
-            {
-                var p1 = Expression.Parameter(typeof(T), "p1");
-                var p2 = Expression.Parameter(typeof(T), "p2");
-                var exp = Expression.Lambda<Func<T, T, bool>>(Expression.GreaterThanOrEqual(p1, p2), p1, p2).Compile();
-                return new Lazy<Func<T, T, bool>>(() => exp);
-            }
-            else if (typeof(IComparable).IsAssignableFrom(type) || type == typeof(object))
-            {
-                bool Compare(T a, T b)
-                {
-                    return ((IComparable) a).CompareTo((IComparable) b) >= 0;
-                }
-                
-                return new Lazy<Func<T, T, bool>>(() => Compare);
-            }
-            else
-            {
-                return new Lazy<Func<T, T, bool>>(() => throw new InvalidCastException($"The data type {typeof(T)} is not supported for comparisons."));
-            }
-        }
-
-        private static Lazy<Func<T, T, bool>> CreateLessThanOrEqual()
-        {
-            var type = typeof(T);
-            if (IsBoolSupportedType(type))
-            {
-                var p1 = Expression.Parameter(typeof(T), "p1");
-                var p2 = Expression.Parameter(typeof(T), "p2");
-                var exp = Expression.Lambda<Func<T, T, bool>>(Expression.LessThanOrEqual(p1, p2), p1, p2).Compile();
-                return new Lazy<Func<T, T, bool>>(() => exp);
-            }
-            else if (typeof(IComparable).IsAssignableFrom(type) || type == typeof(object))
-            {
-                bool Compare(T a, T b)
-                {
-                    return ((IComparable) a).CompareTo((IComparable) b) <= 0;
-                }
-                
-                return new Lazy<Func<T, T, bool>>(() => Compare);
-            }
-            else
-            {
-                return new Lazy<Func<T, T, bool>>(() => throw new InvalidCastException($"The data type {typeof(T)} is not supported for comparisons."));
-            }
-        }
-
         
         private static Lazy<Func<T, T>> CreateNegate()
         {
@@ -760,7 +1727,6 @@ namespace Dexih.Utils.DataType
             }
             
             return new Lazy<Func<T, string>>(() => exp);
-
         }
 
         private static Func<object, T> ConvertToBoolean()
@@ -918,7 +1884,6 @@ namespace Dexih.Utils.DataType
             };
         }
 
-
         private static Lazy<Func<object, T>> CreateParse()
         {
             Func<object, T> exp;
@@ -1031,663 +1996,6 @@ namespace Dexih.Utils.DataType
                 bytes[i / 2] = Convert.ToByte(hex.Substring(i, 2), 16);
             return bytes;
         }
-
-//        public static IOperations<T> Create()
-//        {
-//            var dataType = typeof(T); 
-//            switch (Type.GetTypeCode(dataType))
-//            {
-//                case TypeCode.Byte:
-//                    return (IOperations<T>) new ByteOperations();
-//                case TypeCode.Decimal:
-//                    return (IOperations<T>) new DecimalOperations();
-//                case TypeCode.Double:
-//                    return (IOperations<T>) new DoubleOperations();
-//                case TypeCode.Int16:
-//                    return (IOperations<T>) new Int16Operations();
-//                case TypeCode.Int32:
-//                    return (IOperations<T>) new Int32Operations();
-//                case TypeCode.Int64:
-//                    return (IOperations<T>) new Int64Operations();
-//                case TypeCode.SByte:
-//                    return (IOperations<T>) new SByteOperations();
-//                case TypeCode.Single:
-//                    return (IOperations<T>) new SingleOperations();
-//                case TypeCode.UInt16:
-//                    return (IOperations<T>) new UInt16Operations();
-//                case TypeCode.UInt32:
-//                    return (IOperations<T>) new UInt32Operations();
-//                case TypeCode.UInt64:
-//                    return (IOperations<T>) new UInt64Operations();
-//                case TypeCode.Boolean:
-//                    return (IOperations<T>) new BooleanOperations();
-//                case TypeCode.DateTime:
-//                    return (IOperations<T>) new DateTimeOperations();
-//                case TypeCode.DBNull:
-//                    break;
-//                case TypeCode.Object:
-//                    if (dataType == typeof(TimeSpan) || dataType == typeof(TimeSpan?)) return (IOperations<T>) new TimeOperations();
-//                    if (dataType == typeof(Guid) || dataType == typeof(Guid?)) return (IOperations<T>) new GuidOperations();
-//                    if (dataType == typeof(byte[])) return (IOperations<T>) new ByteArrayOperations();
-//                    if (dataType == typeof(char[])) return (IOperations<T>) new CharArrayOperations();
-//                    if (dataType == typeof(JToken)) return (IOperations<T>) new JsonOperations();
-//                    if (dataType == typeof(XmlDocument)) return (IOperations<T>) new XmlOperations();
-//                    break;
-//                case TypeCode.String:
-//                    return (IOperations<T>) new StringOperations();
-//                default:
-//                    throw new ArgumentOutOfRangeException();
-//            }
-//            
-//            throw new DataTypeException($"The datatype {typeof(T)} is not a valid type for arithmetic.");
-//        }
-//
-//        class BooleanOperations : IOperations<bool>
-//        {
-//
-//            public bool Add(bool a, bool b) => throw new OverflowException("Can not add a boolean.");
-//            public bool Subtract(bool a, bool b)  => throw new OverflowException("Can not subtract a boolean.");
-//            public bool Multiply(bool a, bool b)  => throw new OverflowException("Can not multiply a boolean.");
-//            public bool Divide(bool a, bool b)  => throw new OverflowException("Can not divide a boolean.");
-//            public int Sign(bool a)  => throw new OverflowException("Can not get the sign of a boolean.");
-//            public bool Negate(bool a)  => throw new OverflowException("Can not negate a boolean.");
-//            public bool Zero => false;
-//            public bool One => true;
-//            public bool Two => throw new OverflowException("");
-//            public bool Equal(bool a, bool b) => a == b;
-//            public bool GreaterThan(bool a, bool b) => a.CompareTo(b) == 1;
-//            public bool LessThan(bool a, bool b) => a.CompareTo(b) == -1;
-//            public bool GreaterThanEqual(bool a, bool b) => a.CompareTo(b) != -1;
-//            public bool LessThanEqual(bool a, bool b) => a.CompareTo(b) != 1;
-//            public string ToString(bool a) => a.ToString();
-//            public bool TryParse(object value) 
-//            {
-//                switch (value)
-//                {
-//                    case string stringValue:
-//                        var parsed = bool.TryParse(stringValue, out var parsedResult);
-//                        if (parsed)
-//                        {
-//                            return parsedResult;
-//                        }
-//
-//                        parsed = int.TryParse(stringValue, out var numberResult);
-//                        if (parsed)
-//                        {
-//                            return Convert.ToBoolean(numberResult);
-//                        }
-//                        else
-//                        {
-//                            throw new FormatException("String was not recognized as a valid boolean");
-//                        }
-//
-//                    default:
-//                        return Convert.ToBoolean(value);
-//                }            
-//            }
-//            DataType.ETypeCode IOperations<bool>.TypeCode => DataType.ETypeCode.Boolean;
-//            public Func<bool, bool, bool> AddTest => ((a, b) => throw new OverflowException("Can not add a boolean."));
-//        }
-//        
-//        class ByteOperations : IOperations<byte>
-//        {
-//            public byte Add(byte a, byte b) { return unchecked((byte)(a + b)); }
-//            public byte Subtract(byte a, byte b) { return unchecked((byte)(a - b)); }
-//            public byte Multiply(byte a, byte b) { return unchecked((byte)(a * b)); }
-//            public byte Divide(byte a, byte b) { return unchecked((byte)(a / b)); }
-//            public int Sign(byte a) { return 1; }
-//            public byte Negate(byte a) { throw new OverflowException("Can not negate an unsigned number."); }
-//            public byte Zero => 0;
-//            public byte One => 1;
-//            public byte Two => 2;
-//            public bool Equal(byte a, byte b) => a == b;
-//            public bool GreaterThan(byte a, byte b) => a > b;
-//            public bool LessThan(byte a, byte b) => a < b;
-//            public bool GreaterThanEqual(byte a, byte b) => a >= b;
-//            public bool LessThanEqual(byte a, byte b) => a <= b;
-//            public string ToString(byte a) => a.ToString();
-//            public byte TryParse(object value) => Convert.ToByte(value);
-//            DataType.ETypeCode IOperations<byte>.TypeCode => DataType.ETypeCode.Byte;
-//            public Func<byte, byte, byte> AddTest => ((a, b) => throw new OverflowException("Can not add a boolean."));
-//
-//        }
-//
-//        class DoubleOperations : IOperations<double>
-//        {
-//            public double Add(double a, double b) { return a + b; }
-//            public double Subtract(double a, double b) { return a - b; }
-//            public double Multiply(double a, double b) { return a * b; }
-//            public double Divide(double a, double b) { return a / b; }
-//            public int Sign(double a) { return Math.Sign(a); }
-//            public double Negate(double a) { return a * -1; }       
-//            public double Zero => 0;
-//            public double One => 1;
-//            public double Two => 2;
-//            public bool Equal(double a, double b) => a == b;
-//            public bool GreaterThan(double a, double b) => a > b;
-//            public bool LessThan(double a, double b) => a < b;
-//            public bool GreaterThanEqual(double a, double b) => a >= b;
-//            public bool LessThanEqual(double a, double b) => a <= b;
-//            public string ToString(double a) => a.ToString();
-//            public double TryParse(object value) => Convert.ToDouble(value);
-//            DataType.ETypeCode IOperations<double>.TypeCode => DataType.ETypeCode.Double;
-//            public Func<double, double, double> AddTest => ((a, b) => throw new OverflowException("Can not add a boolean."));
-//        }
-//        
-//        class SingleOperations : IOperations<float>
-//        {
-//            public float Add(float a, float b) { return a + b; }
-//            public float Subtract(float a, float b) { return a - b; }
-//            public float Multiply(float a, float b) { return a * b; }
-//            public float Divide(float a, float b) { return a / b; }
-//            public int Sign(float a) { return Math.Sign(a); }
-//            public float Negate(float a) { return a * -1; }    
-//            public float Zero => 0;
-//            public float One => 1;
-//            public float Two => 2;
-//            public bool Equal(float a, float b) => a == b;
-//            public bool GreaterThan(float a, float b) => a > b;
-//            public bool LessThan(float a, float b) => a < b;
-//            public bool GreaterThanEqual(float a, float b) => a >= b;
-//            public bool LessThanEqual(float a, float b) => a <= b;
-//            public string ToString(float a) => a.ToString();
-//            public float TryParse(object value) => Convert.ToSingle(value);
-//            DataType.ETypeCode IOperations<float>.TypeCode => DataType.ETypeCode.Single;
-//            public Func<float, float, float> AddTest => ((a, b) => throw new OverflowException("Can not add a boolean."));
-//        }
-//        
-//        class DecimalOperations : IOperations<decimal>
-//        {
-//            public decimal Add(decimal a, decimal b) { return a + b; }
-//            public decimal Subtract(decimal a, decimal b) { return a - b; }
-//            public decimal Multiply(decimal a, decimal b) { return a * b; }
-//            public decimal Divide(decimal a, decimal b) { return a / b; }
-//            public int Sign(decimal a) { return Math.Sign(a); }
-//            public decimal Negate(decimal a) { return a * -1; }       
-//            public decimal Zero => 0;
-//            public decimal One => 1;
-//            public decimal Two => 2;
-//            public bool Equal(decimal a, decimal b) => a == b;
-//            public bool GreaterThan(decimal a, decimal b) => a > b;
-//            public bool LessThan(decimal a, decimal b) => a < b;
-//            public bool GreaterThanEqual(decimal a, decimal b) => a >= b;
-//            public bool LessThanEqual(decimal a, decimal b) => a <= b;
-//            public string ToString(decimal a) => a.ToString();
-//            public decimal TryParse(object value) => Convert.ToDecimal(value);
-//            DataType.ETypeCode IOperations<decimal>.TypeCode => DataType.ETypeCode.Decimal;
-//            public Func<decimal, decimal, decimal> AddTest => ((a, b) => throw new OverflowException("Can not add a boolean."));
-//        }
-//        
-//        class Int16Operations : IOperations<short>
-//        {
-//            public short Add(short a, short b) { return unchecked((short)(a + b)); }
-//            public short Subtract(short a, short b) { return unchecked((short)(a - b)); }
-//            public short Multiply(short a, short b) { return unchecked((short)(a * b)); }
-//            public short Divide(short a, short b) { return unchecked((short)(a / b)); }
-//            public int Sign(short a) { return Math.Sign(a); }
-//            public short Negate(short a) { return unchecked((short)(a * -1)); }       
-//            public short Zero => 0;
-//            public short One => 1;
-//            public short Two => 2;
-//            public bool Equal(short a, short b) => a == b;
-//            public bool GreaterThan(short a, short b) => a > b;
-//            public bool LessThan(short a, short b) => a < b;
-//            public bool GreaterThanEqual(short a, short b) => a >= b;
-//            public bool LessThanEqual(short a, short b) => a <= b;
-//            public string ToString(short a) => a.ToString();
-//            public short TryParse(object value) => Convert.ToInt16(value);
-//            DataType.ETypeCode IOperations<short>.TypeCode => DataType.ETypeCode.Int16;
-//            public Func<short, short, short> AddTest => ((a, b) => throw new OverflowException("Can not add a boolean."));
-//        }
-//        
-//        class Int32Operations : IOperations<int>
-//        {
-//            public int Add(int a, int b) { return a + b; }
-//            public int Subtract(int a, int b) { return a - b; }
-//            public int Multiply(int a, int b) { return a * b; }
-//            public int Divide(int a, int b) { return a / b; }
-//            public int Sign(int a) { return Math.Sign(a); }
-//            public int Negate(int a) { return a * -1; }       
-//            public int Zero => 0;
-//            public int One => 1;
-//            public int Two => 2;
-//            public bool Equal(int a, int b) => a == b;
-//            public bool GreaterThan(int a, int b) => a > b;
-//            public bool LessThan(int a, int b) => a < b;
-//            public bool GreaterThanEqual(int a, int b) => a >= b;
-//            public bool LessThanEqual(int a, int b) => a <= b;
-//            public string ToString(int a) => a.ToString();
-//            public int TryParse(object value) => Convert.ToInt32(value);
-//            DataType.ETypeCode IOperations<int>.TypeCode => DataType.ETypeCode.Int32;
-//            public Func<int, int, int> AddTest => (a,b) => a+b;
-//        }
-//        
-//        class Int64Operations : IOperations<long>
-//        {
-//            public long Add(long a, long b) { return a + b; }
-//            public long Subtract(long a, long b) { return a - b; }
-//            public long Multiply(long a, long b) { return a * b; }
-//            public long Divide(long a, long b) { return a / b; }
-//            public int Sign(long a) { return Math.Sign(a); }
-//            public long Negate(long a) { return a * -1; }       
-//            public long Zero => 0;
-//            public long One => 1;
-//            public long Two => 2;
-//            public bool Equal(long a, long b) => a == b;
-//            public bool GreaterThan(long a, long b) => a > b;
-//            public bool LessThan(long a, long b) => a < b;
-//            public bool GreaterThanEqual(long a, long b) => a >= b;
-//            public bool LessThanEqual(long a, long b) => a <= b;
-//            public string ToString(long a) => a.ToString();
-//            public long TryParse(object value) => Convert.ToInt64(value);
-//            DataType.ETypeCode IOperations<long>.TypeCode => DataType.ETypeCode.Int64;
-//            public Func<long, long, long> AddTest => ((a, b) => throw new OverflowException("Can not add a boolean."));
-//        }
-//        
-//        class UInt16Operations : IOperations<ushort>
-//        {
-//            public ushort Add(ushort a, ushort b) { return unchecked((ushort)(a + b)); }
-//            public ushort Subtract(ushort a, ushort b) { return unchecked((ushort)(a - b)); }
-//            public ushort Multiply(ushort a, ushort b) { return unchecked((ushort)(a * b)); }
-//            public ushort Divide(ushort a, ushort b) { return unchecked((ushort)(a / b)); }
-//            public int Sign(ushort a) { return 1; }
-//            public ushort Negate(ushort a) { throw new OverflowException("Can not negate an unsigned number."); }       
-//            public ushort Zero => 0;
-//            public ushort One => 1;
-//            public ushort Two => 2;
-//            public bool Equal(ushort a, ushort b) => a == b;
-//            public bool GreaterThan(ushort a, ushort b) => a > b;
-//            public bool LessThan(ushort a, ushort b) => a < b;
-//            public bool GreaterThanEqual(ushort a, ushort b) => a >= b;
-//            public bool LessThanEqual(ushort a, ushort b) => a <= b;
-//            public string ToString(ushort a) => a.ToString();
-//            public ushort TryParse(object value) => Convert.ToUInt16(value);
-//            DataType.ETypeCode IOperations<ushort>.TypeCode => DataType.ETypeCode.UInt16;
-//            public Func<ushort, ushort, ushort> AddTest => ((a, b) => throw new OverflowException("Can not add a boolean."));
-//        }
-//        
-//        class UInt32Operations : IOperations<uint>
-//        {
-//            public uint Add(uint a, uint b) { return a + b; }
-//            public uint Subtract(uint a, uint b) { return a - b; }
-//            public uint Multiply(uint a, uint b) { return a * b; }
-//            public uint Divide(uint a, uint b) { return a / b; }
-//            public int Sign(uint a) { return 1; }
-//            public uint Negate(uint a) { throw new OverflowException("Can not negate an unsigned number."); }       
-//            public uint Zero => 0;
-//            public uint One => 1;
-//            public uint Two => 2;
-//            public bool Equal(uint a, uint b) => a == b;
-//            public bool GreaterThan(uint a, uint b) => a > b;
-//            public bool LessThan(uint a, uint b) => a < b;
-//            public bool GreaterThanEqual(uint a, uint b) => a >= b;
-//            public bool LessThanEqual(uint a, uint b) => a <= b;
-//            public string ToString(uint a) => a.ToString();
-//            public uint TryParse(object value) => Convert.ToUInt32(value);
-//            DataType.ETypeCode IOperations<uint>.TypeCode => DataType.ETypeCode.UInt32;
-//            public Func<uint, uint, uint> AddTest => ((a, b) => throw new OverflowException("Can not add a boolean."));
-//        }
-//        
-//        class UInt64Operations : IOperations<ulong>
-//        {
-//            public ulong Add(ulong a, ulong b) { return a + b; }
-//            public ulong Subtract(ulong a, ulong b) { return a - b; }
-//            public ulong Multiply(ulong a, ulong b) { return a * b; }
-//            public ulong Divide(ulong a, ulong b) { return a / b; }
-//            public int Sign(ulong a) { return 1; }
-//            public ulong Negate(ulong a) { throw new OverflowException("Can not negate an unsigned number."); }       
-//            public ulong Zero => 0;
-//            public ulong One => 1;
-//            public ulong Two => 2;
-//            public bool Equal(ulong a, ulong b) => a == b;
-//            public bool GreaterThan(ulong a, ulong b) => a > b;
-//            public bool LessThan(ulong a, ulong b) => a < b;
-//            public bool GreaterThanEqual(ulong a, ulong b) => a >= b;
-//            public bool LessThanEqual(ulong a, ulong b) => a <= b;
-//            public string ToString(ulong a) => a.ToString();
-//            public ulong TryParse(object value) => Convert.ToUInt64(value);
-//            DataType.ETypeCode IOperations<ulong>.TypeCode => DataType.ETypeCode.UInt64;
-//            public Func<ulong, ulong, ulong> AddTest => ((a, b) => throw new OverflowException("Can not add a boolean."));
-//        }
-//        
-//        class SByteOperations : IOperations<sbyte>
-//        {
-//            public sbyte Add(sbyte a, sbyte b) { return unchecked((sbyte)(a + b)); }
-//            public sbyte Subtract(sbyte a, sbyte b) { return unchecked((sbyte)(a - b)); }
-//            public sbyte Multiply(sbyte a, sbyte b) { return unchecked((sbyte)(a * b)); }
-//            public sbyte Divide(sbyte a, sbyte b) { return unchecked((sbyte)(a / b)); }
-//            public int Sign(sbyte a) { return Math.Sign(a); }
-//            public sbyte Negate(sbyte a) { return unchecked((sbyte)(a * -1)); }       
-//            public sbyte Zero => 0;
-//            public sbyte One => 1;
-//            public sbyte Two => 2;
-//            public bool Equal(sbyte a, sbyte b) => a == b;
-//            public bool GreaterThan(sbyte a, sbyte b) => a > b;
-//            public bool LessThan(sbyte a, sbyte b) => a < b;
-//            public bool GreaterThanEqual(sbyte a, sbyte b) => a >= b;
-//            public bool LessThanEqual(sbyte a, sbyte b) => a <= b;
-//            public string ToString(sbyte a) => a.ToString();
-//            public sbyte TryParse(object value) => Convert.ToSByte(value);
-//            DataType.ETypeCode IOperations<sbyte>.TypeCode => DataType.ETypeCode.SByte;
-//            public Func<sbyte, sbyte, sbyte> AddTest => ((a, b) => throw new OverflowException("Can not add a boolean."));
-//        }
-//        
-//        class DateTimeOperations : IOperations<DateTime>
-//        {
-//            public DateTime Add(DateTime a, DateTime b) => throw new OverflowException("Can not add a dates.");
-//            public DateTime Subtract(DateTime a, DateTime b)  => throw new OverflowException("Can not subtract a dates.");
-//            public DateTime Multiply(DateTime a, DateTime b)  => throw new OverflowException("Can not multiply a dates.");
-//            public DateTime Divide(DateTime a, DateTime b)  => throw new OverflowException("Can not divide a dates.");
-//            public int Sign(DateTime a)  => throw new OverflowException("Can not get the sign of a dates.");
-//            public DateTime Negate(DateTime a)  => throw new OverflowException("Can not negate a dates.");    
-//            public DateTime Zero => throw new OverflowException("");
-//            public DateTime One => throw new OverflowException("");
-//            public DateTime Two => throw new OverflowException("");
-//            public bool Equal(DateTime a, DateTime b) => a == b;
-//            public bool GreaterThan(DateTime a, DateTime b) => a > b;
-//            public bool LessThan(DateTime a, DateTime b) => a < b;
-//            public bool GreaterThanEqual(DateTime a, DateTime b) => a >= b;
-//            public bool LessThanEqual(DateTime a, DateTime b) => a <= b;
-//            public string ToString(DateTime a) => a.ToString();
-//            public DateTime TryParse(object value) => Convert.ToDateTime(value);
-//            DataType.ETypeCode IOperations<DateTime>.TypeCode => DataType.ETypeCode.DateTime;
-//            public Func<DateTime, DateTime, DateTime> AddTest => ((a, b) => throw new OverflowException("Can not add a boolean."));
-//        }
-//        
-//        class TimeOperations : IOperations<TimeSpan>
-//        {
-//            public TimeSpan Add(TimeSpan a, TimeSpan b) => throw new OverflowException("Can not add a dates.");
-//            public TimeSpan Subtract(TimeSpan a, TimeSpan b)  => throw new OverflowException("Can not subtract a dates.");
-//            public TimeSpan Multiply(TimeSpan a, TimeSpan b)  => throw new OverflowException("Can not multiply a dates.");
-//            public TimeSpan Divide(TimeSpan a, TimeSpan b)  => throw new OverflowException("Can not divide a dates.");
-//            public int Sign(TimeSpan a)  => throw new OverflowException("Can not get the sign of a dates.");
-//            public TimeSpan Negate(TimeSpan a)  => throw new OverflowException("Can not negate a dates.");    
-//            public TimeSpan Zero => throw new OverflowException("");
-//            public TimeSpan One => throw new OverflowException("");
-//            public TimeSpan Two => throw new OverflowException("");
-//            public bool Equal(TimeSpan a, TimeSpan b) => a == b;
-//            public bool GreaterThan(TimeSpan a, TimeSpan b) => a > b;
-//            public bool LessThan(TimeSpan a, TimeSpan b) => a < b;
-//            public bool GreaterThanEqual(TimeSpan a, TimeSpan b) => a >= b;
-//            public bool LessThanEqual(TimeSpan a, TimeSpan b) => a <= b;
-//            public string ToString(TimeSpan a) => a.ToString();
-//            public TimeSpan TryParse(object value)
-//            {
-//                if (value is TimeSpan timeSpan)
-//                {
-//                    return timeSpan;
-//                }
-//                return TimeSpan.Parse(value.ToString());
-//            } 
-//            DataType.ETypeCode IOperations<TimeSpan>.TypeCode => DataType.ETypeCode.Time;
-//            public Func<TimeSpan, TimeSpan, TimeSpan> AddTest => ((a, b) => throw new OverflowException("Can not add a boolean."));
-//        }
-//        
-//        class GuidOperations : IOperations<Guid>
-//        {
-//            public Guid Add(Guid a, Guid b) => throw new OverflowException("Can not add a dates.");
-//            public Guid Subtract(Guid a, Guid b)  => throw new OverflowException("Can not subtract a dates.");
-//            public Guid Multiply(Guid a, Guid b)  => throw new OverflowException("Can not multiply a dates.");
-//            public Guid Divide(Guid a, Guid b)  => throw new OverflowException("Can not divide a dates.");
-//            public int Sign(Guid a)  => throw new OverflowException("Can not get the sign of a dates.");
-//            public Guid Negate(Guid a)  => throw new OverflowException("Can not negate a dates.");    
-//            public Guid Zero  => throw new OverflowException("");
-//            public Guid One => throw new OverflowException("");
-//            public Guid Two => throw new OverflowException("");
-//            public bool Equal(Guid a, Guid b) => a == b;
-//            public bool GreaterThan(Guid a, Guid b) => a.CompareTo(b) == 1;
-//            public bool LessThan(Guid a, Guid b) => a.CompareTo(b) == -1;
-//            public bool GreaterThanEqual(Guid a, Guid b) => a.CompareTo(b) >= 0;
-//            public bool LessThanEqual(Guid a, Guid b) => a.CompareTo(b) <= 1;
-//            public string ToString(Guid a) => a.ToString();
-//            public Guid TryParse(object value) => Guid.Parse(value.ToString());
-//            DataType.ETypeCode IOperations<Guid>.TypeCode => DataType.ETypeCode.Guid;
-//            public Func<Guid, Guid, Guid> AddTest => ((a, b) => throw new OverflowException("Can not add a boolean."));
-//        }
-//        
-//        class ByteArrayOperations : IOperations<byte[]>
-//        {
-//            public byte[] Add(byte[] a, byte[] b) => throw new OverflowException("Can not add a dates.");
-//            public byte[] Subtract(byte[] a, byte[] b)  => throw new OverflowException("Can not subtract a dates.");
-//            public byte[] Multiply(byte[] a, byte[] b)  => throw new OverflowException("Can not multiply a dates.");
-//            public byte[] Divide(byte[] a, byte[] b)  => throw new OverflowException("Can not divide a dates.");
-//            public int Sign(byte[] a)  => throw new OverflowException("Can not get the sign of a dates.");
-//            public byte[] Negate(byte[] a)  => throw new OverflowException("Can not negate a dates.");    
-//            public byte[] Zero => throw new OverflowException("");
-//            public byte[] One => throw new OverflowException("");
-//            public byte[] Two => throw new OverflowException("");
-//            public bool Equal(byte[] a, byte[] b) => a.SequenceEqual(b);
-//            public bool GreaterThan(byte[] a, byte[] b)
-//            {
-//                for (var i = 0; i < a.Length; i++)
-//                {
-//                    if (i > b.Length) return false;
-//                    if (a[i] > b[i]) return true;
-//                    if (a[i] < b[i]) return false;
-//                }
-//
-//                return a.Length < b.Length;
-//            }
-//            public bool LessThan(byte[] a, byte[] b)
-//            {
-//                for (var i = 0; i < a.Length; i++)
-//                {
-//                    if (i > b.Length) return true;
-//                    if (a[i] > b[i]) return false;
-//                    if (a[i] < b[i]) return true;
-//                }
-//
-//                return a.Length > b.Length;
-//            }
-//
-//            public bool GreaterThanEqual(byte[] a, byte[] b)
-//            {
-//                for (var i = 0; i < a.Length; i++)
-//                {
-//                    if (i > b.Length) return false;
-//                    if (a[i] > b[i]) return true;
-//                    if (a[i] < b[i]) return false;
-//                }
-//
-//                return a.Length <= b.Length;
-//            }
-//
-//            public bool LessThanEqual(byte[] a, byte[] b)
-//            {
-//                for (var i = 0; i < a.Length; i++)
-//                {
-//                    if (i > b.Length) return true;
-//                    if (a[i] > b[i]) return true;
-//                    if (a[i] < b[i]) return false;
-//                }
-//
-//                return a.Length >= b.Length;
-//            }
-//            public string ToString(byte[] a) => a.ToString();
-//            public byte[] TryParse(object value)
-//            {
-//                if (value is byte[] bytes) return bytes;
-//                if (value is string valueString) return DataType.HexToByteArray(valueString);
-//                throw new DataTypeParseException($"Binary type conversion not supported on type {value.GetType()} .");
-//            }
-//            DataType.ETypeCode IOperations<byte[]>.TypeCode => DataType.ETypeCode.Binary;
-//            public Func<byte[], byte[], byte[]> AddTest => ((a, b) => throw new OverflowException("Can not add a boolean."));
-//        }
-//        
-//        class CharArrayOperations : IOperations<char[]>
-//        {
-//            public char[] Add(char[] a, char[] b) => throw new OverflowException("Can not add a chars.");
-//            public char[] Subtract(char[] a, char[] b)  => throw new OverflowException("Can not subtract chars.");
-//            public char[] Multiply(char[] a, char[] b)  => throw new OverflowException("Can not multiply chars.");
-//            public char[] Divide(char[] a, char[] b)  => throw new OverflowException("Can not divide chars.");
-//            public int Sign(char[] a)  => throw new OverflowException("Can not get the sign of chars.");
-//            public char[] Negate(char[] a)  => throw new OverflowException("Can not negate a dates.");    
-//            public char[] Zero => "0".ToCharArray();
-//            public char[] One =>  "1".ToCharArray();
-//            public char[] Two => "2".ToCharArray();
-//            public bool Equal(char[] a, char[] b) => a.SequenceEqual(b);
-//
-//            public bool GreaterThan(char[] a, char[] b)
-//            {
-//                for (var i = 0; i < a.Length; i++)
-//                {
-//                    if (i >= b.Length) return false;
-//                    if (a[i] > b[i]) return true;
-//                    if (a[i] < b[i]) return false;
-//                }
-//
-//                return a.Length < b.Length;
-//            }
-//            public bool LessThan(char[] a, char[] b)
-//            {
-//                for (var i = 0; i < a.Length; i++)
-//                {
-//                    if (i >= b.Length) return true;
-//                    if (a[i] > b[i]) return false;
-//                    if (a[i] < b[i]) return true;
-//                }
-//
-//                return a.Length > b.Length;
-//            }
-//
-//            public bool GreaterThanEqual(char[] a, char[] b)
-//            {
-//                for (var i = 0; i < a.Length; i++)
-//                {
-//                    if (i >= b.Length) return false;
-//                    if (a[i] > b[i]) return true;
-//                    if (a[i] < b[i]) return false;
-//                }
-//
-//                return a.Length <= b.Length;
-//            }
-//
-//            public bool LessThanEqual(char[] a, char[] b)
-//            {
-//                for (var i = 0; i < a.Length; i++)
-//                {
-//                    if (i >= b.Length) return true;
-//                    if (a[i] > b[i]) return true;
-//                    if (a[i] < b[i]) return false;
-//                }
-//
-//                return a.Length >= b.Length;
-//            }
-//            public string ToString(char[] a) => a.ToString();
-//
-//            public char[] TryParse(object value)
-//            {
-//                if (value is char[] chars) return chars;
-//                return value.ToString().ToCharArray();
-//            }
-//            DataType.ETypeCode IOperations<char[]>.TypeCode => DataType.ETypeCode.Char;
-//           
-//            public Func<char[], char[], char[]> AddTest => ((a, b) => throw new OverflowException("Can not add a boolean."));
-//        }
-//        
-//        class JsonOperations : IOperations<JToken>
-//        {
-//            public JToken Add(JToken a, JToken b) => throw new OverflowException("Can not add a dates.");
-//            public JToken Subtract(JToken a, JToken b)  => throw new OverflowException("Can not subtract a dates.");
-//            public JToken Multiply(JToken a, JToken b)  => throw new OverflowException("Can not multiply a dates.");
-//            public JToken Divide(JToken a, JToken b)  => throw new OverflowException("Can not divide a dates.");
-//            public int Sign(JToken a)  => throw new OverflowException("Can not get the sign of a dates.");
-//            public JToken Negate(JToken a)  => throw new OverflowException("Can not negate a dates.");    
-//            public JToken Zero  => throw new OverflowException("");
-//            public JToken One  => throw new OverflowException("");
-//            public JToken Two  => throw new OverflowException("");
-//            public bool Equal(JToken a, JToken b) => throw new OverflowException("Can not compare json.");
-//            public bool GreaterThan(JToken a, JToken b) => throw new OverflowException("Can not compare json.");
-//            public bool LessThan(JToken a, JToken b) => throw new OverflowException("Can not compare json.");
-//            public bool GreaterThanEqual(JToken a, JToken b) => throw new OverflowException("Can not compare json.");
-//            public bool LessThanEqual(JToken a, JToken b) => throw new OverflowException("Can not compare json.");
-//            public string ToString(JToken a) => a.ToString();
-//            public JToken TryParse(object value)
-//            {
-//                switch (value)
-//                {
-//                    case JToken jToken:
-//                        return jToken;
-//                    case string stringValue:
-//                        return JToken.Parse(stringValue);
-//                    default:
-//                        throw new DataTypeParseException($"The value is not a valid json string.");
-//                }
-//            }
-//            DataType.ETypeCode IOperations<JToken>.TypeCode => DataType.ETypeCode.Json;
-//            public Func<JToken, JToken, JToken> AddTest => ((a, b) => throw new OverflowException("Can not add a boolean."));
-//        }
-//        
-//        class XmlOperations : IOperations<XmlDocument>
-//        {
-//            public XmlDocument Add(XmlDocument a, XmlDocument b) => throw new OverflowException("Can not add a dates.");
-//            public XmlDocument Subtract(XmlDocument a, XmlDocument b)  => throw new OverflowException("Can not subtract a dates.");
-//            public XmlDocument Multiply(XmlDocument a, XmlDocument b)  => throw new OverflowException("Can not multiply a dates.");
-//            public XmlDocument Divide(XmlDocument a, XmlDocument b)  => throw new OverflowException("Can not divide a dates.");
-//            public int Sign(XmlDocument a)  => throw new OverflowException("Can not get the sign of a dates.");
-//            public XmlDocument Negate(XmlDocument a)  => throw new OverflowException("Can not negate a dates.");    
-//            public XmlDocument Zero => throw new OverflowException("");
-//            public XmlDocument One => throw new OverflowException("");
-//            public XmlDocument Two => throw new OverflowException("");
-//            public bool Equal(XmlDocument a, XmlDocument b) => throw new OverflowException("Can not compare xml.");
-//            public bool GreaterThan(XmlDocument a, XmlDocument b) => throw new OverflowException("Can not compare xml.");
-//            public bool LessThan(XmlDocument a, XmlDocument b) => throw new OverflowException("Can not compare xml.");
-//            public bool GreaterThanEqual(XmlDocument a, XmlDocument b) => throw new OverflowException("Can not compare xml.");
-//            public bool LessThanEqual(XmlDocument a, XmlDocument b) => throw new OverflowException("Can not compare xml.");
-//            public string ToString(XmlDocument a) => a.ToString();
-//            public XmlDocument TryParse(object value)
-//            {
-//                switch (value)
-//                {
-//                    case XmlDocument xmlDocument:
-//                        return xmlDocument;
-//                    case string stringValue:
-//                        var xmlDocument1 = new XmlDocument();
-//                        xmlDocument1.LoadXml(stringValue);
-//                        return xmlDocument1;
-//                    default:
-//                        throw new DataTypeParseException($"The value is not a valid xml string.");
-//                }
-//            } 
-//            DataType.ETypeCode IOperations<XmlDocument>.TypeCode => DataType.ETypeCode.Xml;
-//            public Func<XmlDocument, XmlDocument, XmlDocument> AddTest => ((a, b) => throw new OverflowException("Can not add a boolean."));
-//        }
-//        
-//        class StringOperations : IOperations<String>
-//        {
-//            public String Add(String a, String b) => throw new OverflowException("Can not add a dates.");
-//            public String Subtract(String a, String b)  => throw new OverflowException("Can not subtract a dates.");
-//            public String Multiply(String a, String b)  => throw new OverflowException("Can not multiply a dates.");
-//            public String Divide(String a, String b)  => throw new OverflowException("Can not divide a dates.");
-//            public int Sign(String a)  => throw new OverflowException("Can not get the sign of a dates.");
-//            public String Negate(String a)  => throw new OverflowException("Can not negate a dates.");    
-//            public String Zero => "0";
-//            public String One => "1";
-//            public String Two => "2";
-//            public bool Equal(String a, String b) => a == b;
-//            public bool GreaterThan(String a, String b) => String.Compare(a,b) == 1;
-//            public bool LessThan(String a, String b) => String.Compare(a,b) == -1;
-//            public bool GreaterThanEqual(String a, String b) => String.Compare(a,b) >= 0;
-//            public bool LessThanEqual(String a, String b) => String.Compare(a,b) <= 0;
-//            public string ToString(String a) => a;
-//            public String TryParse(object value)
-//            {
-//                switch (value)
-//                {
-//                    case string stringValue:
-//                        return stringValue;
-//                    case byte[] byteValue:
-//                        return DataType.ByteArrayToHex(byteValue);
-//                    case char[] charValue:
-//                        return new string(charValue);
-//                }
-//
-//                return value.ToString();
-//            }
-//            DataType.ETypeCode IOperations<String>.TypeCode => DataType.ETypeCode.String;
-//            public Func<String, String, String> AddTest => ((a, b) => throw new OverflowException("Can not add a boolean."));
-//        }
-        
         
     }
 }
