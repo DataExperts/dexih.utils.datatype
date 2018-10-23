@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using System.Data;
 using System.Linq.Expressions;
 using System.Net.NetworkInformation;
@@ -60,23 +61,24 @@ namespace Dexih.Utils.DataType
         private const int ConvertTypeTimeSpan = 21;
         
         
-        
         public static T Add<T>(T a, T b) => Operations<T>.Add.Value(a,b);
         public static T Subtract<T>(T a, T b) => Operations<T>.Subtract.Value(a, b);
         public static T Divide<T>(T a, T b) => Operations<T>.Divide.Value(a, b);
         public static T DivideInt<T>(T a, int b) => Operations<T>.DivideInt.Value(a, b);
         public static T Multiply<T>(T a, T b) => Operations<T>.Multiply.Value(a, b);
         public static T Negate<T>(T a) => Operations<T>.Negate.Value(a);
+        public static T Increment<T>(T a) => Operations<T>.Increment.Value(a);
+        public static T Decrement<T>(T a) => Operations<T>.Decrement.Value(a);
         public static bool GreaterThan<T>(T a, T b) => Operations<T>.GreaterThan.Value(a, b);
         public static bool LessThan<T>(T a, T b) => Operations<T>.LessThan.Value(a, b);
         public static bool GreaterThanOrEqual<T>(T a, T b) => Operations<T>.GreaterThanOrEqual.Value(a, b);
         public static bool LessThanOrEqual<T>(T a, T b) => Operations<T>.LessThanOrEqual.Value(a, b);
         public static bool Equal<T>(T a, T b) => Operations<T>.Equal.Value(a, b);
-        public static bool Equal<T>(object a, object b) => Operations<T>.EqualObject.Value(a, b);
-        public static string ToString<T>(T a) => Operations<T>.ToString(a);
-        public static T Parse<T>(object a) => Operations<T>.Parse(a);
+        public static bool Equal<T>(object a, object b) => Operations<object>.Equal.Value(a, b);
+        public static string ToString<T>(T a) => Operations<T>.ToString.Value(a);
+        public static T Parse<T>(object a) => Operations<T>.Parse.Value(a);
         public static int Compare<T>(T inputValue, T compareTo) => Operations<T>.Compare.Value(inputValue, compareTo);
-        public static int Compare<T>(object inputValue, object compareTo) => Operations<T>.CompareObject.Value(inputValue, compareTo);
+        public static int Compare<T>(object inputValue, object compareTo) => Operations<object>.Compare.Value(inputValue, compareTo);
 
         public static object Parse(DataType.ETypeCode typeCode, object inputValue)
         {
@@ -138,7 +140,43 @@ namespace Dexih.Utils.DataType
             }
         }
         
+        public static object Parse(Type type, object inputValue)
+        {
+            if (inputValue == null || inputValue == DBNull.Value)
+            {
+                return null;
+            }
+
+            if (type == ConvertTypes[ConvertTypeBool]) return Parse<bool>(inputValue);
+            if (type == ConvertTypes[ConvertTypeSbyte]) return Parse<sbyte>(inputValue);
+            if (type == ConvertTypes[ConvertTypeByte]) return Parse<byte>(inputValue);
+            if (type == ConvertTypes[ConvertTypeShort]) return Parse<short>(inputValue);
+            if (type == ConvertTypes[ConvertTypeUShort]) return Parse<ushort>(inputValue);
+            if (type == ConvertTypes[ConvertTypeInt]) return Parse<int>(inputValue);
+            if (type == ConvertTypes[ConvertTypeUint]) return Parse<uint>(inputValue);
+            if (type == ConvertTypes[ConvertTypeLong]) return Parse<long>(inputValue);
+            if (type == ConvertTypes[ConvertTypeULong]) return Parse<ulong>(inputValue);
+            if (type == ConvertTypes[ConvertTypeFloat]) return Parse<float>(inputValue);
+            if (type == ConvertTypes[ConvertTypeDouble]) return Parse<double>(inputValue);
+            if (type == ConvertTypes[ConvertTypeDecimal]) return Parse<decimal>(inputValue);
+            if (type == ConvertTypes[ConvertTypeDateTime]) return Parse<DateTime>(inputValue);
+            if (type == ConvertTypes[ConvertTypeString]) return Parse<string>(inputValue);
+            if (type == ConvertTypes[ConvertTypeByteArray]) return Parse<byte[]>(inputValue);
+            if (type == ConvertTypes[ConvertTypeCharArray]) return Parse<char[]>(inputValue);
+            if (type == ConvertTypes[ConvertTypeJToken]) return Parse<JToken>(inputValue);
+            if (type == ConvertTypes[ConvertTypeXmlDocument]) return Parse<XmlDocument>(inputValue);
+            if (type == ConvertTypes[ConvertTypeTimeSpan]) return Parse<TimeSpan>(inputValue);
+
+            throw new ArgumentOutOfRangeException(nameof(type), inputValue, null);
+        }
+
         public static bool Equal(object inputValue, object compareTo)
+        {
+            var type = inputValue?.GetType();
+            return Equal(type, inputValue, compareTo);
+        }
+        
+        public static bool Equal(Type type, object inputValue, object compareTo)
         {
             if ((inputValue == null || inputValue == DBNull.Value) && (compareTo == null || compareTo == DBNull.Value))
                 return true;
@@ -146,7 +184,6 @@ namespace Dexih.Utils.DataType
             if (inputValue == null || inputValue == DBNull.Value || compareTo == null || compareTo == DBNull.Value)
                 return false;
 
-            var type = inputValue.GetType();
             if (type == ConvertTypes[ConvertTypeBool]) return Equal<bool>(inputValue, compareTo);
             if (type == ConvertTypes[ConvertTypeSbyte]) return Equal<sbyte>(inputValue, compareTo);
             if (type == ConvertTypes[ConvertTypeByte]) return Equal<byte>(inputValue, compareTo);
@@ -169,7 +206,6 @@ namespace Dexih.Utils.DataType
 
             throw new ArgumentOutOfRangeException(nameof(type), inputValue, null);
         }
-
 
         public static bool Equal(DataType.ETypeCode typeCode, object value1, object value2)
         {
@@ -234,13 +270,19 @@ namespace Dexih.Utils.DataType
 
         public static int Compare(object inputValue, object compareTo)
         {
+            var type = inputValue?.GetType();
+            return Compare(type, inputValue, compareTo);
+        }
+
+        public static int Compare(Type type, object inputValue, object compareTo)
+        {
             if ((inputValue == null || inputValue == DBNull.Value) && (compareTo == null || compareTo == DBNull.Value))
                 return 0;
 
             if (inputValue == null || inputValue == DBNull.Value || compareTo == null || compareTo == DBNull.Value)
                 return (inputValue == null || inputValue is DBNull) ? -1 : 1;
 
-            var type = inputValue.GetType();
+            
             if (type == ConvertTypes[ConvertTypeBool]) return Compare<bool>(inputValue, compareTo);
             if (type == ConvertTypes[ConvertTypeSbyte]) return Compare<sbyte>(inputValue, compareTo);
             if (type == ConvertTypes[ConvertTypeByte]) return Compare<byte>(inputValue, compareTo);
@@ -330,27 +372,25 @@ namespace Dexih.Utils.DataType
 
     public static class Operations<T>
     {
-
-        
         public static readonly Lazy<Func<T, T, T>> Add = CreateExpressionNumeric(Expression.Add);
         public static readonly Lazy<Func<T, T, T>> Subtract = CreateExpressionNumeric(Expression.Subtract);
         public static readonly Lazy<Func<T, T, T>> Multiply = CreateExpressionNumeric(Expression.Multiply);
         public static readonly Lazy<Func<T, T, T>> Divide = CreateExpressionNumeric(Expression.Divide);
         public static readonly Lazy<Func<T, int, T>> DivideInt = CreateDivideInt();
-        public static readonly Lazy<Func<T, T>> Negate = CreateExpressionNegate();
+        public static readonly Lazy<Func<T, T>> Negate = CreateNegate();
+        public static readonly Lazy<Func<T, T>> Increment = CreateIncrement();
+        public static readonly Lazy<Func<T, T>> Decrement = CreateDecrement();
         
         public static readonly Lazy<Func<T, T, bool>> GreaterThan = CreateGreaterThan();
         public static readonly Lazy<Func<T, T, bool>> LessThan = CreateLessThan();
         public static readonly Lazy<Func<T, T, bool>> GreaterThanOrEqual = CreateGreaterThanOrEqual();
         public static readonly Lazy<Func<T, T, bool>> LessThanOrEqual = CreateLessThanOrEqual();
         public static readonly Lazy<Func<T, T, bool>> Equal = CreateEqual();
-        public static readonly Lazy<Func<object, object, bool>> EqualObject = CreateEqualObject();
-        public new static readonly Func<T, string> ToString = CreateToString();
-        public static readonly Func<object, T> Parse = CreateParse();
+        public new static readonly Lazy<Func<T, string>> ToString = CreateToString();
+        public static readonly Lazy<Func<object, T>> Parse = CreateParse();
         public static readonly T Zero = default;
         
         public static readonly Lazy<Func<T, T, int>> Compare = CreateCompare();
-        public static readonly Lazy<Func<object, object, int>> CompareObject = CreateCompareObject();
 
         public static bool IsNumericType(Type type)
         {   
@@ -451,7 +491,32 @@ namespace Dexih.Utils.DataType
             {
                 int Compare(T a, T b)
                 {
-                    return (int) ((IComparable) a).CompareTo((IComparable) b);
+                    return ((IComparable) a).CompareTo(b);
+                }
+                
+                return new Lazy<Func<T, T, int>>(() => Compare);
+            }
+            else if(type == typeof(object))
+            {
+                int Compare(T a, T b)
+                {
+                    if (a.GetType() == b.GetType() && a is IComparable comparable)
+                    {
+                        return comparable.CompareTo(b);
+                    }
+
+                    // if types don't match, attempt to convert to common type.
+                    var aType = a.GetType();
+                    var aTypeCode = Type.GetTypeCode(aType);
+                    var bType = b.GetType();
+                    var bTypeCode = Type.GetTypeCode(bType);
+                    if (aTypeCode < bTypeCode)
+                    {
+                        var a1 = Operations.Parse(bType, a);
+                        return ((IComparable) a1).CompareTo(b);
+                    }
+                    var b1 = Operations.Parse(aType, b);
+                    return ((IComparable) b1).CompareTo(b);
                 }
                 
                 return new Lazy<Func<T, T, int>>(() => Compare);
@@ -459,49 +524,6 @@ namespace Dexih.Utils.DataType
             else
             {
                 return new Lazy<Func<T, T, int>>(() => throw new InvalidCastException($"The data type {typeof(T)} is not supported for comparisons."));
-            }
-        }
-        
-        public static int CompareMethod(T a, T b)
-        {
-            return (int) ((IComparable) a).CompareTo((IComparable) b);
-        }
-        
-        private static Lazy<Func<object, object, int>> CreateCompareObject()
-        {
-            var type = typeof(T);
-            if (typeof(IComparable).IsAssignableFrom(type))
-            {
-                int Compare(object a, object b)
-                {
-                    T inputValue, compareTo;
-
-                    if (type == a.GetType())
-                    {
-                        inputValue = (T) a;
-                    }
-                    else
-                    {
-                        inputValue = Parse(a);
-                    }
-                    
-                    if (type == b.GetType())
-                    {
-                        compareTo = (T) b;
-                    }
-                    else
-                    {
-                        compareTo = Parse(b);
-                    }
-                    
-                    return (int) ((IComparable) inputValue).CompareTo((IComparable) compareTo);
-                }
-                
-                return new Lazy<Func<object, object, int>>(() => Compare);
-            }
-            else
-            {
-                return new Lazy<Func<object, object, int>>(() => throw new InvalidCastException($"The data type {typeof(T)} is not supported for comparisons."));
             }
         }
         
@@ -517,57 +539,44 @@ namespace Dexih.Utils.DataType
             }
             else if (typeof(IComparable).IsAssignableFrom(type))
             {
-                bool Compare(T a, T b)
+                bool Equals(T a, T b)
                 {
                     return ((IComparable) a).CompareTo((IComparable) b) == 0;
                 }
                 
-                return new Lazy<Func<T, T, bool>>(() => Compare);
+                return new Lazy<Func<T, T, bool>>(() => Equals);
+            }
+            else if (type == typeof(object))
+            {
+                bool Equals(T a, T b)
+                {
+                    if (a.GetType() == b.GetType() && a is IComparable comparable)
+                    {
+                        return comparable.CompareTo(b) == 0;
+                    }
+
+                    // if types don't match, attempt to convert to common type.
+                    var aType = a.GetType();
+                    var aTypeCode = Type.GetTypeCode(aType);
+                    var bType = b.GetType();
+                    var bTypeCode = Type.GetTypeCode(bType);
+                    if (aTypeCode < bTypeCode)
+                    {
+                        var a1 = Operations.Parse(bType, a);
+                        return ((IComparable) a1).CompareTo(b) == 0;
+                    }
+
+                    var b1 = Operations.Parse(aType, b);
+                    return ((IComparable) b1).CompareTo(b) == 0;
+                }
+
+                return new Lazy<Func<T, T, bool>>(() => Equals);
             }
             else
             {
                 return new Lazy<Func<T, T, bool>>(() => throw new InvalidCastException($"The data type {typeof(T)} is not supported for comparisons."));
             }
         }
-        
-        private static Lazy<Func<object, object, bool>> CreateEqualObject()
-        {
-            var type = typeof(T);
-            if (typeof(IComparable).IsAssignableFrom(type))
-            {
-                bool Equal(object a, object b)
-                {
-                    T value1, value2;
-
-                    if (type == a.GetType())
-                    {
-                        value1 = (T) a;
-                    }
-                    else
-                    {
-                        value1 = Parse(a);
-                    }
-                    
-                    if (type == b.GetType())
-                    {
-                        value2 = (T) b;
-                    }
-                    else
-                    {
-                        value2 = Parse(b);
-                    }
-                    
-                    return ((IComparable) value1).Equals((IComparable) value2);
-                }
-                
-                return new Lazy<Func<object, object, bool>>(() => Equal);
-            }
-            else
-            {
-                return new Lazy<Func<object, object, bool>>(() => throw new InvalidCastException($"The data type {typeof(T)} is not supported for comparisons."));
-            }
-        }
-
         
         private static Lazy<Func<T, T, bool>> CreateGreaterThan()
         {
@@ -579,7 +588,7 @@ namespace Dexih.Utils.DataType
                 var exp = Expression.Lambda<Func<T, T, bool>>(Expression.GreaterThan(p1, p2), p1, p2).Compile();
                 return new Lazy<Func<T, T, bool>>(() => exp);
             }
-            else if (typeof(IComparable).IsAssignableFrom(type))
+            else if (typeof(IComparable).IsAssignableFrom(type) || type == typeof(object))
             {
                 bool Compare(T a, T b)
                 {
@@ -604,7 +613,7 @@ namespace Dexih.Utils.DataType
                 var exp = Expression.Lambda<Func<T, T, bool>>(Expression.LessThan(p1, p2), p1, p2).Compile();
                 return new Lazy<Func<T, T, bool>>(() => exp);
             }
-            else if (typeof(IComparable).IsAssignableFrom(type))
+            else if (typeof(IComparable).IsAssignableFrom(type) || type == typeof(object))
             {
                 bool Compare(T a, T b)
                 {
@@ -629,7 +638,7 @@ namespace Dexih.Utils.DataType
                 var exp = Expression.Lambda<Func<T, T, bool>>(Expression.GreaterThanOrEqual(p1, p2), p1, p2).Compile();
                 return new Lazy<Func<T, T, bool>>(() => exp);
             }
-            else if (typeof(IComparable).IsAssignableFrom(type))
+            else if (typeof(IComparable).IsAssignableFrom(type) || type == typeof(object))
             {
                 bool Compare(T a, T b)
                 {
@@ -654,7 +663,7 @@ namespace Dexih.Utils.DataType
                 var exp = Expression.Lambda<Func<T, T, bool>>(Expression.LessThanOrEqual(p1, p2), p1, p2).Compile();
                 return new Lazy<Func<T, T, bool>>(() => exp);
             }
-            else if (typeof(IComparable).IsAssignableFrom(type))
+            else if (typeof(IComparable).IsAssignableFrom(type) || type == typeof(object))
             {
                 bool Compare(T a, T b)
                 {
@@ -670,7 +679,7 @@ namespace Dexih.Utils.DataType
         }
 
         
-        private static Lazy<Func<T, T>> CreateExpressionNegate()
+        private static Lazy<Func<T, T>> CreateNegate()
         {
             switch (Type.GetTypeCode(typeof(T)))
             {
@@ -688,10 +697,34 @@ namespace Dexih.Utils.DataType
             }
         }
         
-        
-        public static Func<T, string> CreateToString()
+        private static Lazy<Func<T, T>> CreateIncrement()
         {
-            var dataType = typeof(T); 
+            if (IsNumericType(typeof(T)))
+            {
+                var p1 = Expression.Parameter(typeof(T), "p1");
+                var exp = Expression.Lambda<Func<T, T>>(Expression.Increment(p1), p1).Compile();
+                return new Lazy<Func<T, T>>(() => exp);
+            }
+            return new Lazy<Func<T, T>>(() => throw new InvalidCastException($"The data type {typeof(T)} is not supported for negate."));
+        }
+
+        private static Lazy<Func<T, T>> CreateDecrement()
+        {
+            if (IsNumericType(typeof(T)))
+            {
+                var p1 = Expression.Parameter(typeof(T), "p1");
+                var exp = Expression.Lambda<Func<T, T>>(Expression.Decrement(p1), p1).Compile();
+                return new Lazy<Func<T, T>>(() => exp);
+            }
+            return new Lazy<Func<T, T>>(() => throw new InvalidCastException($"The data type {typeof(T)} is not supported for negate."));
+        }
+
+
+        private static Lazy<Func<T, string>> CreateToString()
+        {
+            var dataType = typeof(T);
+            Func<T, string> exp;
+            
             switch (Type.GetTypeCode(dataType))
             {
                 case TypeCode.Byte:
@@ -709,21 +742,28 @@ namespace Dexih.Utils.DataType
                 case TypeCode.DBNull:
                 case TypeCode.String:
                 case TypeCode.Boolean:
-                    return value => value.ToString();
+                    exp = value => value.ToString();
+                    break;
                 case TypeCode.Object:
-                    if (dataType == typeof(TimeSpan) || dataType == typeof(TimeSpan?)) return value => value.ToString();
-                    if (dataType == typeof(Guid) || dataType == typeof(Guid?)) return value => value.ToString();
-                    if (dataType == typeof(byte[])) return value => ByteArrayToHex(value as byte[]);
-                    if (dataType == typeof(char[])) return value => value.ToString();
-                    if (dataType == typeof(JToken)) return value => value.ToString();
-                    if (dataType == typeof(XmlDocument)) return value => (value as XmlDocument)?.InnerXml;
+                    if (dataType == typeof(TimeSpan) || dataType == typeof(TimeSpan?)) exp = value => value.ToString();
+                    else if (dataType == typeof(Guid) || dataType == typeof(Guid?)) exp = value => value.ToString();
+                    else if (dataType == typeof(byte[])) exp = value => ByteArrayToHex(value as byte[]);
+                    else if (dataType == typeof(char[])) exp = value => new string(value as char[]);
+                    else if (dataType == typeof(JToken)) exp = value => value.ToString();
+                    else if (dataType == typeof(XmlDocument)) exp = value => (value as XmlDocument)?.InnerXml;
+                    else if (dataType == typeof(object)) exp = value => value.ToString();
+                    else exp = value => throw new NotSupportedException($"The datatype {dataType} is not supported for ToString conversion.");
+                    break;
+                default:
+                    exp = value => throw new NotSupportedException($"The datatype {dataType} is not supported for ToString conversion.");
                     break;
             }
+            
+            return new Lazy<Func<T, string>>(() => exp);
 
-            throw new ArgumentOutOfRangeException();
         }
 
-        public static Func<object, T> ConvertToBoolean()
+        private static Func<object, T> ConvertToBoolean()
         {
             return value =>
             {
@@ -753,7 +793,7 @@ namespace Dexih.Utils.DataType
             };
         }
 
-        public static Func<object, T> ConvertToCharArray()
+        private static Func<object, T> ConvertToCharArray()
         {
             return value =>
             {
@@ -765,8 +805,8 @@ namespace Dexih.Utils.DataType
                 return (T) (object) value.ToString().ToCharArray();
             };
         }
-        
-        public static Func<object, T> ConvertToByteArray()
+
+        private static Func<object, T> ConvertToByteArray()
         {
             return value =>
             {
@@ -782,8 +822,8 @@ namespace Dexih.Utils.DataType
                 throw new DataTypeParseException("Binary type conversion only supported for hex strings.");
             };
         }
-        
-        public static Func<object, T> ConvertToTimeSpan()
+
+        private static Func<object, T> ConvertToTimeSpan()
         {
             return value =>
             {
@@ -799,8 +839,8 @@ namespace Dexih.Utils.DataType
                 throw new DataTypeParseException("Time conversion only supported for strings.");
             };
         }
-        
-        public static Func<object, T> ConvertToGuid()
+
+        private static Func<object, T> ConvertToGuid()
         {
             return value =>
             {
@@ -816,8 +856,8 @@ namespace Dexih.Utils.DataType
                 throw new DataTypeParseException("Guid conversion only supported for strings.");
             };
         }
-        
-        public static Func<object, T> ConvertToJson()
+
+        private static Func<object, T> ConvertToJson()
         {
             return value =>
             {
@@ -833,8 +873,8 @@ namespace Dexih.Utils.DataType
                 throw new DataTypeParseException("Json conversion only supported for strings.");
             };
         }
-        
-        public static Func<object, T> ConvertToXml()
+
+        private static Func<object, T> ConvertToXml()
         {
             return value =>
             {
@@ -854,7 +894,7 @@ namespace Dexih.Utils.DataType
             };
         }
 
-        public static Func<object, T> ConvertToString()
+        private static Func<object, T> ConvertToString()
         {
             return value =>
             {
@@ -879,7 +919,7 @@ namespace Dexih.Utils.DataType
         }
 
 
-        public static Func<object, T> CreateParse()
+        private static Lazy<Func<object, T>> CreateParse()
         {
             Func<object, T> exp;
             
@@ -938,12 +978,13 @@ namespace Dexih.Utils.DataType
                     else if (dataType == typeof(char[])) exp = ConvertToCharArray();
                     else if (dataType == typeof(JToken)) exp = ConvertToJson();
                     else if (dataType == typeof(XmlDocument)) exp = ConvertToXml();
-                    else throw new ArgumentOutOfRangeException();
+                    else exp = value => throw new NotSupportedException($"The datatype {dataType} is not supported for Parse.");
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException();
+                    exp = value => throw new NotSupportedException($"The datatype {dataType} is not supported for Parse.");
+                    break;
             }
-            return exp;
+            return new Lazy<Func<object, T>>(() => exp);
         }
         
         private static readonly uint[] Lookup32 = CreateLookup32();
@@ -964,7 +1005,7 @@ namespace Dexih.Utils.DataType
         /// </summary>
         /// <param name="bytes"></param>
         /// <returns></returns>
-        public static string ByteArrayToHex(byte[] bytes)
+        private static string ByteArrayToHex(byte[] bytes)
         {
             var lookup32 = Lookup32;
             var result = new char[bytes.Length * 2];
@@ -982,7 +1023,7 @@ namespace Dexih.Utils.DataType
         /// </summary>
         /// <param name="hex"></param>
         /// <returns></returns>
-        public static byte[] HexToByteArray(string hex)
+        private static byte[] HexToByteArray(string hex)
         {
             var numberChars = hex.Length;
             var bytes = new byte[numberChars / 2];

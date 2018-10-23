@@ -24,27 +24,7 @@ namespace Dexih.Utils.DataType.Tests
             _output.WriteLine($"Test \"{name}\" completed in {time}ms");
         }
         
-//        [Fact]
-//        void Operations_Test()
-//        {
-//            var intOperations = Operations<int>.Default;
-//            var result = intOperations.Add(2, 5);
-//            
-//            Assert.Equal(7, result);
-//        }
-//
-//        [Fact]
-//        void CharArray_Test()
-//        {
-//            var charOperations = Operations<char[]>.Default;
-//
-//            var a = "123".ToCharArray();
-//            var b = "1234".ToCharArray();
-//            
-//            Assert.True(charOperations.Equal(a, "123".ToCharArray()));
-//            Assert.True((charOperations.GreaterThan(a,b)));
-//            Assert.True((charOperations.LessThan(b,a)));
-//        }
+
         
         
         [Theory]
@@ -122,7 +102,7 @@ namespace Dexih.Utils.DataType.Tests
             
             Timer("Parse Func", () =>
             {
-                var parse = Operations<decimal>.Parse;
+                var parse = Operations<decimal>.Parse.Value;
                 for(var i = 0; i< iterations; i++)
                 {
                     values.Select(parse).ToArray();
@@ -138,14 +118,5 @@ namespace Dexih.Utils.DataType.Tests
             });
 
         }
-
-        [Fact]
-        public void ParseTest()
-        {
-            var c = Operations.Parse(DataType.ETypeCode.Decimal, "1.23");
-            
-        }
-
-        
     }
 }

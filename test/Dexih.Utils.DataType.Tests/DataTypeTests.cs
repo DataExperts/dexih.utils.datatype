@@ -177,76 +177,20 @@ namespace Dexih.Utils.DataType.Tests
         [InlineData(ETypeCode.Guid, "6d5bba83-e71b-4ce1-beb8-006085a0a77c", "6d5bba83-e71b-4ce1-beb8-006085a0a77d", -1)]
         public void DataType_Compare(ETypeCode dataType, object inputValue, object compareValue, int expectedResult)
         {
-            var result = Operations.Compare(dataType, inputValue, compareValue);
-            Assert.Equal(expectedResult, result);
-            
-            result = Operations.Compare(inputValue, compareValue);
-            Assert.Equal(expectedResult, result);
+            var comp1 = Operations.Compare(dataType, inputValue, compareValue);
+            Assert.Equal(expectedResult, comp1);
 
+            var comp2 = Operations.Compare(inputValue, compareValue);
+            Assert.Equal(expectedResult, comp2);
+            
+            Assert.Equal(comp1 == -1, Operations.LessThan(inputValue, compareValue));
+            Assert.Equal(comp1 <= 0, Operations.LessThanOrEqual(inputValue, compareValue));
+            Assert.Equal(comp1 == 0, Operations.Equal(inputValue, compareValue));
+            Assert.Equal(comp1 == 0, Operations.Equal(dataType, inputValue, compareValue));
+            Assert.Equal(comp1 == 1, Operations.GreaterThan(inputValue, compareValue));
+            Assert.Equal(comp1 >= 0, Operations.GreaterThanOrEqual(inputValue, compareValue));
         }
         
-         [Theory]
-        [InlineData(ETypeCode.Byte, 2, 1, false)]
-        [InlineData(ETypeCode.Byte, 1, 1, true)]
-        [InlineData(ETypeCode.Byte, 1, 2, false)]
-        [InlineData(ETypeCode.SByte, 2, 1, false)]
-        [InlineData(ETypeCode.SByte, 1, 1, true)]
-        [InlineData(ETypeCode.SByte, 1, 2, false)]
-        [InlineData(ETypeCode.UInt16, 2, 1, false)]
-        [InlineData(ETypeCode.UInt16, 1, 1, true)]
-        [InlineData(ETypeCode.UInt16, 1, 2, false)]
-        [InlineData(ETypeCode.UInt32, 2, 1, false)]
-        [InlineData(ETypeCode.UInt32, 1, 1, true)]
-        [InlineData(ETypeCode.UInt32, 1, 2, false)]
-        [InlineData(ETypeCode.UInt64, 2, 1, false)]
-        [InlineData(ETypeCode.UInt64, 1, 1, true)]
-        [InlineData(ETypeCode.UInt64, 1, 2, false)]
-        [InlineData(ETypeCode.Int16, 2, 1, false)]
-        [InlineData(ETypeCode.Int16, 1, 1, true)]
-        [InlineData(ETypeCode.Int16, 1, 2, false)]
-        [InlineData(ETypeCode.Int32, 2, 1, false)]
-        [InlineData(ETypeCode.Int32, 1, 1, true)]
-        [InlineData(ETypeCode.Int32, 1, 2, false)]
-        [InlineData(ETypeCode.Int64, 2, 1, false)]
-        [InlineData(ETypeCode.Int64, 1, 1, true)]
-        [InlineData(ETypeCode.Int64, 1, 2, false)]
-        [InlineData(ETypeCode.Decimal, 1.1, 1.09, false)]
-        [InlineData(ETypeCode.Decimal, 1.09, 1.09, true)]
-        [InlineData(ETypeCode.Decimal, 1.09, 1.1, false)]
-        [InlineData(ETypeCode.Double, 1.1, 1.09, false)]
-        [InlineData(ETypeCode.Double, 1.09, 1.09, true)]
-        [InlineData(ETypeCode.Double, 1.09, 1.1, false)]
-        [InlineData(ETypeCode.Single, 1.1, 1.09, false)]
-        [InlineData(ETypeCode.Single, 1.09, 1.09, true)]
-        [InlineData(ETypeCode.Single, 1.09, 1.1, false)]
-        [InlineData(ETypeCode.String, "01", "001", false)]
-        [InlineData(ETypeCode.String, "01", "01", true)]
-        [InlineData(ETypeCode.String, "001", "01", false)]
-        [InlineData(ETypeCode.Text, "01", "001", false)]
-        [InlineData(ETypeCode.Text, "01", "01", true)]
-        [InlineData(ETypeCode.Text, "001", "01", false)]
-        [InlineData(ETypeCode.Boolean, true, false, false)]
-        [InlineData(ETypeCode.Boolean, true, true, true)]
-        [InlineData(ETypeCode.Boolean, false, true, false)]
-        [InlineData(ETypeCode.DateTime, "2001-01-01", "2000-12-31", false)]
-        [InlineData(ETypeCode.DateTime, "2001-01-01", "2001-01-01", true)]
-        [InlineData(ETypeCode.DateTime, "2000-01-02", "2000-01-03", false)]
-        [InlineData(ETypeCode.Time, "00:01:00", "00:00:59", false)]
-        [InlineData(ETypeCode.Time, "00:00:59", "00:00:59", true)]
-        [InlineData(ETypeCode.Time, "00:01:00", "00:01:01", false)]
-        [InlineData(ETypeCode.Guid, "6d5bba83-e71b-4ce1-beb8-006085a0a77d", "6d5bba83-e71b-4ce1-beb8-006085a0a77c", false)]
-        [InlineData(ETypeCode.Guid, "6d5bba83-e71b-4ce1-beb8-006085a0a77c", "6d5bba83-e71b-4ce1-beb8-006085a0a77c", true)]
-        [InlineData(ETypeCode.Guid, "6d5bba83-e71b-4ce1-beb8-006085a0a77c", "6d5bba83-e71b-4ce1-beb8-006085a0a77d", false)]
-        public void DataType_Equal(ETypeCode dataType, object inputValue, object compareValue, bool expectedResult)
-        {
-            var result = Operations.Equal(dataType, inputValue, compareValue);
-            Assert.Equal(expectedResult, result);
-            
-            result = Operations.Equal(inputValue, compareValue);
-            Assert.Equal(expectedResult, result);
-
-        }
-
         [Theory]
         [InlineData(ETypeCode.Byte, 2, (Byte)2)]
         [InlineData(ETypeCode.Byte, "2", (Byte)2)]
@@ -346,6 +290,26 @@ namespace Dexih.Utils.DataType.Tests
         }
 
         [Fact]
+        public void TestNegate()
+        {
+            Assert.Equal(0, Operations.Negate((0)));
+            Assert.Equal(-5, Operations.Negate((5)));
+            Assert.Equal(5, Operations.Negate((-5)));
+        }
+
+        [Fact]
+        public void TestIncrement()
+        {
+            Assert.Equal(0, Operations.Increment(-1));
+        }
+
+        [Fact]
+        public void TestDecrement()
+        {
+            Assert.Equal(0, Operations.Decrement(1));
+        }
+
+        [Fact]
         public void DataType_Add()
         {
             Assert.Equal(8, Operations.Add(3, 5));
@@ -370,7 +334,7 @@ namespace Dexih.Utils.DataType.Tests
         }
 
         [Fact]
-        public void DataType_Divude()
+        public void DataType_Divide()
         {
             Assert.Equal(4, Operations.Divide(8, 2));
             Assert.Equal(4.5d, Operations.Divide(9d, 2d));
@@ -384,7 +348,7 @@ namespace Dexih.Utils.DataType.Tests
             Assert.Equal(4.5d, Operations.DivideInt(9d, 2));
             Assert.Equal(4L, Operations.DivideInt(8L, 2));
         }
-
+        
 //        [Theory]
 //        [InlineData(ETypeCode.UInt16, (ushort)5, (ushort) 3, (ushort) 8)]
 //        [InlineData(ETypeCode.UInt32, (uint)5, (uint) 3, (uint) 8)]
