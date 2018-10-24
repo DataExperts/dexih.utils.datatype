@@ -190,6 +190,16 @@ namespace Dexih.Utils.DataType.Tests
             Assert.Equal(comp1 == 1, Operations.GreaterThan(inputValue, compareValue));
             Assert.Equal(comp1 >= 0, Operations.GreaterThanOrEqual(inputValue, compareValue));
         }
+
+        [Fact]
+        public void DataType_TypeCompare()
+        {
+            Assert.Equal(true, Operations.GreaterThan(2,1));
+            Assert.Equal(true, Operations.LessThan(1,2));
+            Assert.Equal(true, Operations.LessThanOrEqual(1,2));
+            Assert.Equal(true, Operations.GreaterThanOrEqual(2,1));
+            Assert.Equal(true, Operations.Equal(1,1));
+        }
         
         [Theory]
         [InlineData(ETypeCode.Byte, 2, (Byte)2)]

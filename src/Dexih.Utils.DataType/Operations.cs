@@ -1529,10 +1529,10 @@ namespace Dexih.Utils.DataType
         public static readonly Lazy<Func<T, T>> Increment = CreateIncrement();
         public static readonly Lazy<Func<T, T>> Decrement = CreateDecrement();
         
-        public static readonly Lazy<Func<T, T, bool>> GreaterThan = CreateCondition(Expression.Equal, new[] {1});
-        public static readonly Lazy<Func<T, T, bool>> LessThan = CreateCondition(Expression.Equal, new[] {-1});
-        public static readonly Lazy<Func<T, T, bool>> GreaterThanOrEqual = CreateCondition(Expression.Equal, new[] {0,1});
-        public static readonly Lazy<Func<T, T, bool>> LessThanOrEqual = CreateCondition(Expression.Equal, new[] {0,-1});
+        public static readonly Lazy<Func<T, T, bool>> GreaterThan = CreateCondition(Expression.GreaterThan, new[] {1});
+        public static readonly Lazy<Func<T, T, bool>> LessThan = CreateCondition(Expression.LessThan, new[] {-1});
+        public static readonly Lazy<Func<T, T, bool>> GreaterThanOrEqual = CreateCondition(Expression.GreaterThanOrEqual, new[] {0,1});
+        public static readonly Lazy<Func<T, T, bool>> LessThanOrEqual = CreateCondition(Expression.LessThanOrEqual, new[] {0,-1});
         public static readonly Lazy<Func<T, T, bool>> Equal = CreateCondition(Expression.Equal, new[] {0});
         
         public new static readonly Lazy<Func<T, string>> ToString = CreateToString();
