@@ -73,8 +73,20 @@ namespace Dexih.Utils.DataType.Tests
                 }
             });
 
-         
+            object e = 123;
+            object f = 234;
 
+            Timer("Add using object math", () =>
+            {
+                for(var i = 0; i< iterations; i++)
+                {
+                    var c = Operations.Add(DataType.ETypeCode.Int32, e, f);
+                }
+            });
+
+
+
+            
         }
         
         [Theory]
