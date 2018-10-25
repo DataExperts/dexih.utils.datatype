@@ -66,7 +66,7 @@ namespace Dexih.Utils.DataType.Tests
         [InlineData(typeof(Guid), ETypeCode.Guid)]
         [InlineData(typeof(byte[]), ETypeCode.Binary)]
         [InlineData(typeof(Int32?), ETypeCode.Int32)]
-        [InlineData(typeof(char[]), ETypeCode.Char)]
+        [InlineData(typeof(char[]), ETypeCode.CharArray)]
         public void DataType_GetTypeCode(Type dataType, ETypeCode expectedTypeCode)
         {
             Assert.Equal(expectedTypeCode, DataType.GetTypeCode(dataType, out _));
@@ -124,9 +124,9 @@ namespace Dexih.Utils.DataType.Tests
         }
 
         [Theory]
-        [InlineData(ETypeCode.Byte, 2, 1, 1)]
-        [InlineData(ETypeCode.Byte, 1, 1, 0)]
-        [InlineData(ETypeCode.Byte, 1, 2, -1)]
+        [InlineData(ETypeCode.Byte, (byte)2, (byte)1, 1)]
+        [InlineData(ETypeCode.Byte, (byte)1, (byte)1, 0)]
+        [InlineData(ETypeCode.Byte, (byte)1, (byte)2, -1)]
         [InlineData(ETypeCode.SByte, 2, 1, 1)]
         [InlineData(ETypeCode.SByte, 1, 1, 0)]
         [InlineData(ETypeCode.SByte, 1, 2, -1)]
@@ -175,21 +175,40 @@ namespace Dexih.Utils.DataType.Tests
         [InlineData(ETypeCode.Guid, "6d5bba83-e71b-4ce1-beb8-006085a0a77d", "6d5bba83-e71b-4ce1-beb8-006085a0a77c", 1)]
         [InlineData(ETypeCode.Guid, "6d5bba83-e71b-4ce1-beb8-006085a0a77c", "6d5bba83-e71b-4ce1-beb8-006085a0a77c", 0)]
         [InlineData(ETypeCode.Guid, "6d5bba83-e71b-4ce1-beb8-006085a0a77c", "6d5bba83-e71b-4ce1-beb8-006085a0a77d", -1)]
-        public void DataType_Compare(ETypeCode dataType, object inputValue, object compareValue, int expectedResult)
+        [MemberData(nameof(OtherCompareTypes))]
+        public void DataType_Compare(ETypeCode dataType, object v1, object v2, int expectedResult)
         {
+            var inputValue = Operations.Parse(dataType, v1);
+            var compareValue = Operations.Parse(dataType, v2);
             var comp1 = Operations.Compare(dataType, inputValue, compareValue);
             Assert.Equal(expectedResult, comp1);
 
             var comp2 = Operations.Compare(inputValue, compareValue);
             Assert.Equal(expectedResult, comp2);
             
+            Assert.Equal(comp1 == -1, Operations.LessThan(dataType, inputValue, compareValue));
             Assert.Equal(comp1 == -1, Operations.LessThan(inputValue, compareValue));
+            Assert.Equal(comp1 <= 0, Operations.LessThanOrEqual(dataType, inputValue, compareValue));
             Assert.Equal(comp1 <= 0, Operations.LessThanOrEqual(inputValue, compareValue));
             Assert.Equal(comp1 == 0, Operations.Equal(inputValue, compareValue));
             Assert.Equal(comp1 == 0, Operations.Equal(dataType, inputValue, compareValue));
+            Assert.Equal(comp1 == 1, Operations.GreaterThan(dataType, inputValue, compareValue));
             Assert.Equal(comp1 == 1, Operations.GreaterThan(inputValue, compareValue));
+            Assert.Equal(comp1 >= 0, Operations.GreaterThanOrEqual(dataType, inputValue, compareValue));
             Assert.Equal(comp1 >= 0, Operations.GreaterThanOrEqual(inputValue, compareValue));
         }
+
+        public static IEnumerable<object[]> OtherCompareTypes => new[]
+        {
+            new object[] { ETypeCode.CharArray, "001".ToCharArray(), "01".ToCharArray(), -1},
+            new object[] { ETypeCode.CharArray, "01".ToCharArray(), "001".ToCharArray(), 1},
+            new object[] { ETypeCode.CharArray, "021".ToCharArray(), "01".ToCharArray(), 1},
+            new object[] { ETypeCode.CharArray, "001".ToCharArray(), "001".ToCharArray(), 0},
+            new object[] { ETypeCode.Binary, new byte[] {1,2,3}, new byte[] {1,2,2}, 1},
+            new object[] { ETypeCode.Binary, new byte[] {1,2}, new byte[] {1,2,3}, -1},
+            new object[] { ETypeCode.Binary, new byte[] {1,2,2}, new byte[] {1,2,3}, -1},
+            new object[] { ETypeCode.Binary, new byte[] {1,2,3}, new byte[] {1,2,3}, 0},
+        };
 
         [Fact]
         public void DataType_TypeCompare()
@@ -248,7 +267,7 @@ namespace Dexih.Utils.DataType.Tests
             new object[] { ETypeCode.Guid, "6d5bba83-e71b-4ce1-beb8-006085a0a77d", new Guid("6d5bba83-e71b-4ce1-beb8-006085a0a77d")},
             new object[] { ETypeCode.Binary, "61626364", new byte[] { 0x61, 0x62, 0x63, 0x64 }},
             new object[] { ETypeCode.String, new byte[] { 0x61, 0x62, 0x63, 0x64 }, "61626364"},
-            new object[] { ETypeCode.Char, "123", "123".ToCharArray()},
+            new object[] { ETypeCode.CharArray, "123", "123".ToCharArray()},
             new object[] { ETypeCode.String, "123".ToCharArray(), "123"},
             new object[] { ETypeCode.String, new[] {1,2,3}, "[1,2,3]"},
             new object[] { ETypeCode.String, new[] {"a", "b", "c"}, "[\"a\",\"b\",\"c\"]"}
@@ -364,6 +383,9 @@ namespace Dexih.Utils.DataType.Tests
             Assert.Equal(4, Operations.Divide(8, 2));
             Assert.Equal(4.5d, Operations.Divide(9d, 2d));
             Assert.Equal(4L, Operations.Divide(8L, 2L));
+
+            object a = 1;
+            object b = 2;
         }
 
         [Fact]
@@ -372,6 +394,10 @@ namespace Dexih.Utils.DataType.Tests
             Assert.Equal(4, Operations.DivideInt(8, 2));
             Assert.Equal(4.5d, Operations.DivideInt(9d, 2));
             Assert.Equal(4L, Operations.DivideInt(8L, 2));
+            
+            object a = 6;
+            int b = 3;
+            Assert.Equal(2, Operations.DivideInt(ETypeCode.Int32, a, b));
         }
         
         [Theory]
@@ -438,249 +464,6 @@ namespace Dexih.Utils.DataType.Tests
             _output.WriteLine($"Test \"{name}\" completed in {time}ms");
         }
 
-        [Theory]
-        [InlineData(10000000)]
-        public void CompareArithmeticPerformance(long iterations)
-        {
-            var a = 2;
-            var b = 3;
-
-            // 4ms
-            Timer("Add - Baseline", () =>
-            {
-                for (var i = 0; i < iterations; i++)
-                {
-                    var c = a + b;
-                }
-            });
-
-           // 33ms
-            Timer("Add - Func", () =>
-            {
-                var add = Operations<int>.Add.Value;
-                for (var i = 0; i < iterations; i++)
-                {
-                    var c = add(a, b);
-                }
-            });
-
-            // 33ms
-            Timer("Add - Operations", () =>
-            {
-                for (var i = 0; i < iterations; i++)
-                {
-                    var c = Operations.Add(a, b);
-                }
-            });
-            
-        }
-
-        [Theory]
-        [InlineData(10000000)]
-        public void Compare_Performance(long iterations)
-        {
-            var a = 2;
-            var b = 3;
-
-            Timer("Compare integers baseline", () =>
-            {
-                for (var i = 0; i < iterations; i++)
-                {
-                    var c = a.CompareTo(b);
-                }
-            });
-
-            Timer("Compare - func", () =>
-            {
-                var comp = Operations<int>.Compare.Value;
-                for (var i = 0; i < iterations; i++)
-                {
-                    var c = comp(a, b);
-                }
-            });
-
-            Timer("Compare - 1", () =>
-            {
-                for (var i = 0; i < iterations; i++)
-                {
-                    var c = Operations.Compare(a, b);
-                }
-            });
-            
-            Timer("Compare - object", () =>
-            {
-                for (var i = 0; i < iterations; i++)
-                {
-                    var c = Operations.Compare((object)a, (object)b);
-                }
-            });
-
-        }
-
-        [Theory]
-        [InlineData(10000000)]
-        public void DataType_Performance(long iterations)
-        {
-
-        Timer("DataType.IsSimple (int)", () =>
-            {
-                var type = typeof(int);
-                for(var i = 0; i< iterations; i++)
-                {
-                    var value = DataType.IsSimple(type);
-                }
-            });
-            
-            Timer("DataType.IsSimple (int?)", () =>
-            {
-                var type = typeof(int?);
-                for(var i = 0; i< iterations; i++)
-                {
-                    var value = DataType.IsSimple(type);
-                }
-            });
-
-            Timer("DataType.IsSimple (int[])", () =>
-            {
-                var type = typeof(int[]);
-                for(var i = 0; i< iterations; i++)
-                {
-                    var value = DataType.IsSimple(type);
-                }
-            });
-
-            Timer("DataType.IsSimple (string)", () =>
-            {
-                var type = typeof(int);
-                for(var i = 0; i< iterations; i++)
-                {
-                    var value = DataType.IsSimple(type);
-                }
-            });
-
-            Timer("DataType.GetTypeCode(string)", () =>
-            {
-                var type = typeof(string);
-                for(var i = 0; i< iterations; i++)
-                {
-                    var value = DataType.GetTypeCode(type, out _);
-                }
-            });
-            
-
-//            Timer("DataType.Compare Integers Old", () =>
-//            {
-//                for(var i = 0; i< iterations; i++)
-//                {
-//                    var value = DataType.Compare(null ,(object)1, 2);
-//                }
-//            });
-//            
-//            Timer("DataType.Compare Nulls Old", () =>
-//            {
-//                for(var i = 0; i< iterations; i++)
-//                {
-//                    var value = DataType.Compare(null ,(object)null, null);
-//                }
-//            });
-//            
-//            Timer("DataType.Compare DbNulls Old", () =>
-//            {
-//                for(var i = 0; i< iterations; i++)
-//                {
-//                    var value = DataType.Compare(null ,(object)DBNull.Value, null);
-//                }
-//            });
-//            
-//            Timer("DataType.Compare Integer/Decimal Old", () =>
-//            {
-//                for(var i = 0; i< iterations; i++)
-//                {
-//                    var value =DataType.Compare(null ,(object)2, 2d);
-//                }
-//            });
-//            
-//            Timer("DataType.Compare Integer/String Old", () =>
-//            {
-//                for(var i = 0; i< iterations; i++)
-//                {
-//                    var value = DataType.Compare(null ,(object)2, "2");
-//                }
-//            });
-//            
-//            Timer("DataType.Compare String/Intege Oldr", () =>
-//            {
-//                for(var i = 0; i< iterations; i++)
-//                {
-//                    var value =DataType.Compare(null ,(object)2, "2");
-//                }
-//            });
-//            
-//            
-//            Timer("Compare dec-dec  Old", () =>
-//            {
-//                for(var i = 0; i< iterations; i++)
-//                {
-//                    var value = DataType.Compare(null ,(object)1.1, 2.2);
-//                }
-//            });
-            
-            Timer("DataType.Compare Integers", () =>
-            {
-                for(var i = 0; i< iterations; i++)
-                {
-                    var value = Operations.Compare((object)1, 2);
-                }
-            });
-            
-            Timer("DataType.Compare Nulls", () =>
-            {
-                for(var i = 0; i< iterations; i++)
-                {
-                    var value = Operations.Compare((object)null, null);
-                }
-            });
-            
-            Timer("DataType.Compare DbNulls", () =>
-            {
-                for(var i = 0; i< iterations; i++)
-                {
-                    var value = Operations.Compare((object)DBNull.Value, null);
-                }
-            });
-            
-            Timer("DataType.Compare Integer/Decimal", () =>
-            {
-                for(var i = 0; i< iterations; i++)
-                {
-                    var value = Operations.Compare((object)2, 2d);
-                }
-            });
-            
-            Timer("DataType.Compare Integer/String", () =>
-            {
-                for(var i = 0; i< iterations; i++)
-                {
-                    var value = Operations.Compare((object)2, "2");
-                }
-            });
-            
-            Timer("DataType.Compare String/Integer", () =>
-            {
-                for(var i = 0; i< iterations; i++)
-                {
-                    var value = Operations.Compare((object)2, "2");
-                }
-            });
-            
-            
-            Timer("Compare dec-dec", () =>
-            {
-                for(var i = 0; i< iterations; i++)
-                {
-                    var value = Operations.Compare((object)1.1, 2.2);
-                }
-            });
-        }
+    
     }
 }

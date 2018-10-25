@@ -95,7 +95,7 @@ namespace Dexih.Utils.DataType
             Json,
             Xml,
             Enum,
-            Char
+            CharArray
         }
 
         /// <summary>
@@ -130,7 +130,7 @@ namespace Dexih.Utils.DataType
                     return double.MaxValue;
                 case ETypeCode.Single:
                     return float.MaxValue;
-                case ETypeCode.Char:
+                case ETypeCode.CharArray:
                     return new string(char.MaxValue, length).ToCharArray();
                 case ETypeCode.String:
                 case ETypeCode.Json:
@@ -185,7 +185,7 @@ namespace Dexih.Utils.DataType
                     return double.MinValue;
                 case ETypeCode.Single:
                     return float.MinValue;
-                case ETypeCode.Char:
+                case ETypeCode.CharArray:
                     return new[] {char.MinValue};
                 case ETypeCode.String:
                 case ETypeCode.Xml:
@@ -231,7 +231,7 @@ namespace Dexih.Utils.DataType
                 case ETypeCode.Double:
                 case ETypeCode.Single: return EBasicType.Numeric;
                 case ETypeCode.Guid:
-                case ETypeCode.Char:
+                case ETypeCode.CharArray:
                 case ETypeCode.Json:
                 case ETypeCode.Xml:
                 case ETypeCode.Text:
@@ -266,7 +266,7 @@ namespace Dexih.Utils.DataType
 
                     if (dataType == typeof(char[]))
                     {
-                        return ETypeCode.Char;
+                        return ETypeCode.CharArray;
                     }
                     
                     rank = dataType.GetArrayRank();
@@ -310,7 +310,7 @@ namespace Dexih.Utils.DataType
                         if (dataType == typeof(TimeSpan) || dataType == typeof(TimeSpan?)) return ETypeCode.Time;
                         if (dataType == typeof(Guid) || dataType == typeof(Guid?)) return ETypeCode.Guid;
                         if (dataType == typeof(byte[])) return ETypeCode.Binary;
-                        if (dataType == typeof(char[])) return ETypeCode.Char;
+                        if (dataType == typeof(char[])) return ETypeCode.CharArray;
                         return ETypeCode.Unknown;
                     case TypeCode.SByte:
                         return ETypeCode.SByte;
@@ -453,7 +453,7 @@ namespace Dexih.Utils.DataType
                     return typeof(double);
                 case ETypeCode.Single:
                     return typeof(float);
-                case ETypeCode.Char:
+                case ETypeCode.CharArray:
                     return typeof(char[]);
                 case ETypeCode.Xml:
                     return typeof(XmlDocument);
@@ -511,7 +511,7 @@ namespace Dexih.Utils.DataType
                     return DbType.Single;
                 case ETypeCode.String:
                     return DbType.String;
-                case ETypeCode.Char:
+                case ETypeCode.CharArray:
                     return DbType.StringFixedLength;
                 case ETypeCode.Json:
                     return DbType.String;
@@ -769,8 +769,10 @@ namespace Dexih.Utils.DataType
 //
 //        public static object Add(ETypeCode typeCode,  object value1, object value2)
 //        {
-//            var convertedValue1 = TryParse(typeCode, value1);
-//            var convertedValue2 = TryParse(typeCode, value2);
+//            // var convertedValue1 = TryParse(typeCode, value1);
+//            // var convertedValue2 = TryParse(typeCode, value2);
+//            var convertedValue1 = value1;
+//            var convertedValue2 = value2;
 //            switch (typeCode)
 //            {
 //                case ETypeCode.Binary:
