@@ -373,13 +373,13 @@ namespace Dexih.Utils.DataType
 //            }
         }
 
-        public static object GreaterThan(object a, object b)
+        public static bool GreaterThan(object a, object b)
         {
             var type = a?.GetType();
             return GreaterThan(type, a, b);
         }
         
-        public static object GreaterThan(Type type, object a, object b)
+        public static bool GreaterThan(Type type, object a, object b)
         {
             if (type == ConvertTypes[ConvertTypeBool]) return BoolIsGreaterThan((bool)a, (bool)b);
             if (type == ConvertTypes[ConvertTypeSbyte]) return (sbyte)a > (sbyte) b;
@@ -405,7 +405,7 @@ namespace Dexih.Utils.DataType
             throw new ArgumentOutOfRangeException(nameof(type), a, null);
         }
 
-        public static object GreaterThan(DataType.ETypeCode typeCode,  object value1, object value2)
+        public static bool GreaterThan(DataType.ETypeCode typeCode,  object value1, object value2)
         {
             switch (typeCode)
             {
@@ -456,13 +456,13 @@ namespace Dexih.Utils.DataType
             }
         }
 
-       public static object GreaterThanOrEqual(object a, object b)
+       public static bool GreaterThanOrEqual(object a, object b)
         {
             var type = a?.GetType();
             return GreaterThanOrEqual(type, a, b);
         }
         
-        public static object GreaterThanOrEqual(Type type, object a, object b)
+        public static bool GreaterThanOrEqual(Type type, object a, object b)
         {
             if (type == ConvertTypes[ConvertTypeBool]) return BoolIsGreaterThanOrEqual((bool)a, (bool)b);
             if (type == ConvertTypes[ConvertTypeSbyte]) return (sbyte)a >= (sbyte) b;
@@ -488,7 +488,7 @@ namespace Dexih.Utils.DataType
             throw new ArgumentOutOfRangeException(nameof(type), a, null);
         }
 
-        public static object GreaterThanOrEqual(DataType.ETypeCode typeCode,  object value1, object value2)
+        public static bool GreaterThanOrEqual(DataType.ETypeCode typeCode,  object value1, object value2)
         {
             switch (typeCode)
             {
@@ -540,13 +540,13 @@ namespace Dexih.Utils.DataType
         }
 
         
-        public static object LessThan(object a, object b)
+        public static bool LessThan(object a, object b)
         {
             var type = a?.GetType();
             return LessThan(type, a, b);
         }
         
-        public static object LessThan(Type type, object a, object b)
+        public static bool LessThan(Type type, object a, object b)
         {
             if (type == ConvertTypes[ConvertTypeBool]) return BoolIsLessThan((bool)a, (bool)b);
             if (type == ConvertTypes[ConvertTypeSbyte]) return (sbyte)a < (sbyte) b;
@@ -572,7 +572,7 @@ namespace Dexih.Utils.DataType
             throw new ArgumentOutOfRangeException(nameof(type), a, null);
         }
 
-        public static object LessThan(DataType.ETypeCode typeCode,  object value1, object value2)
+        public static bool LessThan(DataType.ETypeCode typeCode,  object value1, object value2)
         {
             switch (typeCode)
             {
@@ -624,13 +624,13 @@ namespace Dexih.Utils.DataType
         }
 
         
-        public static object LessThanOrEqual(object a, object b)
+        public static bool LessThanOrEqual(object a, object b)
         {
             var type = a?.GetType();
             return LessThanOrEqual(type, a, b);
         }
         
-        public static object LessThanOrEqual(Type type, object a, object b)
+        public static bool LessThanOrEqual(Type type, object a, object b)
         {
             if (type == ConvertTypes[ConvertTypeBool]) return BoolIsLessThanOrEqual((bool)a, (bool)b);
             if (type == ConvertTypes[ConvertTypeSbyte]) return (sbyte)a <= (sbyte) b;
@@ -656,7 +656,7 @@ namespace Dexih.Utils.DataType
             throw new ArgumentOutOfRangeException(nameof(type), a, null);
         }
 
-        public static object LessThanOrEqual(DataType.ETypeCode typeCode,  object value1, object value2)
+        public static bool LessThanOrEqual(DataType.ETypeCode typeCode,  object value1, object value2)
         {
             switch (typeCode)
             {
