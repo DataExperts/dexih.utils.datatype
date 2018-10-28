@@ -95,7 +95,8 @@ namespace Dexih.Utils.DataType
             Json,
             Xml,
             Enum,
-            CharArray
+            CharArray,
+            Object
         }
 
         /// <summary>

@@ -238,6 +238,13 @@ namespace Dexih.Utils.DataType
 
                 return returnValue;
             }
+
+            if (type == typeof(string))
+            {
+                var arrayType = tryType.MakeArrayType(rank);
+                var result = JsonConvert.DeserializeObject((string)inputValue, arrayType);
+                return result;
+            }
             
             return Parse(type, inputValue);
         }
