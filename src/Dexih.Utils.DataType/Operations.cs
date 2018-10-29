@@ -215,7 +215,15 @@ namespace Dexih.Utils.DataType
 
                 return returnValue;
             }
-            
+
+            if (type == typeof(string))
+            {
+                var tryType = DataType.GetType(tryDataType);
+                var arrayType = tryType.MakeArrayType(rank);
+                var result = JsonConvert.DeserializeObject((string)inputValue, arrayType);
+                return result;
+            }
+
             return Parse(tryDataType, inputValue);
         }
         

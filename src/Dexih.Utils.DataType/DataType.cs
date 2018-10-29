@@ -133,9 +133,13 @@ namespace Dexih.Utils.DataType
                     return float.MaxValue;
                 case ETypeCode.CharArray:
                     return new string(char.MaxValue, length).ToCharArray();
-                case ETypeCode.String:
-                case ETypeCode.Json:
                 case ETypeCode.Xml:
+                    var xmlDoc = new XmlDocument();
+                    xmlDoc.LoadXml("<zzzzz></zzzzz>");
+                    return xmlDoc;
+                case ETypeCode.Json:
+                    return JToken.Parse("{zzzzz: 1}");
+                case ETypeCode.String:
                 case ETypeCode.Text:
                     return new string('Z', length);
                 case ETypeCode.Boolean:
@@ -148,10 +152,8 @@ namespace Dexih.Utils.DataType
                     return Guid.Parse("FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF");
                 case ETypeCode.Binary:
                     return new[] { byte.MaxValue, byte.MaxValue, byte.MaxValue };
-                case ETypeCode.Unknown:
-                    return "";
                 default:
-                    return typeof(object);
+                    throw new DataTypeException($"Max value not available for {typeCode}");
             }
         }
 
@@ -188,9 +190,13 @@ namespace Dexih.Utils.DataType
                     return float.MinValue;
                 case ETypeCode.CharArray:
                     return new[] {char.MinValue};
-                case ETypeCode.String:
                 case ETypeCode.Xml:
+                    var xmlDoc = new XmlDocument();
+                    xmlDoc.LoadXml("<aaaa></aaaa>");
+                    return xmlDoc;
                 case ETypeCode.Json:
+                    return JToken.Parse("{}");
+                case ETypeCode.String:
                 case ETypeCode.Text:
                     return "";
                 case ETypeCode.Boolean:
@@ -203,10 +209,8 @@ namespace Dexih.Utils.DataType
                     return Guid.Parse("00000000-0000-0000-0000-000000000000");
                 case ETypeCode.Binary:
                     return new[] { byte.MinValue, byte.MinValue, byte.MinValue };
-                case ETypeCode.Unknown:
-                    return "";
                 default:
-                    return typeof(object);
+                    throw new DataTypeException($"Max value not available for {typeCode}");
             }
         }
 
