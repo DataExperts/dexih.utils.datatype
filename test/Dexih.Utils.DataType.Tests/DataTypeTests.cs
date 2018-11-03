@@ -286,11 +286,14 @@ namespace Dexih.Utils.DataType.Tests
             result = Operations.Parse(typeof(int), 1, "[1,2,3]");
             Assert.Equal(new int[] {1,2,3}, result);
 
+            result = Operations.Parse(ETypeCode.Int32, 1, "[1,2,3]");
+            Assert.Equal(new int[] {1,2,3}, result);
+            
             result = Operations.Parse(typeof(int[]), new string[] {"1", "2", "3"});
             Assert.Equal(new int[] {1,2,3}, result);
 
-            result = Operations.Parse(typeof(int[,]), new[] {new[] {"1", "2"},new[] {"3" ,"4"}});
-            Assert.Equal(new[] {new[] {1,2},new[] {3,4}}, result);
+            result = Operations.Parse(typeof(int[,]), new[,] {{"1", "2"},{"3" ,"4"}});
+            Assert.Equal(new[,] {{1,2},{3,4}}, result);
 
             result = Operations.Parse(typeof(string), 0, new [] {1,2,3});
             Assert.Equal("[1,2,3]", result);

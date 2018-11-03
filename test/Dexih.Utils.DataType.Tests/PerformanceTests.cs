@@ -185,6 +185,107 @@ namespace Dexih.Utils.DataType.Tests
 
         [Theory]
         [InlineData(10000000)]
+        public void ParsePerformanceDifferentDataTypes(long iterations)
+        {
+            Timer("Parse Int -> Int", () =>
+            {
+                for(var i = 0; i< iterations; i++)
+                {
+                    Operations.Parse(DataType.ETypeCode.Int32, (object) 123);
+                }
+            });
+
+            Timer("Parse String -> Int", () =>
+            {
+                for(var i = 0; i< iterations; i++)
+                {
+                    Operations.Parse(DataType.ETypeCode.Int32, (object) "123");
+                }
+            });
+
+            Timer("Parse Long -> Int", () =>
+            {
+                for(var i = 0; i< iterations; i++)
+                {
+                    Operations.Parse(DataType.ETypeCode.Int32, (object) 123L);
+                }
+            });
+
+            var type = typeof(int);
+
+            Timer("Parse Int -> Int (type)", () =>
+            {
+                for(var i = 0; i< iterations; i++)
+                {
+                    Operations.Parse(type, (object) 123);
+                }
+            });
+
+            Timer("Parse String -> Int (type)", () =>
+            {
+                for(var i = 0; i< iterations; i++)
+                {
+                    Operations.Parse(type, (object) "123");
+                }
+            });
+
+            Timer("Parse Long -> Int (type)", () =>
+            {
+                for(var i = 0; i< iterations; i++)
+                {
+                    Operations.Parse(type, (object) 123L);
+                }
+            });
+        }
+        
+        [Theory]
+        [InlineData(10000000)]
+        public void GreaterThan_Performance(long iterations)
+        {
+            var a = 2;
+            var b = 3;
+            var blong = 3L;
+
+            Timer("Greater than base (fastest)", () =>
+            {
+                for (var i = 0; i < iterations; i++)
+                {
+                    var c = a > b;
+                }
+            });
+
+            Timer("Greater than using known type", () =>
+            {
+                for (var i = 0; i < iterations; i++)
+                {
+                    var c = Operations.GreaterThan(a,b);
+                }
+            });
+            
+            Timer("Greater than base same type, but unknown", () =>
+            {
+                for (var i = 0; i < iterations; i++)
+                {
+                    var c = Operations.GreaterThan((object)a,(object)b);
+                }
+            });
+
+            Operations.GreaterThan((short)1, 1);
+            
+
+            
+            Timer("Greater than base different type", () =>
+            {
+                for (var i = 0; i < iterations; i++)
+                {
+                    var c = Operations.GreaterThan((object)a, (object)blong);
+                }
+            });
+
+        }
+        
+        [Theory]
+        [InlineData(10000000)]
         public void Compare_Performance(long iterations)
         {
             var a = 2;
@@ -222,7 +323,6 @@ namespace Dexih.Utils.DataType.Tests
                     var c = Operations.Compare((object)a, (object)b);
                 }
             });
-
         }
 
         [Theory]
