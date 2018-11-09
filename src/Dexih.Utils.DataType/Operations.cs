@@ -458,9 +458,9 @@ namespace Dexih.Utils.DataType
                     return CharArrayIsGreater((char[])value1, (char[])value2,false);
                 case DataType.ETypeCode.String:
                 case DataType.ETypeCode.Text:
-                    return string.CompareOrdinal((string)value1, (string)value2) > 0;
+                    return string.Compare((string)value1, (string)value2) > 0;
                 case DataType.ETypeCode.Guid:
-                    return string.CompareOrdinal(value1.ToString(), value2.ToString()) > 0;
+                    return string.Compare(value1.ToString(), value2.ToString()) > 0;
                 case DataType.ETypeCode.DateTime:
                     return (DateTime) value1 > (DateTime) value2;
                 case DataType.ETypeCode.Boolean:
@@ -562,9 +562,9 @@ namespace Dexih.Utils.DataType
                     return ByteArrayIsGreater((byte[])value1, (byte[])value2,true);
                 case DataType.ETypeCode.String:
                 case DataType.ETypeCode.Text:
-                    return string.CompareOrdinal((string)value1, (string)value2) >= 0;
+                    return string.Compare((string)value1, (string)value2) >= 0;
                 case DataType.ETypeCode.Guid:
-                    return string.CompareOrdinal(value1.ToString(), value2.ToString()) >= 0;
+                    return string.Compare(value1.ToString(), value2.ToString()) >= 0;
                 case DataType.ETypeCode.DateTime:
                     return (DateTime) value1 >= (DateTime) value2;
                 case DataType.ETypeCode.Boolean:
@@ -667,9 +667,9 @@ namespace Dexih.Utils.DataType
                     return CharArrayIsLessThan((char[])value1, (char[])value2,false);
                 case DataType.ETypeCode.String:
                 case DataType.ETypeCode.Text:
-                    return string.CompareOrdinal((string)value1, (string)value2) < 0;
+                    return string.Compare((string)value1, (string)value2) < 0;
                 case DataType.ETypeCode.Guid:
-                    return string.CompareOrdinal(value1.ToString(), value2.ToString()) < 0;
+                    return string.Compare(value1.ToString(), value2.ToString()) < 0;
                 case DataType.ETypeCode.DateTime:
                     return (DateTime) value1 < (DateTime) value2;
                 case DataType.ETypeCode.Boolean:
@@ -771,9 +771,9 @@ namespace Dexih.Utils.DataType
                     return CharArrayIsLessThan((char[])value1, (char[])value2,true);
                 case DataType.ETypeCode.String:
                 case DataType.ETypeCode.Text:
-                    return string.CompareOrdinal((string)value1, (string)value2) <= 0;
+                    return string.Compare((string)value1, (string)value2) <= 0;
                 case DataType.ETypeCode.Guid:
-                    return string.CompareOrdinal(value1.ToString(), value2.ToString()) <= 0;
+                    return string.Compare(value1.ToString(), value2.ToString()) <= 0;
                 case DataType.ETypeCode.DateTime:
                     return (DateTime) value1 <= (DateTime) value2;
                 case DataType.ETypeCode.Boolean:
@@ -1553,7 +1553,7 @@ namespace Dexih.Utils.DataType
                     return ((float)inputValue).CompareTo((float)compareTo);
                 case DataType.ETypeCode.String:
                 case DataType.ETypeCode.Text:
-                    return string.CompareOrdinal((string) inputValue, (string) compareTo);
+                    return string.Compare((string) inputValue, (string) compareTo);
                 case DataType.ETypeCode.Boolean:
                     return ((bool)inputValue).CompareTo((bool)compareTo);
                 case DataType.ETypeCode.DateTime:
@@ -1565,9 +1565,9 @@ namespace Dexih.Utils.DataType
                 case DataType.ETypeCode.Unknown:
                     return String.Compare((inputValue.ToString()), compareTo.ToString(), StringComparison.Ordinal);
                 case DataType.ETypeCode.Json:
-                    return String.CompareOrdinal(inputValue.ToString(), compareTo.ToString());
+                    return String.Compare(inputValue.ToString(), compareTo.ToString());
                 case DataType.ETypeCode.Xml:
-                    return String.CompareOrdinal(((XmlDocument)inputValue).InnerXml, ((XmlDocument)compareTo).InnerXml);
+                    return String.Compare(((XmlDocument)inputValue).InnerXml, ((XmlDocument)compareTo).InnerXml);
                 case DataType.ETypeCode.Enum:
                     return ((int)inputValue).CompareTo((int)compareTo);
                 case DataType.ETypeCode.CharArray:

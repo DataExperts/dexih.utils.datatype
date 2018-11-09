@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Xml;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -257,6 +258,7 @@ namespace Dexih.Utils.DataType
             }
         }
 
+
         /// <summary>
         /// Converts a <see cref="Type"/> into a <see cref="ETypeCode"/>
         /// </summary>
@@ -298,6 +300,8 @@ namespace Dexih.Utils.DataType
                         if (dataType == typeof(Guid) || dataType == typeof(Guid?)) return ETypeCode.Guid;
                         if (dataType == typeof(byte[])) return ETypeCode.Binary;
                         if (dataType == typeof(char[])) return ETypeCode.CharArray;
+                        if (dataType == typeof(JToken)) return ETypeCode.Json;
+                        if (dataType == typeof(XmlDocument)) return ETypeCode.Xml;
                         
                         if (dataType.IsArray)
                         {
