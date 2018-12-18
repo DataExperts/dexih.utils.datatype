@@ -1,13 +1,6 @@
 using System;
-using System.Collections;
-using System.ComponentModel;
-using System.Data;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Net.NetworkInformation;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Security.Cryptography;
 using System.Xml;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -16,56 +9,7 @@ namespace Dexih.Utils.DataType
 {
     public static class Operations
     {
-//        internal static readonly Type[] ConvertTypes = {
-//            typeof (object),
-//            typeof (DBNull),
-//            typeof (bool),
-//            typeof (char),
-//            typeof (sbyte),
-//            typeof (byte),
-//            typeof (short),
-//            typeof (ushort),
-//            typeof (int),
-//            typeof (uint),
-//            typeof (long),
-//            typeof (ulong),
-//            typeof (float),
-//            typeof (double),
-//            typeof (decimal),
-//            typeof (DateTime),
-//            typeof (string),
-//            typeof(byte[]),
-//            typeof(char[]),
-//            typeof(JToken),
-//            typeof(XmlDocument),
-//            typeof(TimeSpan),
-//            typeof(Guid)
-//        };
-//
-//        private const int ConvertTypeObject = 0;
-//        private const int ConvertTypeDbNull = 1;
-//        private const int ConvertTypeBool = 2;
-//        private const int ConvertTypeChar = 3;
-//        private const int ConvertTypeSbyte = 4;
-//        private const int ConvertTypeByte = 5;
-//        private const int ConvertTypeShort = 6;
-//        private const int ConvertTypeUShort = 7;
-//        private const int ConvertTypeInt = 8;
-//        private const int ConvertTypeUint = 9;
-//        private const int ConvertTypeLong = 10;
-//        private const int ConvertTypeULong = 11;
-//        private const int ConvertTypeFloat = 12;
-//        private const int ConvertTypeDouble = 13;
-//        private const int ConvertTypeDecimal = 14;
-//        private const int ConvertTypeDateTime = 15;
-//        private const int ConvertTypeString = 16;
-//        private const int ConvertTypeByteArray = 17;
-//        private const int ConvertTypeCharArray = 18;
-//        private const int ConvertTypeJToken = 19;
-//        private const int ConvertTypeXmlDocument = 20;
-//        private const int ConvertTypeTimeSpan = 21;
-//        private const int ConvertTypeGuid = 22;
-        
+       
         public static T Add<T>(T a, T b) => Operations<T>.Add.Value(a,b);
         public static T Subtract<T>(T a, T b) => Operations<T>.Subtract.Value(a, b);
         public static T Divide<T>(T a, T b) => Operations<T>.Divide.Value(a, b);
@@ -92,6 +36,7 @@ namespace Dexih.Utils.DataType
         public static int Compare<T>(T inputValue, T compareTo) => Operations<T>.Compare.Value(inputValue, compareTo);
         public static int Compare<T>(object inputValue, object compareTo) => Operations<object>.Compare.Value(inputValue, compareTo);
 
+       
         public static object Parse(DataType.ETypeCode typeCode, object inputValue)
         {
             if (inputValue == null || inputValue == DBNull.Value)
@@ -142,11 +87,12 @@ namespace Dexih.Utils.DataType
                 case DataType.ETypeCode.Unknown:
                     return inputValue is string ? inputValue : Parse<string>(inputValue);
                 case DataType.ETypeCode.Json:
+                case DataType.ETypeCode.Node:
                     return inputValue is JToken ? inputValue : Parse<JToken>(inputValue);
                 case DataType.ETypeCode.Xml:
                     return inputValue is XmlDocument ? inputValue : Parse<XmlDocument>(inputValue);
                 case DataType.ETypeCode.Enum:
-                    return inputValue is Enum ? inputValue : Parse<int>(inputValue);
+                    return inputValue is Enum ? inputValue : Parse<string>(inputValue);
                 case DataType.ETypeCode.CharArray:
                     return inputValue is char[] ? inputValue : Parse<char[]>(inputValue);
                 default:
@@ -177,10 +123,40 @@ namespace Dexih.Utils.DataType
             {
                 return Parse(tryDataType, inputValue);
             }
-
+            
             var dataType = DataType.GetType(tryDataType);
+
+            if (inputValue is JArray jArray)
+            {
+                if (rank == 1)
+                {
+                    var returnValue = Array.CreateInstance(dataType, jArray.Count);
+                    for (var i = 0; i < jArray.Count; i++)
+                    {
+                        returnValue.SetValue(Parse(tryDataType, 0, jArray[i]), i);
+                    }
+
+                    return returnValue;
+                } else if (rank == 2)
+                {
+                    var array2 = (JArray) jArray.First();
+                    var returnValue = Array.CreateInstance(dataType, jArray.Count, array2.Count);
+                    
+                    for (var i = 0; i < jArray.Count; i++)
+                    {
+                        array2 = (JArray) jArray[i];
+                        for (var j = 0; j < array2.Count; j++)
+                        {
+                            returnValue.SetValue(Parse(tryDataType, 0, array2[j]), i, j);
+                        }
+                    }
+
+                    return returnValue;
+                }
+            }
+
             var type = inputValue.GetType();
-            if (type.IsArray && type != typeof(byte[]) && type != typeof(char[]))
+            if ((type.IsArray) && type != typeof(byte[]) && type != typeof(char[]))
             {
                 if (rank == 1)
                 {
@@ -208,6 +184,7 @@ namespace Dexih.Utils.DataType
                     return returnValue;
                 }
             }
+            
 
             if (type == typeof(string))
             {
@@ -230,35 +207,7 @@ namespace Dexih.Utils.DataType
             }
 
             return Parse(typeCode, rank, inputValue);
-            
-//            if (rank == 0)
-//            {
-//                return Parse(tryType, inputValue);
-//            }
-//
-//            
-//            var type = inputValue.GetType();
-//            var dataType = tryType.MakeArrayType(rank - 1);
-//            if (type.IsArray && type != typeof(byte[]) && type != typeof(char[]))
-//            {
-//                var inputArray = (Array) inputValue;
-//                var returnValue = Array.CreateInstance(dataType, inputArray.Length);
-//                for (var i = 0; i < inputArray.Length; i++)
-//                {
-//                    returnValue.SetValue(Parse(tryType, rank -1, inputArray.GetValue(i)), i);
-//                }
-//
-//                return returnValue;
-//            }
-//
-//            if (type == typeof(string))
-//            {
-//                var arrayType = tryType.MakeArrayType(rank);
-//                var result = JsonConvert.DeserializeObject((string)inputValue, arrayType);
-//                return result;
-//            }
-//            
-//            return Parse(type, inputValue);
+
         }
         
         public static bool Equal(object inputValue, object compareTo)
@@ -290,29 +239,7 @@ namespace Dexih.Utils.DataType
                 return true;
             }
             return object.Equals(inputValue, compareTo);
-            
-//            if (type == ConvertTypes[ConvertTypeBool]) return Equal<bool>(inputValue, compareTo);
-//            if (type == ConvertTypes[ConvertTypeSbyte]) return Equal<sbyte>(inputValue, compareTo);
-//            if (type == ConvertTypes[ConvertTypeByte]) return Equal<byte>(inputValue, compareTo);
-//            if (type == ConvertTypes[ConvertTypeShort]) return Equal<short>(inputValue, compareTo);
-//            if (type == ConvertTypes[ConvertTypeUShort]) return Equal<ushort>(inputValue, compareTo);
-//            if (type == ConvertTypes[ConvertTypeInt]) return Equal<int>(inputValue, compareTo);
-//            if (type == ConvertTypes[ConvertTypeUint]) return Equal<uint>(inputValue, compareTo);
-//            if (type == ConvertTypes[ConvertTypeLong]) return Equal<long>(inputValue, compareTo);
-//            if (type == ConvertTypes[ConvertTypeULong]) return Equal<ulong>(inputValue, compareTo);
-//            if (type == ConvertTypes[ConvertTypeFloat]) return Equal<float>(inputValue, compareTo);
-//            if (type == ConvertTypes[ConvertTypeDouble]) return Equal<double>(inputValue, compareTo);
-//            if (type == ConvertTypes[ConvertTypeDecimal]) return Equal<decimal>(inputValue, compareTo);
-//            if (type == ConvertTypes[ConvertTypeDateTime]) return Equal<DateTime>(inputValue, compareTo);
-//            if (type == ConvertTypes[ConvertTypeString]) return Equal<string>(inputValue, compareTo);
-//            if (type == ConvertTypes[ConvertTypeGuid]) return Equal<Guid>(inputValue, compareTo);
-//            if (type == ConvertTypes[ConvertTypeByteArray]) return Equal<byte[]>(inputValue, compareTo);
-//            if (type == ConvertTypes[ConvertTypeCharArray]) return Equal<char[]>(inputValue, compareTo);
-//            if (type == ConvertTypes[ConvertTypeJToken]) return Equal<JToken>(inputValue, compareTo);
-//            if (type == ConvertTypes[ConvertTypeXmlDocument]) return Equal<XmlDocument>(inputValue, compareTo);
-//            if (type == ConvertTypes[ConvertTypeTimeSpan]) return Equal<TimeSpan>(inputValue, compareTo);
-//
-//            throw new ArgumentOutOfRangeException(nameof(type), inputValue, null);
+
         }
 
         public static bool Equal(DataType.ETypeCode typeCode, object value1, object value2)
@@ -339,58 +266,7 @@ namespace Dexih.Utils.DataType
             }
 
             return object.Equals(value1, value2);
-            
-//            switch (typeCode)
-//            {
-//                case DataType.ETypeCode.Binary:
-//                    return Equal<byte[]>(value1, value2);
-//                case DataType.ETypeCode.Byte:
-//                    return Equal<byte>(value1, value2);
-//                case DataType.ETypeCode.SByte:
-//                    return Equal<sbyte>(value1, value2);
-//                case DataType.ETypeCode.UInt16:
-//                    return Equal<ushort>(value1, value2);
-//                case DataType.ETypeCode.UInt32:
-//                    return Equal<uint>(value1, value2);
-//                case DataType.ETypeCode.UInt64:
-//                    return Equal<ulong>(value1, value2);
-//                case DataType.ETypeCode.Int16:
-//                    return Equal<short>(value1, value2);
-//                case DataType.ETypeCode.Int32:
-//                    return Equal<int>(value1, value2);
-//                case DataType.ETypeCode.Int64:
-//                    return Equal<long>(value1, value2);
-//                case DataType.ETypeCode.Decimal:
-//                    return Equal<decimal>(value1, value2);
-//                case DataType.ETypeCode.Double:
-//                    return Equal<double>(value1, value2);
-//                case DataType.ETypeCode.Single:
-//                    return Equal<float>(value1, value2);
-//                case DataType.ETypeCode.String:
-//                    return Equal<string>(value1, value2);
-//                case DataType.ETypeCode.Text:
-//                    return Equal<string>(value1, value2);
-//                case DataType.ETypeCode.Boolean:
-//                    return Equal<bool>(value1, value2);
-//                case DataType.ETypeCode.DateTime:
-//                    return Equal<DateTime>(value1, value2);
-//                case DataType.ETypeCode.Time:
-//                    return Equal<TimeSpan>(value1, value2);
-//                case DataType.ETypeCode.Guid:
-//                    return Equal<Guid>(value1, value2);
-//                case DataType.ETypeCode.Unknown:
-//                    return Equal<string>(value1, value2);
-//                case DataType.ETypeCode.Json:
-//                    return Equal<JToken>(value1, value2);
-//                case DataType.ETypeCode.Xml:
-//                    return Equal<XmlDocument>(value1, value2);
-//                case DataType.ETypeCode.Enum:
-//                    return Equal<int>(value1, value2);
-//                case DataType.ETypeCode.Char:
-//                    return Equal<char[]>(value1, value2);
-//                default:
-//                    throw new ArgumentOutOfRangeException(nameof(typeCode), typeCode, null);
-//            }
+
         }
         
         public static bool GreaterThan(object value1, object value2)
@@ -409,30 +285,7 @@ namespace Dexih.Utils.DataType
             
             var typeCode = DataType.GetTypeCode(type, out _);
             return GreaterThan(typeCode, value1, value2);
-//            
-//            if (type == ConvertTypes[ConvertTypeBool]) return BoolIsGreaterThan((bool)value1, (bool)value2);
-//            if (type == ConvertTypes[ConvertTypeSbyte]) return (sbyte)value1 > (sbyte) value2;
-//            if (type == ConvertTypes[ConvertTypeByte]) return (byte)value1 > (byte) value2;
-//            if (type == ConvertTypes[ConvertTypeChar]) return (char)value1 > (char) value2;
-//            if (type == ConvertTypes[ConvertTypeShort]) return (short)value1 > (short) value2;
-//            if (type == ConvertTypes[ConvertTypeUShort]) return (ushort)value1 > (ushort) value2;
-//            if (type == ConvertTypes[ConvertTypeInt]) return (int)value1 > (int) value2;
-//            if (type == ConvertTypes[ConvertTypeUint]) return (uint)value1 > (uint) value2;
-//            if (type == ConvertTypes[ConvertTypeLong]) return (long)value1 > (long) value2;
-//            if (type == ConvertTypes[ConvertTypeULong]) return (ulong)value1 > (ulong) value2;
-//            if (type == ConvertTypes[ConvertTypeFloat]) return  (float)value1 > (float) value2;
-//            if (type == ConvertTypes[ConvertTypeDouble]) return (double)value1 > (double) value2;
-//            if (type == ConvertTypes[ConvertTypeDecimal]) return (decimal)value1 > (decimal) value2;
-//            if (type == ConvertTypes[ConvertTypeDateTime]) return (DateTime)value1 > (DateTime) value2;
-//            if (type == ConvertTypes[ConvertTypeString]) return String.CompareOrdinal((string)value1, (string) value2) > 0;
-//            if (type == ConvertTypes[ConvertTypeGuid]) return String.CompareOrdinal(value1.ToString(), value2.ToString()) > 0;
-//            if (type == ConvertTypes[ConvertTypeByteArray]) return ByteArrayIsGreater((byte[])value1, (byte[])value2,false);
-//            if (type == ConvertTypes[ConvertTypeCharArray]) return CharArrayIsGreater((char[])value1, (char[])value2,false);
-//            // if (type == ConvertTypes[ConvertTypeJToken]) return (JToken)a > (JToken) b;
-//            // if (type == ConvertTypes[ConvertTypeXmlDocument]) return (XmlDocument)a > (XmlDocument) b;
-//            if (type == ConvertTypes[ConvertTypeTimeSpan]) return (TimeSpan)value1 > (TimeSpan) value2;
-//
-//            throw new ArgumentOutOfRangeException(nameof(type), value1, null);
+
         }
 
         public static bool GreaterThan(DataType.ETypeCode typeCode,  object value1, object value2)
@@ -451,6 +304,7 @@ namespace Dexih.Utils.DataType
                 case DataType.ETypeCode.Unknown:
                 case DataType.ETypeCode.Json:
                 case DataType.ETypeCode.Xml:
+                case DataType.ETypeCode.Node:
                     throw new Exception($"Cannot compare {typeCode} types.");
                 case DataType.ETypeCode.Binary:
                     return ByteArrayIsGreater((byte[])value1, (byte[])value2,false);
@@ -513,29 +367,6 @@ namespace Dexih.Utils.DataType
             var typeCode = DataType.GetTypeCode(type, out _);
             return GreaterThanOrEqual(typeCode, value1, value2);
 
-//            if (type == ConvertTypes[ConvertTypeBool]) return BoolIsGreaterThanOrEqual((bool)value1, (bool)value2);
-//            if (type == ConvertTypes[ConvertTypeSbyte]) return (sbyte)value1 >= (sbyte) value2;
-//            if (type == ConvertTypes[ConvertTypeByte]) return (byte)value1 >= (byte) value2;
-//            if (type == ConvertTypes[ConvertTypeChar]) return (char)value1 >= (char) value2;
-//            if (type == ConvertTypes[ConvertTypeShort]) return (short)value1 >= (short) value2;
-//            if (type == ConvertTypes[ConvertTypeUShort]) return (ushort)value1 >= (ushort) value2;
-//            if (type == ConvertTypes[ConvertTypeInt]) return (int)value1 >= (int) value2;
-//            if (type == ConvertTypes[ConvertTypeUint]) return (uint)value1 >= (uint) value2;
-//            if (type == ConvertTypes[ConvertTypeLong]) return (long)value1 >= (long) value2;
-//            if (type == ConvertTypes[ConvertTypeULong]) return (ulong)value1 >= (ulong) value2;
-//            if (type == ConvertTypes[ConvertTypeFloat]) return  (float)value1 >= (float) value2;
-//            if (type == ConvertTypes[ConvertTypeDouble]) return (double)value1 >= (double) value2;
-//            if (type == ConvertTypes[ConvertTypeDecimal]) return (decimal)value1 >= (decimal) value2;
-//            if (type == ConvertTypes[ConvertTypeDateTime]) return (DateTime)value1 >= (DateTime) value2;
-//            if (type == ConvertTypes[ConvertTypeString]) return String.CompareOrdinal((string)value1, (string) value2) >= 0;
-//            if (type == ConvertTypes[ConvertTypeGuid]) return String.CompareOrdinal(value1.ToString(), value2.ToString()) >= 0;
-//            if (type == ConvertTypes[ConvertTypeByteArray]) return ByteArrayIsGreater((byte[])value1, (byte[])value2,true);
-//            if (type == ConvertTypes[ConvertTypeCharArray]) return CharArrayIsGreater((char[])value1, (char[])value2,true);
-//            // if (type == ConvertTypes[ConvertTypeJToken]) return (JToken)a >= (JToken) b;
-//            // if (type == ConvertTypes[ConvertTypeXmlDocument]) return (XmlDocument)a >= (XmlDocument) b;
-//            if (type == ConvertTypes[ConvertTypeTimeSpan]) return (TimeSpan)value1 >= (TimeSpan) value2;
-//
-//            throw new ArgumentOutOfRangeException(nameof(type), value1, null);
         }
 
         public static bool GreaterThanOrEqual(DataType.ETypeCode typeCode,  object value1, object value2)
@@ -555,6 +386,7 @@ namespace Dexih.Utils.DataType
                 case DataType.ETypeCode.Unknown:
                 case DataType.ETypeCode.Json:
                 case DataType.ETypeCode.Xml:
+                case DataType.ETypeCode.Node:
                     throw new Exception($"Cannot compare {typeCode} types.");
                 case DataType.ETypeCode.CharArray:
                     return CharArrayIsGreater((char[])value1, (char[])value2,true);
@@ -618,29 +450,6 @@ namespace Dexih.Utils.DataType
             var typeCode = DataType.GetTypeCode(type, out _);
             return LessThan(typeCode, value1, value2);
 
-//            if (type == ConvertTypes[ConvertTypeBool]) return BoolIsLessThan((bool)value1, (bool)value2);
-//            if (type == ConvertTypes[ConvertTypeSbyte]) return (sbyte)value1 < (sbyte) value2;
-//            if (type == ConvertTypes[ConvertTypeByte]) return (byte)value1 < (byte) value2;
-//            if (type == ConvertTypes[ConvertTypeChar]) return (char)value1 < (char) value2;
-//            if (type == ConvertTypes[ConvertTypeShort]) return (short)value1 < (short) value2;
-//            if (type == ConvertTypes[ConvertTypeUShort]) return (ushort)value1 < (ushort) value2;
-//            if (type == ConvertTypes[ConvertTypeInt]) return (int)value1 < (int) value2;
-//            if (type == ConvertTypes[ConvertTypeUint]) return (uint)value1 < (uint) value2;
-//            if (type == ConvertTypes[ConvertTypeLong]) return (long)value1 < (long) value2;
-//            if (type == ConvertTypes[ConvertTypeULong]) return (ulong)value1 < (ulong) value2;
-//            if (type == ConvertTypes[ConvertTypeFloat]) return  (float)value1 < (float) value2;
-//            if (type == ConvertTypes[ConvertTypeDouble]) return (double)value1 < (double) value2;
-//            if (type == ConvertTypes[ConvertTypeDecimal]) return (decimal)value1 < (decimal) value2;
-//            if (type == ConvertTypes[ConvertTypeDateTime]) return (DateTime)value1 < (DateTime) value2;
-//            if (type == ConvertTypes[ConvertTypeString]) return String.CompareOrdinal((string)value1, (string) value2) < 0;
-//            if (type == ConvertTypes[ConvertTypeGuid]) return String.CompareOrdinal(value1.ToString(), value2.ToString()) < 0;
-//            if (type == ConvertTypes[ConvertTypeByteArray]) return ByteArrayIsLessThan((byte[])value1, (byte[])value2,false);
-//            if (type == ConvertTypes[ConvertTypeCharArray]) return CharArrayIsLessThan((char[])value1, (char[])value2,false);
-//            // if (type == ConvertTypes[ConvertTypeJToken]) return (JToken)a < (JToken) b;
-//            // if (type == ConvertTypes[ConvertTypeXmlDocument]) return (XmlDocument)a < (XmlDocument) b;
-//            if (type == ConvertTypes[ConvertTypeTimeSpan]) return (TimeSpan)value1 < (TimeSpan) value2;
-//
-//            throw new ArgumentOutOfRangeException(nameof(type), value1, null);
         }
 
         public static bool LessThan(DataType.ETypeCode typeCode,  object value1, object value2)
@@ -660,6 +469,7 @@ namespace Dexih.Utils.DataType
                 case DataType.ETypeCode.Unknown:
                 case DataType.ETypeCode.Json:
                 case DataType.ETypeCode.Xml:
+                case DataType.ETypeCode.Node:
                     throw new Exception($"Cannot compare {typeCode} types.");
                 case DataType.ETypeCode.Binary:
                     return ByteArrayIsLessThan((byte[])value1, (byte[])value2,false);
@@ -722,30 +532,6 @@ namespace Dexih.Utils.DataType
 
             var typeCode = DataType.GetTypeCode(type, out _);
             return LessThanOrEqual(typeCode, value1, value2);
-
-//            if (type == ConvertTypes[ConvertTypeBool]) return BoolIsLessThanOrEqual((bool)value1, (bool)value2);
-//            if (type == ConvertTypes[ConvertTypeSbyte]) return (sbyte)value1 <= (sbyte) value2;
-//            if (type == ConvertTypes[ConvertTypeByte]) return (byte)value1 <= (byte) value2;
-//            if (type == ConvertTypes[ConvertTypeChar]) return (char)value1 <= (char) value2;
-//            if (type == ConvertTypes[ConvertTypeShort]) return (short)value1 <= (short) value2;
-//            if (type == ConvertTypes[ConvertTypeUShort]) return (ushort)value1 <= (ushort) value2;
-//            if (type == ConvertTypes[ConvertTypeInt]) return (int)value1 <= (int) value2;
-//            if (type == ConvertTypes[ConvertTypeUint]) return (uint)value1 <= (uint) value2;
-//            if (type == ConvertTypes[ConvertTypeLong]) return (long)value1 <= (long) value2;
-//            if (type == ConvertTypes[ConvertTypeULong]) return (ulong)value1 <= (ulong) value2;
-//            if (type == ConvertTypes[ConvertTypeFloat]) return  (float)value1 <= (float) value2;
-//            if (type == ConvertTypes[ConvertTypeDouble]) return (double)value1 <= (double) value2;
-//            if (type == ConvertTypes[ConvertTypeDecimal]) return (decimal)value1 <= (decimal) value2;
-//            if (type == ConvertTypes[ConvertTypeDateTime]) return (DateTime)value1 <= (DateTime) value2;
-//            if (type == ConvertTypes[ConvertTypeString]) return String.CompareOrdinal((string)value1, (string) value2) <= 0;
-//            if (type == ConvertTypes[ConvertTypeGuid]) return String.CompareOrdinal(value1.ToString(), value2.ToString()) <= 0;
-//            if (type == ConvertTypes[ConvertTypeByteArray]) return ByteArrayIsLessThan((byte[])value1, (byte[])value2,true);
-//            if (type == ConvertTypes[ConvertTypeCharArray]) return CharArrayIsLessThan((char[])value1, (char[])value2,true);
-//            // if (type == ConvertTypes[ConvertTypeJToken]) return (JToken)a <= (JToken) b;
-//            // if (type == ConvertTypes[ConvertTypeXmlDocument]) return (XmlDocument)a <= (XmlDocument) b;
-//            if (type == ConvertTypes[ConvertTypeTimeSpan]) return (TimeSpan)value1 <= (TimeSpan) value2;
-//
-//            throw new ArgumentOutOfRangeException(nameof(type), value1, null);
         }
 
         public static bool LessThanOrEqual(DataType.ETypeCode typeCode,  object value1, object value2)
@@ -764,6 +550,7 @@ namespace Dexih.Utils.DataType
                 case DataType.ETypeCode.Unknown:
                 case DataType.ETypeCode.Json:
                 case DataType.ETypeCode.Xml:
+                case DataType.ETypeCode.Node:
                     throw new Exception($"Cannot compare {typeCode} types.");
                 case DataType.ETypeCode.Binary:
                     return ByteArrayIsLessThan((byte[])value1, (byte[])value2,true);
@@ -819,29 +606,6 @@ namespace Dexih.Utils.DataType
         {
             var typeCode = DataType.GetTypeCode(type, out _);
             return Add(typeCode, value1, value2);
-
-//            // if (type == ConvertTypes[ConvertTypeBool]) return (bool)a + (bool)b;
-//            if (type == ConvertTypes[ConvertTypeSbyte]) return (sbyte)a + (sbyte) b;
-//            if (type == ConvertTypes[ConvertTypeByte]) return (byte)a + (byte) b;
-//            if (type == ConvertTypes[ConvertTypeChar]) return (char)a + (char) b;
-//            if (type == ConvertTypes[ConvertTypeShort]) return (short)a + (short) b;
-//            if (type == ConvertTypes[ConvertTypeUShort]) return (ushort)a + (ushort) b;
-//            if (type == ConvertTypes[ConvertTypeInt]) return (int)a + (int) b;
-//            if (type == ConvertTypes[ConvertTypeUint]) return (uint)a + (uint) b;
-//            if (type == ConvertTypes[ConvertTypeLong]) return (long)a + (long) b;
-//            if (type == ConvertTypes[ConvertTypeULong]) return (ulong)a + (ulong) b;
-//            if (type == ConvertTypes[ConvertTypeFloat]) return  (float)a + (float) b;
-//            if (type == ConvertTypes[ConvertTypeDouble]) return (double)a + (double) b;
-//            if (type == ConvertTypes[ConvertTypeDecimal]) return (decimal)a + (decimal) b;
-//            // if (type == ConvertTypes[ConvertTypeDateTime]) return (DateTime)a + (DateTime) b;
-//            // if (type == ConvertTypes[ConvertTypeString]) return (string)a + (string) b;
-//            // if (type == ConvertTypes[ConvertTypeByteArray]) return (byte[])a + (byte[]) b;
-//            // if (type == ConvertTypes[ConvertTypeCharArray]) return (char[])a + (char[]) b;
-//            // if (type == ConvertTypes[ConvertTypeJToken]) return (JToken)a + (JToken) b;
-//            // if (type == ConvertTypes[ConvertTypeXmlDocument]) return (XmlDocument)a + (XmlDocument) b;
-//            if (type == ConvertTypes[ConvertTypeTimeSpan]) return (TimeSpan)a + (TimeSpan) b;
-//
-//            throw new ArgumentOutOfRangeException(nameof(type), a, null);
         }
 
         public static object Add(DataType.ETypeCode typeCode,  object value1, object value2)
@@ -861,6 +625,7 @@ namespace Dexih.Utils.DataType
                 case DataType.ETypeCode.Guid:
                 case DataType.ETypeCode.Json:
                 case DataType.ETypeCode.Xml:
+                case DataType.ETypeCode.Node:
                     throw new Exception($"Cannot add {typeCode} types.");
                 case DataType.ETypeCode.Time:
                     return (TimeSpan) value1 + (TimeSpan) value2;
@@ -903,29 +668,6 @@ namespace Dexih.Utils.DataType
         {
             var typeCode = DataType.GetTypeCode(type, out _);
             return Subtract(typeCode, value1, value2);
-
-//            // if (type == ConvertTypes[ConvertTypeBool]) return (bool)a - (bool)b;
-//            if (type == ConvertTypes[ConvertTypeSbyte]) return (sbyte)value1 - (sbyte) value2;
-//            if (type == ConvertTypes[ConvertTypeByte]) return (byte)value1 - (byte) value2;
-//            if (type == ConvertTypes[ConvertTypeChar]) return (char)value1 - (char) value2;
-//            if (type == ConvertTypes[ConvertTypeShort]) return (short)value1 - (short) value2;
-//            if (type == ConvertTypes[ConvertTypeUShort]) return (ushort)value1 - (ushort) value2;
-//            if (type == ConvertTypes[ConvertTypeInt]) return (int)value1 - (int) value2;
-//            if (type == ConvertTypes[ConvertTypeUint]) return (uint)value1 - (uint) value2;
-//            if (type == ConvertTypes[ConvertTypeLong]) return (long)value1 - (long) value2;
-//            if (type == ConvertTypes[ConvertTypeULong]) return (ulong)value1 - (ulong) value2;
-//            if (type == ConvertTypes[ConvertTypeFloat]) return  (float)value1 - (float) value2;
-//            if (type == ConvertTypes[ConvertTypeDouble]) return (double)value1 - (double) value2;
-//            if (type == ConvertTypes[ConvertTypeDecimal]) return (decimal)value1 - (decimal) value2;
-//            // if (type == ConvertTypes[ConvertTypeDateTime]) return (DateTime)a - (DateTime) b;
-//            // if (type == ConvertTypes[ConvertTypeString]) return (string)a - (string) b;
-//            // if (type == ConvertTypes[ConvertTypeByteArray]) return (byte[])a - (byte[]) b;
-//            // if (type == ConvertTypes[ConvertTypeCharArray]) return (char[])a - (char[]) b;
-//            // if (type == ConvertTypes[ConvertTypeJToken]) return (JToken)a - (JToken) b;
-//            // if (type == ConvertTypes[ConvertTypeXmlDocument]) return (XmlDocument)a - (XmlDocument) b;
-//            if (type == ConvertTypes[ConvertTypeTimeSpan]) return (TimeSpan)value1 - (TimeSpan) value2;
-//
-//            throw new ArgumentOutOfRangeException(nameof(type), value1, null);
         }
 
         public static object Subtract(DataType.ETypeCode typeCode,  object value1, object value2)
@@ -945,6 +687,7 @@ namespace Dexih.Utils.DataType
                 case DataType.ETypeCode.Guid:
                 case DataType.ETypeCode.Json:
                 case DataType.ETypeCode.Xml:
+                case DataType.ETypeCode.Node:
                     throw new Exception($"Cannot subtract {typeCode} types.");
                 case DataType.ETypeCode.Time:
                     return (TimeSpan) value1 - (TimeSpan) value2;
@@ -987,29 +730,6 @@ namespace Dexih.Utils.DataType
         {
             var typeCode = DataType.GetTypeCode(type, out _);
             return Divide(typeCode, value1, value2);
-
-//            // if (type == ConvertTypes[ConvertTypeBool]) return (bool)a / (bool)b;
-//            if (type == ConvertTypes[ConvertTypeSbyte]) return (sbyte)a / (sbyte) b;
-//            if (type == ConvertTypes[ConvertTypeByte]) return (byte)a / (byte) b;
-//            if (type == ConvertTypes[ConvertTypeChar]) return (char)a / (char) b;
-//            if (type == ConvertTypes[ConvertTypeShort]) return (short)a / (short) b;
-//            if (type == ConvertTypes[ConvertTypeUShort]) return (ushort)a / (ushort) b;
-//            if (type == ConvertTypes[ConvertTypeInt]) return (int)a / (int) b;
-//            if (type == ConvertTypes[ConvertTypeUint]) return (uint)a / (uint) b;
-//            if (type == ConvertTypes[ConvertTypeLong]) return (long)a / (long) b;
-//            if (type == ConvertTypes[ConvertTypeULong]) return (ulong)a / (ulong) b;
-//            if (type == ConvertTypes[ConvertTypeFloat]) return  (float)a / (float) b;
-//            if (type == ConvertTypes[ConvertTypeDouble]) return (double)a / (double) b;
-//            if (type == ConvertTypes[ConvertTypeDecimal]) return (decimal)a / (decimal) b;
-//            // if (type == ConvertTypes[ConvertTypeDateTime]) return (DateTime)a / (DateTime) b;
-//            // if (type == ConvertTypes[ConvertTypeString]) return (string)a / (string) b;
-//            // if (type == ConvertTypes[ConvertTypeByteArray]) return (byte[])a / (byte[]) b;
-//            // if (type == ConvertTypes[ConvertTypeCharArray]) return (char[])a / (char[]) b;
-//            // if (type == ConvertTypes[ConvertTypeJToken]) return (JToken)a / (JToken) b;
-//            // if (type == ConvertTypes[ConvertTypeXmlDocument]) return (XmlDocument)a / (XmlDocument) b;
-//            // if (type == ConvertTypes[ConvertTypeTimeSpan]) return (TimeSpan)a / (TimeSpan) b;
-//
-//            throw new ArgumentOutOfRangeException(nameof(type), a, null);
         }
 
         public static object Divide(DataType.ETypeCode typeCode,  object value1, object value2)
@@ -1030,6 +750,7 @@ namespace Dexih.Utils.DataType
                 case DataType.ETypeCode.Guid:
                 case DataType.ETypeCode.Json:
                 case DataType.ETypeCode.Xml:
+                case DataType.ETypeCode.Node:
                     throw new Exception($"Cannot add {typeCode} types.");
                 case DataType.ETypeCode.Byte:
                     return (byte)((byte) value1 / (byte) value2);
@@ -1070,29 +791,6 @@ namespace Dexih.Utils.DataType
         {
             var typeCode = DataType.GetTypeCode(type, out _);
             return Multiply(typeCode, value1, value2);
-
-//            // if (type == ConvertTypes[ConvertTypeBool]) return (bool)a * (bool)b;
-//            if (type == ConvertTypes[ConvertTypeSbyte]) return (sbyte)value1 * (sbyte) value2;
-//            if (type == ConvertTypes[ConvertTypeByte]) return (byte)value1 * (byte) value2;
-//            if (type == ConvertTypes[ConvertTypeChar]) return (char)value1 * (char) value2;
-//            if (type == ConvertTypes[ConvertTypeShort]) return (short)value1 * (short) value2;
-//            if (type == ConvertTypes[ConvertTypeUShort]) return (ushort)value1 * (ushort) value2;
-//            if (type == ConvertTypes[ConvertTypeInt]) return (int)value1 * (int) value2;
-//            if (type == ConvertTypes[ConvertTypeUint]) return (uint)value1 * (uint) value2;
-//            if (type == ConvertTypes[ConvertTypeLong]) return (long)value1 * (long) value2;
-//            if (type == ConvertTypes[ConvertTypeULong]) return (ulong)value1 * (ulong) value2;
-//            if (type == ConvertTypes[ConvertTypeFloat]) return  (float)value1 * (float) value2;
-//            if (type == ConvertTypes[ConvertTypeDouble]) return (double)value1 * (double) value2;
-//            if (type == ConvertTypes[ConvertTypeDecimal]) return (decimal)value1 * (decimal) value2;
-//            // if (type == ConvertTypes[ConvertTypeDateTime]) return (DateTime)a * (DateTime) b;
-//            // if (type == ConvertTypes[ConvertTypeString]) return (string)a * (string) b;
-//            // if (type == ConvertTypes[ConvertTypeByteArray]) return (byte[])a * (byte[]) b;
-//            // if (type == ConvertTypes[ConvertTypeCharArray]) return (char[])a * (char[]) b;
-//            // if (type == ConvertTypes[ConvertTypeJToken]) return (JToken)a * (JToken) b;
-//            // if (type == ConvertTypes[ConvertTypeXmlDocument]) return (XmlDocument)a * (XmlDocument) b;
-//            // if (type == ConvertTypes[ConvertTypeTimeSpan]) return (TimeSpan)a * (TimeSpan) b;
-//
-//            throw new ArgumentOutOfRangeException(nameof(type), value1, null);
         }
 
         public static object Multiply(DataType.ETypeCode typeCode,  object value1, object value2)
@@ -1113,6 +811,7 @@ namespace Dexih.Utils.DataType
                 case DataType.ETypeCode.Json:
                 case DataType.ETypeCode.Time:
                 case DataType.ETypeCode.Xml:
+                case DataType.ETypeCode.Node:
                     throw new Exception($"Cannot add {typeCode} types.");
                 case DataType.ETypeCode.Byte:
                     return (byte)((byte) value1 * (byte) value2);
@@ -1153,29 +852,6 @@ namespace Dexih.Utils.DataType
         {
             var typeCode = DataType.GetTypeCode(type, out _);
             return DivideInt(typeCode, value1, value2);
-
-//            // if (type == ConvertTypes[ConvertTypeBool]) return (bool)a / (bool)b;
-//            if (type == ConvertTypes[ConvertTypeSbyte]) return (sbyte)value1 / value2;
-//            if (type == ConvertTypes[ConvertTypeByte]) return (byte)value1 / value2;
-//            if (type == ConvertTypes[ConvertTypeChar]) return (char)value1 / value2;
-//            if (type == ConvertTypes[ConvertTypeShort]) return (short)value1 / value2;
-//            if (type == ConvertTypes[ConvertTypeUShort]) return (ushort)value1 / value2;
-//            if (type == ConvertTypes[ConvertTypeInt]) return (int)value1 / value2;
-//            if (type == ConvertTypes[ConvertTypeUint]) return (uint)value1 / value2;
-//            if (type == ConvertTypes[ConvertTypeLong]) return (long)value1 / value2;
-//            if (type == ConvertTypes[ConvertTypeULong]) return (ulong)value1 / Convert.ToUInt64(value2);
-//            if (type == ConvertTypes[ConvertTypeFloat]) return  (float)value1 / value2;
-//            if (type == ConvertTypes[ConvertTypeDouble]) return (double)value1 / value2;
-//            if (type == ConvertTypes[ConvertTypeDecimal]) return (decimal)value1 / value2;
-//            // if (type == ConvertTypes[ConvertTypeDateTime]) return (DateTime)a / (DateTime) b;
-//            // if (type == ConvertTypes[ConvertTypeString]) return (string)a / (string) b;
-//            // if (type == ConvertTypes[ConvertTypeByteArray]) return (byte[])a / (byte[]) b;
-//            // if (type == ConvertTypes[ConvertTypeCharArray]) return (char[])a / (char[]) b;
-//            // if (type == ConvertTypes[ConvertTypeJToken]) return (JToken)a / (JToken) b;
-//            // if (type == ConvertTypes[ConvertTypeXmlDocument]) return (XmlDocument)a / (XmlDocument) b;
-//            // if (type == ConvertTypes[ConvertTypeTimeSpan]) return (TimeSpan)a / (TimeSpan) b;
-//
-//            throw new ArgumentOutOfRangeException(nameof(type), value1, null);
         }
 
         public static object DivideInt(DataType.ETypeCode typeCode,  object value1, int value2)
@@ -1195,6 +871,7 @@ namespace Dexih.Utils.DataType
                 case DataType.ETypeCode.Json:
                 case DataType.ETypeCode.Time:
                 case DataType.ETypeCode.Xml:
+                case DataType.ETypeCode.Node:
                     throw new Exception($"Cannot add {typeCode} types.");
                 case DataType.ETypeCode.Byte:
                     return (byte)((byte) value1 / value2);
@@ -1235,29 +912,6 @@ namespace Dexih.Utils.DataType
         {
             var typeCode = DataType.GetTypeCode(type, out _);
             return Negate(typeCode, value);
-
-//            // if (type == ConvertTypes[ConvertTypeBool]) return (bool)a / (bool)b;
-//            if (type == ConvertTypes[ConvertTypeSbyte]) return (sbyte)a * -1;
-//            if (type == ConvertTypes[ConvertTypeByte]) return (byte)a * -1;
-//            if (type == ConvertTypes[ConvertTypeChar]) return (char)a * -1;
-//            if (type == ConvertTypes[ConvertTypeShort]) return (short)a * -1;
-//            // if (type == ConvertTypes[ConvertTypeUShort]) return (ushort)a * -1;
-//            if (type == ConvertTypes[ConvertTypeInt]) return (int)a * -1;
-//            //if (type == ConvertTypes[ConvertTypeUint]) return (uint)a * -1;
-//            if (type == ConvertTypes[ConvertTypeLong]) return (long)a * -1;
-//            //if (type == ConvertTypes[ConvertTypeULong]) return (ulong)a -1;
-//            if (type == ConvertTypes[ConvertTypeFloat]) return  (float)a * -1;
-//            if (type == ConvertTypes[ConvertTypeDouble]) return (double)a * -1;
-//            if (type == ConvertTypes[ConvertTypeDecimal]) return (decimal)a * -1;
-//            // if (type == ConvertTypes[ConvertTypeDateTime]) return (DateTime)a / (DateTime) b;
-//            // if (type == ConvertTypes[ConvertTypeString]) return (string)a / (string) b;
-//            // if (type == ConvertTypes[ConvertTypeByteArray]) return (byte[])a / (byte[]) b;
-//            // if (type == ConvertTypes[ConvertTypeCharArray]) return (char[])a / (char[]) b;
-//            // if (type == ConvertTypes[ConvertTypeJToken]) return (JToken)a / (JToken) b;
-//            // if (type == ConvertTypes[ConvertTypeXmlDocument]) return (XmlDocument)a / (XmlDocument) b;
-//            // if (type == ConvertTypes[ConvertTypeTimeSpan]) return (TimeSpan)a / (TimeSpan) b;
-//
-//            throw new ArgumentOutOfRangeException(nameof(type), a, null);
         }
 
         public static object Negate(DataType.ETypeCode typeCode,  object value1)
@@ -1280,6 +934,7 @@ namespace Dexih.Utils.DataType
                 case DataType.ETypeCode.UInt16:
                 case DataType.ETypeCode.UInt32:
                 case DataType.ETypeCode.UInt64:
+                case DataType.ETypeCode.Node:
                     throw new Exception($"Cannot negate {typeCode} types.");
                 case DataType.ETypeCode.Byte:
                     return (byte)((byte) value1 * -1);
@@ -1314,29 +969,6 @@ namespace Dexih.Utils.DataType
         {
             var typeCode = DataType.GetTypeCode(type, out _);
             return Increment(typeCode, value);
-
-//            // if (type == ConvertTypes[ConvertTypeBool]) return (bool)a / (bool)b;
-//            if (type == ConvertTypes[ConvertTypeSbyte]) return (sbyte)value + 1;
-//            if (type == ConvertTypes[ConvertTypeByte]) return (byte)value + 1;
-//            if (type == ConvertTypes[ConvertTypeChar]) return (char)value + 1;
-//            if (type == ConvertTypes[ConvertTypeShort]) return (short)value + 1;
-//            if (type == ConvertTypes[ConvertTypeUShort]) return (ushort)value + 1;
-//            if (type == ConvertTypes[ConvertTypeInt]) return (int)value + 1;
-//            if (type == ConvertTypes[ConvertTypeUint]) return (uint)value + 1;
-//            if (type == ConvertTypes[ConvertTypeLong]) return (long)value + 1;
-//            if (type == ConvertTypes[ConvertTypeULong]) return (ulong)value -1;
-//            if (type == ConvertTypes[ConvertTypeFloat]) return  (float)value + 1;
-//            if (type == ConvertTypes[ConvertTypeDouble]) return (double)value + 1;
-//            if (type == ConvertTypes[ConvertTypeDecimal]) return (decimal)value + 1;
-//            // if (type == ConvertTypes[ConvertTypeDateTime]) return (DateTime)a / (DateTime) b;
-//            // if (type == ConvertTypes[ConvertTypeString]) return (string)a / (string) b;
-//            // if (type == ConvertTypes[ConvertTypeByteArray]) return (byte[])a / (byte[]) b;
-//            // if (type == ConvertTypes[ConvertTypeCharArray]) return (char[])a / (char[]) b;
-//            // if (type == ConvertTypes[ConvertTypeJToken]) return (JToken)a / (JToken) b;
-//            // if (type == ConvertTypes[ConvertTypeXmlDocument]) return (XmlDocument)a / (XmlDocument) b;
-//            // if (type == ConvertTypes[ConvertTypeTimeSpan]) return (TimeSpan)a / (TimeSpan) b;
-//
-//            throw new ArgumentOutOfRangeException(nameof(type), value, null);
         }
 
         public static object Increment(DataType.ETypeCode typeCode,  object value1)
@@ -1356,6 +988,7 @@ namespace Dexih.Utils.DataType
                 case DataType.ETypeCode.Json:
                 case DataType.ETypeCode.Time:
                 case DataType.ETypeCode.Xml:
+                case DataType.ETypeCode.Node:
                     throw new Exception($"Cannot negate {typeCode} types.");
                 case DataType.ETypeCode.Byte:
                     return (byte)((byte) value1 + 1);
@@ -1396,29 +1029,6 @@ namespace Dexih.Utils.DataType
         {
             var typeCode = DataType.GetTypeCode(type, out _);
             return Decrement(typeCode, value);
-
-//            // if (type == ConvertTypes[ConvertTypeBool]) return (bool)a / (bool)b;
-//            if (type == ConvertTypes[ConvertTypeSbyte]) return (sbyte)value - 1;
-//            if (type == ConvertTypes[ConvertTypeByte]) return (byte)value - 1;
-//            if (type == ConvertTypes[ConvertTypeChar]) return (char)value - 1;
-//            if (type == ConvertTypes[ConvertTypeShort]) return (short)value - 1;
-//            if (type == ConvertTypes[ConvertTypeUShort]) return (ushort)value - 1;
-//            if (type == ConvertTypes[ConvertTypeInt]) return (int)value - 1;
-//            if (type == ConvertTypes[ConvertTypeUint]) return (uint)value - 1;
-//            if (type == ConvertTypes[ConvertTypeLong]) return (long)value - 1;
-//            if (type == ConvertTypes[ConvertTypeULong]) return (ulong)value -1;
-//            if (type == ConvertTypes[ConvertTypeFloat]) return  (float)value - 1;
-//            if (type == ConvertTypes[ConvertTypeDouble]) return (double)value - 1;
-//            if (type == ConvertTypes[ConvertTypeDecimal]) return (decimal)value - 1;
-//            // if (type == ConvertTypes[ConvertTypeDateTime]) return (DateTime)a / (DateTime) b;
-//            // if (type == ConvertTypes[ConvertTypeString]) return (string)a / (string) b;
-//            // if (type == ConvertTypes[ConvertTypeByteArray]) return (byte[])a / (byte[]) b;
-//            // if (type == ConvertTypes[ConvertTypeCharArray]) return (char[])a / (char[]) b;
-//            // if (type == ConvertTypes[ConvertTypeJToken]) return (JToken)a / (JToken) b;
-//            // if (type == ConvertTypes[ConvertTypeXmlDocument]) return (XmlDocument)a / (XmlDocument) b;
-//            // if (type == ConvertTypes[ConvertTypeTimeSpan]) return (TimeSpan)a / (TimeSpan) b;
-//
-//            throw new ArgumentOutOfRangeException(nameof(type), value, null);
         }
 
         public static object Decrement(DataType.ETypeCode typeCode,  object value1)
@@ -1438,6 +1048,7 @@ namespace Dexih.Utils.DataType
                 case DataType.ETypeCode.Json:
                 case DataType.ETypeCode.Time:
                 case DataType.ETypeCode.Xml:
+                case DataType.ETypeCode.Node:
                     throw new Exception($"Cannot negate {typeCode} types.");
                 case DataType.ETypeCode.Byte:
                     return (byte)((byte) value1 - 1);
@@ -1486,30 +1097,6 @@ namespace Dexih.Utils.DataType
             var typeCode = DataType.GetTypeCode(type, out _);
             return Compare(typeCode, inputValue, compareTo);
 
-            
-//            if (type == ConvertTypes[ConvertTypeBool]) return ((bool)inputValue).CompareTo((bool)compareTo);
-//            if (type == ConvertTypes[ConvertTypeSbyte]) return ((sbyte)inputValue).CompareTo((sbyte)compareTo);
-//            if (type == ConvertTypes[ConvertTypeByte]) return ((byte)inputValue).CompareTo((byte)compareTo);
-//            if (type == ConvertTypes[ConvertTypeChar]) return ((char)inputValue).CompareTo((char)compareTo);
-//            if (type == ConvertTypes[ConvertTypeShort]) return ((short)inputValue).CompareTo((short)compareTo);
-//            if (type == ConvertTypes[ConvertTypeUShort]) return  ((ushort)inputValue).CompareTo((ushort)compareTo);
-//            if (type == ConvertTypes[ConvertTypeInt]) return ((int)inputValue).CompareTo((int)compareTo);
-//            if (type == ConvertTypes[ConvertTypeUint]) return ((uint)inputValue).CompareTo((uint)compareTo);
-//            if (type == ConvertTypes[ConvertTypeLong]) return  ((long)inputValue).CompareTo((long)compareTo);
-//            if (type == ConvertTypes[ConvertTypeULong]) return ((ulong)inputValue).CompareTo((ulong)compareTo);
-//            if (type == ConvertTypes[ConvertTypeFloat]) return ((float)inputValue).CompareTo((float)compareTo);
-//            if (type == ConvertTypes[ConvertTypeDouble]) return ((double)inputValue).CompareTo((double)compareTo);
-//            if (type == ConvertTypes[ConvertTypeDecimal]) return ((decimal)inputValue).CompareTo((decimal)compareTo);
-//            if (type == ConvertTypes[ConvertTypeDateTime]) return  ((DateTime)inputValue).CompareTo((DateTime)compareTo);
-//            if (type == ConvertTypes[ConvertTypeString]) return String.CompareOrdinal(((string)inputValue), (string)compareTo);
-//            if (type == ConvertTypes[ConvertTypeGuid]) return  ((Guid)inputValue).CompareTo((Guid)compareTo);
-//            if (type == ConvertTypes[ConvertTypeByteArray]) return ByteArrayCompareTo((byte[])inputValue,(byte[])compareTo);
-//            if (type == ConvertTypes[ConvertTypeCharArray]) return CharArrayCompareTo((char[])inputValue,(char[])compareTo);
-//            if (type == ConvertTypes[ConvertTypeJToken]) return  String.CompareOrdinal(inputValue.ToString(), compareTo.ToString());
-//            if (type == ConvertTypes[ConvertTypeXmlDocument]) return  String.CompareOrdinal(((XmlDocument)inputValue).InnerXml, ((XmlDocument)compareTo).InnerXml);;
-//            if (type == ConvertTypes[ConvertTypeTimeSpan]) return  ((TimeSpan)inputValue).CompareTo((TimeSpan)compareTo);
-//
-//            throw new ArgumentOutOfRangeException(nameof(type), inputValue, null);
         }
 
         public static int Compare(DataType.ETypeCode typeCode, object inputValue, object compareTo)
@@ -1563,13 +1150,14 @@ namespace Dexih.Utils.DataType
                 case DataType.ETypeCode.Guid:
                     return ((Guid)inputValue).CompareTo((Guid)compareTo);
                 case DataType.ETypeCode.Unknown:
-                    return String.Compare((inputValue.ToString()), compareTo.ToString(), StringComparison.Ordinal);
+                    return string.Compare((inputValue.ToString()), compareTo.ToString(), StringComparison.Ordinal);
                 case DataType.ETypeCode.Json:
-                    return String.Compare(inputValue.ToString(), compareTo.ToString());
+                case DataType.ETypeCode.Node:
+                    return string.Compare(inputValue.ToString(), compareTo.ToString());
                 case DataType.ETypeCode.Xml:
-                    return String.Compare(((XmlDocument)inputValue).InnerXml, ((XmlDocument)compareTo).InnerXml);
+                    return string.Compare(((XmlDocument)inputValue).InnerXml, ((XmlDocument)compareTo).InnerXml);
                 case DataType.ETypeCode.Enum:
-                    return ((int)inputValue).CompareTo((int)compareTo);
+                    return string.Compare((string) inputValue, (string) compareTo);
                 case DataType.ETypeCode.CharArray:
                     return CharArrayCompareTo((char[])inputValue,(char[])compareTo);
                 default:
@@ -2131,6 +1719,10 @@ namespace Dexih.Utils.DataType
                 else if (value is XmlDocument xmlDocument)
                 {
                     return (T) (object) xmlDocument.InnerXml;
+                }
+                else if (value is JValue jValue)
+                {
+                    return (T) (object) jValue.Value<string>();
                 }
                 else if (!DataType.IsSimple(value.GetType()))
                 {

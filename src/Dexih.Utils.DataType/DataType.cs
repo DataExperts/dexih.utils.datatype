@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Data;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Xml;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -98,7 +97,8 @@ namespace Dexih.Utils.DataType
             Xml,
             Enum,
             CharArray,
-            Object
+            Object,
+            Node // a reference to another record-set.
         }
 
         /// <summary>
@@ -248,6 +248,7 @@ namespace Dexih.Utils.DataType
                 case ETypeCode.Json:
                 case ETypeCode.Xml:
                 case ETypeCode.Text:
+                case ETypeCode.Node:
                 case ETypeCode.String: return EBasicType.String;
                 case ETypeCode.Boolean: return EBasicType.Boolean;
                 case ETypeCode.DateTime: return EBasicType.Date;
@@ -271,6 +272,11 @@ namespace Dexih.Utils.DataType
             
             while (true)
             {
+                if (dataType.IsEnum)
+                {
+                    return ETypeCode.Enum;
+                }
+
                 switch (Type.GetTypeCode(dataType))
                 {
                     case TypeCode.Boolean:
@@ -446,6 +452,7 @@ namespace Dexih.Utils.DataType
                     type = typeof(XmlDocument);
                     break;
                 case ETypeCode.Json:
+                case ETypeCode.Node:
                     type = typeof(JObject);
                     break;
                 case ETypeCode.String:
@@ -528,6 +535,7 @@ namespace Dexih.Utils.DataType
                 case ETypeCode.CharArray:
                     return DbType.StringFixedLength;
                 case ETypeCode.Json:
+                case ETypeCode.Node:
                     return DbType.String;
                 case ETypeCode.Xml:
                     return DbType.Xml;
