@@ -238,7 +238,11 @@ namespace Dexih.Utils.DataType
 
                 return true;
             }
-            return object.Equals(inputValue, compareTo);
+            
+            var value1 = Parse(type, inputValue);
+            var value2 = Parse(type, compareTo);
+            
+            return Equals(value1, value2);
 
         }
 
@@ -265,7 +269,10 @@ namespace Dexih.Utils.DataType
                 return true;
             }
 
-            return object.Equals(value1, value2);
+            var value1Converted = Parse(typeCode, value1);
+            var value2Converted = Parse(typeCode, value2);
+
+            return object.Equals(value1Converted, value2Converted);
 
         }
         
@@ -1646,7 +1653,8 @@ namespace Dexih.Utils.DataType
                 {
                     return (T) (object) TimeSpan.Parse(stringValue);
                 }
-                throw new DataTypeParseException("Time conversion only supported for strings.");
+
+                throw new DataTypeParseException("TimeSpan conversion is only supported for strings.");
             };
         }
 
@@ -1663,7 +1671,7 @@ namespace Dexih.Utils.DataType
                 {
                     return (T) (object) Guid.Parse(stringValue);
                 }
-                throw new DataTypeParseException("Guid conversion only supported for strings.");
+                throw new DataTypeParseException("Guid conversion is only supported for strings.");
             };
         }
 
@@ -1680,7 +1688,7 @@ namespace Dexih.Utils.DataType
                 {
                     return (T) (object) JToken.Parse(stringValue);
                 }
-                throw new DataTypeParseException("Json conversion only supported for strings.");
+                throw new DataTypeParseException("Json conversion is only supported for strings.");
             };
         }
 
@@ -1700,7 +1708,7 @@ namespace Dexih.Utils.DataType
                     return (T) (object) xmlDocument2;
                 }
                 
-                throw new DataTypeParseException("Xml conversion only supported for strings.");
+                throw new DataTypeParseException("Xml conversion is only supported for strings.");
             };
         }
 

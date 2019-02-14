@@ -142,6 +142,7 @@ namespace Dexih.Utils.DataType
                     xmlDoc.LoadXml("<zzzzz></zzzzz>");
                     return xmlDoc;
                 case ETypeCode.Json:
+                case ETypeCode.Node:
                     return JToken.Parse("{zzzzz: 1}");
                 case ETypeCode.String:
                 case ETypeCode.Text:
@@ -202,6 +203,7 @@ namespace Dexih.Utils.DataType
                     xmlDoc.LoadXml("<aaaa></aaaa>");
                     return xmlDoc;
                 case ETypeCode.Json:
+                case ETypeCode.Node:
                     return JToken.Parse("{}");
                 case ETypeCode.String:
                 case ETypeCode.Text:
