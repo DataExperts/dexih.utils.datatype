@@ -1644,17 +1644,28 @@ namespace Dexih.Utils.DataType
         {
             return value =>
             {
-                if (value is TimeSpan timeSpan)
+                switch (value)
                 {
-                    return (T) (object) timeSpan;
+                    case TimeSpan timeSpan:
+                        return (T) (object) timeSpan;
+                    case string stringValue:
+                        return (T) (object) TimeSpan.Parse(stringValue);
+                    case long longValue:
+                        return (T) (object) TimeSpan.FromTicks(longValue);
+                    case int intValue:
+                        return (T) (object) TimeSpan.FromTicks(intValue);
+                    case short ushortValue:
+                        return (T) (object) TimeSpan.FromTicks(ushortValue);
+                    case ulong ulongValue:
+                        return (T) (object) TimeSpan.FromTicks((long)ulongValue);
+                    case uint uintValue:
+                        return (T) (object) TimeSpan.FromTicks(uintValue);
+                    case ushort ushortValue:
+                        return (T) (object) TimeSpan.FromTicks(ushortValue);
                 }
 
-                if (value is string stringValue)
-                {
-                    return (T) (object) TimeSpan.Parse(stringValue);
-                }
 
-                throw new DataTypeParseException("TimeSpan conversion is only supported for strings.");
+                throw new DataTypeParseException("TimeSpan conversion is only supported for strings or longs.");
             };
         }
 

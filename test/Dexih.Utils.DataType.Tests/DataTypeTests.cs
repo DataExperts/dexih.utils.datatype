@@ -263,6 +263,7 @@ namespace Dexih.Utils.DataType.Tests
             new object[] { ETypeCode.DateTime, "2001-01-01", new DateTime(2001,01,01)},
             new object[] { ETypeCode.DateTime, "2001-01-01T12:59:59", new DateTime(2001,01,01, 12, 59, 59)},
             new object[] { ETypeCode.Time, "12:59:59", new TimeSpan(12, 59, 59)},
+            new object[] { ETypeCode.Time, 10000000, new TimeSpan(0, 0, 0, 1)},
             new object[] { ETypeCode.Guid, "6d5bba83-e71b-4ce1-beb8-006085a0a77d", new Guid("6d5bba83-e71b-4ce1-beb8-006085a0a77d")},
             new object[] { ETypeCode.Guid, "6d5bba83-e71b-4ce1-beb8-006085a0a77d", new Guid("6d5bba83-e71b-4ce1-beb8-006085a0a77d")},
             new object[] { ETypeCode.Binary, "61626364", new byte[] { 0x61, 0x62, 0x63, 0x64 }},
