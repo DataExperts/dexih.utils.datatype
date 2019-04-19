@@ -52,7 +52,7 @@ namespace Dexih.Utils.DataType
                 Int64Type = false;
             }
 
-            if (!bool.TryParse(value, out var _))
+            if (!Operations.TryParseBoolean(value, out var _))
             {
                 BooleanType = false;
             }
@@ -65,6 +65,11 @@ namespace Dexih.Utils.DataType
             if (!double.TryParse(value, out var _))
             {
                 DoubleType = false;
+            }
+            else
+            {
+                // if the string is a double then override the datetime parse with a false (as value like 1.1 will incorrectly parse as a date)
+                DateTimeType = false;
             }
 
             if (value.Length > 4000)

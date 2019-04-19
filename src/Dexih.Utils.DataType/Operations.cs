@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Xml;
@@ -1172,6 +1173,93 @@ namespace Dexih.Utils.DataType
             }
         }
         
+        /// <summary>
+        /// More flexible version of bool.TryParse, will accept values on/off/true/false/yes/no.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="result"></param>
+        /// <returns></returns>
+        public static bool TryParseBoolean(object value, out bool result)
+        {
+            switch (value)
+            {
+                case bool boolValue:
+                    result = boolValue;
+                    return true;
+                case string stringValue:
+                    var isParsed = bool.TryParse(stringValue, out var parsedResult);
+                    if (isParsed)
+                    {
+                        result = parsedResult;
+                        return true;
+                    }
+
+                    isParsed = int.TryParse(stringValue, out var numberResult);
+                    if (isParsed)
+                    {
+                        result = (numberResult != 0);
+                        return numberResult == -1 || numberResult == 0 || numberResult == 1;
+                    }
+
+                    switch (stringValue.ToLower())
+                    {
+                        case "yes":
+                        case "y":
+                        case "on":
+                            result = true;
+                            return true;
+                        case "no":
+                        case "n":
+                        case "off":
+                            result = false;
+                            return true;
+                    }
+
+                    result = false;
+                    return false;
+                case char charValue:
+                    switch (charValue)
+                    {
+                        case 'y':
+                            result = true;
+                            return true;
+                        case 'n':
+                            result = false;
+                            return true;
+                    }
+
+                    result = false;
+                    return false;
+                case Single singleValue:
+                    result = (singleValue != 0);
+                    return singleValue == 0 || singleValue == -1 || singleValue == 1;
+                case Double doubleValue:
+                    result = (doubleValue != 0);
+                    return doubleValue == 0 || doubleValue == -1 || doubleValue == 1;
+                case long longValue:
+                    result = (longValue != 0);
+                    return longValue == 0 || longValue == -1 || longValue == 1;
+                case int intValue:
+                    result = (intValue != 0);
+                    return intValue == 0 || intValue == -1 || intValue == 1;
+                case short shortValue:
+                    result = (shortValue != 0);
+                    return shortValue == 0 || shortValue == -1 || shortValue == 1;
+                case ulong ulongValue:
+                    result = (ulongValue != 0);
+                    return ulongValue == 0 || ulongValue == 1;
+                case uint uintValue:
+                    result = (uintValue != 0);
+                    return uintValue == 0 || uintValue == 1;
+                case ushort ushortValue:
+                    result = (ushortValue != 0);
+                    return ushortValue == 0 || ushortValue == 1;
+            }
+            
+            result = false;
+            return false;
+        }
+             
         // c# can't compare bool, to create bool logic
         public static bool BoolIsGreaterThan(bool a, bool b) => a && !b;
         public static bool BoolIsGreaterThanOrEqual(bool a, bool b) => a || !b;
@@ -1584,29 +1672,14 @@ namespace Dexih.Utils.DataType
         {
             return value =>
             {
-                if (value is bool boolValue)
+                var isParsed = Operations.TryParseBoolean(value, out var result);
+
+                if (!isParsed)
                 {
-                    return (T) (object) boolValue;
+                    throw new FormatException("Value was not recognized as a valid boolean");
                 }
 
-                if (value is string stringValue)
-                {
-                    var parsed = bool.TryParse(stringValue, out var parsedResult);
-                    if (parsed)
-                    {
-                        return (T) (object) parsedResult;
-                    }
-
-                    parsed = int.TryParse(stringValue, out var numberResult);
-                    if (parsed)
-                    {
-                        return (T) (object) (numberResult != 0);
-                    }
-
-                    throw new FormatException("String was not recognized as a valid boolean");
-                }
-
-                return (T) (object)Convert.ToBoolean(value);
+                return (T) (object) result;
             };
         }
 
