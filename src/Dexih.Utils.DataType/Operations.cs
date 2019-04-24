@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
@@ -1506,9 +1507,24 @@ namespace Dexih.Utils.DataType
             {
                 int Compare(T a, T b)
                 {
-                    if (a.GetType() == b.GetType() && a is IComparable comparable)
+                    if (a.GetType() == b.GetType())
                     {
-                        return comparable.CompareTo(b);
+                        if (a is IComparable comparable)
+                        {
+                            return comparable.CompareTo(b);
+                        }
+
+                        if (a is byte[] aByte && b is byte[] bByte)
+                        {
+                            int compare = 0;
+                            for (var i = 0; i < aByte.Length; i++)
+                            {
+                                compare = aByte[i].CompareTo(bByte[i]);
+                                if (compare != 0) return compare;
+                            }
+
+                            return compare;
+                        }
                     }
 
                     // if types don't match, attempt to convert to common type.
