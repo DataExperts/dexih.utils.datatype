@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Xml;
@@ -121,82 +119,96 @@ namespace Dexih.Utils.DataType
 
         public static object Parse(DataType.ETypeCode tryDataType, int rank, object inputValue)
         {
-            if (rank == 0)
+            try
             {
+                if (rank == 0)
+                {
+                    return Parse(tryDataType, inputValue);
+                }
+
+                var dataType = DataType.GetType(tryDataType);
+
+                if (inputValue is JArray jArray)
+                {
+                    if (rank == 1)
+                    {
+                        var returnValue = Array.CreateInstance(dataType, jArray.Count);
+                        for (var i = 0; i < jArray.Count; i++)
+                        {
+                            returnValue.SetValue(Parse(tryDataType, 0, jArray[i]), i);
+                        }
+
+                        return returnValue;
+                    }
+                    else if (rank == 2)
+                    {
+                        var array2 = (JArray) jArray.First();
+                        var returnValue = Array.CreateInstance(dataType, jArray.Count, array2.Count);
+
+                        for (var i = 0; i < jArray.Count; i++)
+                        {
+                            array2 = (JArray) jArray[i];
+                            for (var j = 0; j < array2.Count; j++)
+                            {
+                                returnValue.SetValue(Parse(tryDataType, 0, array2[j]), i, j);
+                            }
+                        }
+
+                        return returnValue;
+                    }
+                }
+
+                var type = inputValue.GetType();
+                if ((type.IsArray) && type != typeof(byte[]) && type != typeof(char[]))
+                {
+                    if (rank == 1)
+                    {
+                        var inputArray = (Array) inputValue;
+                        var returnValue = Array.CreateInstance(dataType, inputArray.Length);
+                        for (var i = 0; i < inputArray.Length; i++)
+                        {
+                            returnValue.SetValue(Parse(tryDataType, 0, inputArray.GetValue(i)), i);
+                        }
+
+                        return returnValue;
+                    }
+                    else if (rank == 2)
+                    {
+                        var inputArray = (Array) inputValue;
+                        var returnValue =
+                            Array.CreateInstance(dataType, inputArray.GetLength(0), inputArray.GetLength(1));
+
+                        for (var i = 0; i < inputArray.GetLength(0); i++)
+                        {
+                            for (var j = 0; j < inputArray.GetLength(1); j++)
+                            {
+                                returnValue.SetValue(Parse(tryDataType, 0, inputArray.GetValue(i, j)), i, j);
+                            }
+                        }
+
+                        return returnValue;
+                    }
+                }
+
+
+                if (type == typeof(string))
+                {
+                    var tryType = DataType.GetType(tryDataType);
+                    var arrayType = tryType.MakeArrayType(rank);
+                    var result = JsonConvert.DeserializeObject((string) inputValue, arrayType);
+                    return result;
+                }
+
                 return Parse(tryDataType, inputValue);
             }
-            
-            var dataType = DataType.GetType(tryDataType);
-
-            if (inputValue is JArray jArray)
+            catch (Exception ex)
             {
-                if (rank == 1)
-                {
-                    var returnValue = Array.CreateInstance(dataType, jArray.Count);
-                    for (var i = 0; i < jArray.Count; i++)
-                    {
-                        returnValue.SetValue(Parse(tryDataType, 0, jArray[i]), i);
-                    }
-
-                    return returnValue;
-                } else if (rank == 2)
-                {
-                    var array2 = (JArray) jArray.First();
-                    var returnValue = Array.CreateInstance(dataType, jArray.Count, array2.Count);
-                    
-                    for (var i = 0; i < jArray.Count; i++)
-                    {
-                        array2 = (JArray) jArray[i];
-                        for (var j = 0; j < array2.Count; j++)
-                        {
-                            returnValue.SetValue(Parse(tryDataType, 0, array2[j]), i, j);
-                        }
-                    }
-
-                    return returnValue;
-                }
+                #if DEBUG
+                throw new DataTypeException($"The value {inputValue} could not be parsed to type {tryDataType} rank {rank}");
+                #else 
+                throw new DataTypeException($"The value could not be parsed to type {tryDataType} rank {rank}");
+                #endif
             }
-
-            var type = inputValue.GetType();
-            if ((type.IsArray) && type != typeof(byte[]) && type != typeof(char[]))
-            {
-                if (rank == 1)
-                {
-                    var inputArray = (Array) inputValue;
-                    var returnValue = Array.CreateInstance(dataType, inputArray.Length);
-                    for (var i = 0; i < inputArray.Length; i++)
-                    {
-                        returnValue.SetValue(Parse(tryDataType, 0, inputArray.GetValue(i)), i);
-                    }
-
-                    return returnValue;
-                } else if (rank == 2)
-                {
-                    var inputArray = (Array) inputValue;
-                    var returnValue = Array.CreateInstance(dataType, inputArray.GetLength(0), inputArray.GetLength(1));
-                    
-                    for (var i = 0; i < inputArray.GetLength(0); i++)
-                    {
-                        for (var j = 0; j < inputArray.GetLength(1); j++)
-                        {
-                            returnValue.SetValue(Parse(tryDataType, 0, inputArray.GetValue(i,j)), i, j);
-                        }
-                    }
-
-                    return returnValue;
-                }
-            }
-            
-
-            if (type == typeof(string))
-            {
-                var tryType = DataType.GetType(tryDataType);
-                var arrayType = tryType.MakeArrayType(rank);
-                var result = JsonConvert.DeserializeObject((string)inputValue, arrayType);
-                return result;
-            }
-
-            return Parse(tryDataType, inputValue);
         }
         
         public static object Parse(Type type, int rank, object inputValue)
@@ -1847,51 +1859,51 @@ namespace Dexih.Utils.DataType
         private static Lazy<Func<object, T>> CreateParse()
         {
             Func<object, T> exp;
-            
-            var dataType = typeof(T); 
+
+            var dataType = typeof(T);
             switch (Type.GetTypeCode(dataType))
             {
                 case TypeCode.Double:
-                    exp = value => (T)(object) Convert.ToDouble(value);
+                    exp = value => (T) (object) Convert.ToDouble(value);
                     break;
                 case TypeCode.Decimal:
-                    exp = value => (T)(object) Convert.ToDecimal(value);
+                    exp = value => (T) (object) Convert.ToDecimal(value);
                     break;
                 case TypeCode.Byte:
-                    exp = value => (T)(object) Convert.ToByte(value);
+                    exp = value => (T) (object) Convert.ToByte(value);
                     break;
                 case TypeCode.Char:
-                    exp = value => (T)(object) Convert.ToChar(value);
+                    exp = value => (T) (object) Convert.ToChar(value);
                     break;
                 case TypeCode.Int16:
-                    exp = value => (T)(object) Convert.ToInt16(value);
+                    exp = value => (T) (object) Convert.ToInt16(value);
                     break;
                 case TypeCode.Int32:
-                    exp = value => (T)(object) Convert.ToInt32(value);
+                    exp = value => (T) (object) Convert.ToInt32(value);
                     break;
                 case TypeCode.Int64:
-                    exp = value => (T)(object) Convert.ToInt64(value);
+                    exp = value => (T) (object) Convert.ToInt64(value);
                     break;
                 case TypeCode.SByte:
-                    exp = value => (T)(object) Convert.ToSByte(value);
+                    exp = value => (T) (object) Convert.ToSByte(value);
                     break;
                 case TypeCode.Single:
-                    exp = value => (T)(object) Convert.ToSingle(value);
+                    exp = value => (T) (object) Convert.ToSingle(value);
                     break;
                 case TypeCode.UInt16:
-                    exp = value => (T)(object) Convert.ToUInt16(value);
+                    exp = value => (T) (object) Convert.ToUInt16(value);
                     break;
                 case TypeCode.UInt32:
-                    exp = value => (T)(object) Convert.ToUInt32(value);
+                    exp = value => (T) (object) Convert.ToUInt32(value);
                     break;
                 case TypeCode.UInt64:
-                    exp = value => (T)(object) Convert.ToUInt64(value);
+                    exp = value => (T) (object) Convert.ToUInt64(value);
                     break;
                 case TypeCode.DateTime:
-                    exp = value => (T)(object) Convert.ToDateTime(value);
+                    exp = value => (T) (object) Convert.ToDateTime(value);
                     break;
                 case TypeCode.DBNull:
-                    exp = value => (T)(object) DBNull.Value;
+                    exp = value => (T) (object) DBNull.Value;
                     break;
                 case TypeCode.String:
                     exp = ConvertToString();
@@ -1906,15 +1918,19 @@ namespace Dexih.Utils.DataType
                     else if (dataType == typeof(char[])) exp = ConvertToCharArray();
                     else if (dataType == typeof(JToken)) exp = ConvertToJson();
                     else if (dataType == typeof(XmlDocument)) exp = ConvertToXml();
-                    else exp = value => throw new NotSupportedException($"The datatype {dataType} is not supported for Parse.");
+                    else
+                        exp = value =>
+                            throw new NotSupportedException($"The datatype {dataType} is not supported for Parse.");
                     break;
                 default:
-                    exp = value => throw new NotSupportedException($"The datatype {dataType} is not supported for Parse.");
+                    exp = value =>
+                        throw new NotSupportedException($"The datatype {dataType} is not supported for Parse.");
                     break;
             }
+
             return new Lazy<Func<object, T>>(() => exp);
         }
-        
+
         private static readonly uint[] Lookup32 = CreateLookup32();
 
         private static uint[] CreateLookup32()

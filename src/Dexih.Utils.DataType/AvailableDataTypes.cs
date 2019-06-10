@@ -1,11 +1,10 @@
 using System;
-using System.Text;
 
 namespace Dexih.Utils.DataType
 {
     public struct AvailableDataTypes
     {
-        private bool _valueChecked { get; set; }
+        private bool _valueChecked;
 
         public bool CharType { get; set; }
         public bool Int32Type { get; set; }
