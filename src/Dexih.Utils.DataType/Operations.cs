@@ -204,7 +204,7 @@ namespace Dexih.Utils.DataType
             catch (Exception ex)
             {
                 #if DEBUG
-                throw new DataTypeException($"The value {inputValue} could not be parsed to type {tryDataType} rank {rank}");
+                throw new DataTypeException($"The value {inputValue} could not be parsed to type {tryDataType} rank {rank}", ex);
                 #else 
                 throw new DataTypeException($"The value could not be parsed to type {tryDataType} rank {rank}");
                 #endif
@@ -286,7 +286,7 @@ namespace Dexih.Utils.DataType
             var value1Converted = Parse(typeCode, value1);
             var value2Converted = Parse(typeCode, value2);
 
-            return object.Equals(value1Converted, value2Converted);
+            return Equals(value1Converted, value2Converted);
 
         }
         
@@ -1379,14 +1379,14 @@ namespace Dexih.Utils.DataType
             var bTypeCode = Type.GetTypeCode(bType);
             if (aTypeCode < bTypeCode)
             {
-                a1 = Operations.Parse(bType, a);
+                a1 = Parse(bType, a);
                 b1 = b;
                 return (bType);
             }
             else
             {
                 a1 = a;
-                b1 = Operations.Parse(aType, b);
+                b1 = Parse(aType, b);
                 return (aType);
             }
         }

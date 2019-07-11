@@ -8,6 +8,10 @@ namespace Dexih.Utils.DataType
         {
 
         }
+        
+        public DataTypeException(string message, Exception innerException) : base(message, innerException)
+        {
+        }
     }
 
     public class DataTypeParseException: DataTypeException
