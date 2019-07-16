@@ -1,12 +1,32 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Text;
+using System.Text.RegularExpressions;
 using System.Xml;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 
 namespace Dexih.Utils.DataType
 {
+    [JsonConverter(typeof(StringEnumConverter))]
+    public enum ECompare
+    {
+        IsEqual,
+        GreaterThan,
+        GreaterThanEqual,
+        LessThan,
+        LessThanEqual,
+        NotEqual,
+        IsIn,
+        IsNull,
+        IsNotNull,
+        Like
+    }
+    
     public static class Operations
     {
        
@@ -288,6 +308,153 @@ namespace Dexih.Utils.DataType
 
             return Equals(value1Converted, value2Converted);
 
+        }
+
+        public static bool Evaluate(ECompare Operator, DataType.ETypeCode compareDataType, object value1, object value2)
+        {
+            var parsedValue1 = Parse(compareDataType, value1);
+            
+            if(Operator == ECompare.IsIn && value2.GetType().IsArray)
+            {
+                foreach(var value in (IEnumerable)value2)
+                {
+                    var parsedValue = Parse(compareDataType, value);
+                    var compare = Equal(compareDataType, parsedValue1, parsedValue);
+                    if(compare)
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            }
+            
+            var parsedValue2 = Parse(compareDataType, value2);
+
+
+            if (Operator == ECompare.IsNull)
+            {
+                return parsedValue1 == null || parsedValue1 is DBNull;
+            }
+
+            if (Operator == ECompare.IsNotNull)
+            {
+                return parsedValue1 != null && !(parsedValue1 is DBNull);
+            }
+
+            switch (Operator)
+            {
+                case ECompare.IsEqual:
+                    return Equal(compareDataType, parsedValue1, parsedValue2);
+                case ECompare.GreaterThan:
+                    return GreaterThan(compareDataType, parsedValue1, parsedValue2);
+                case ECompare.GreaterThanEqual:
+                    return GreaterThanOrEqual(compareDataType, parsedValue1, parsedValue2);
+                case ECompare.LessThan:
+                    return LessThan(compareDataType, parsedValue1, parsedValue2);
+                case ECompare.LessThanEqual:
+                    return LessThanOrEqual(compareDataType, parsedValue1, parsedValue2);
+                case ECompare.NotEqual:
+                    return !Equal(compareDataType, parsedValue1, parsedValue2);
+                case ECompare.Like:
+                    return Like(parsedValue1?.ToString(), parsedValue2?.ToString());
+                default:
+                    throw new ArgumentException($"The {Operator} is not currently supported.");
+            }
+        }
+        
+           private static readonly char[] _regexSpecialChars = new char[12]
+        {
+            '.',
+            '$',
+            '^',
+            '{',
+            '[',
+            '(',
+            '|',
+            ')',
+            '*',
+            '+',
+            '?',
+            '\\'
+        };
+        private static readonly string _defaultEscapeRegexCharsPattern = BuildEscapeRegexCharsPattern((IEnumerable<char>) _regexSpecialChars);
+        private static readonly TimeSpan _regexTimeout = TimeSpan.FromMilliseconds(1000.0);
+        
+        private static string BuildEscapeRegexCharsPattern(IEnumerable<char> regexSpecialChars)
+        {
+            return string.Join("|", regexSpecialChars.Select<char, string>((Func<char, string>) (c => "\\" + c.ToString())));
+        }
+        
+        public static bool Like(string matchExpression, string pattern, string escapeCharacter = null)
+        {
+            char? singleEscapeCharacter = string.IsNullOrEmpty(escapeCharacter)
+                ? new char?()
+                : new char?(escapeCharacter.First<char>());
+            if (matchExpression == null || pattern == null)
+                return false;
+            if (matchExpression.Equals(pattern, StringComparison.OrdinalIgnoreCase))
+                return true;
+            if (matchExpression.Length == 0 || pattern.Length == 0)
+                return false;
+            string pattern1 = !singleEscapeCharacter.HasValue
+                ? _defaultEscapeRegexCharsPattern
+                : BuildEscapeRegexCharsPattern(
+                    ((IEnumerable<char>) _regexSpecialChars).Where<char>((Func<char, bool>) (c =>
+                    {
+                        int num = (int) c;
+                        char? nullable1 = singleEscapeCharacter;
+                        int? nullable2 = nullable1.HasValue
+                            ? new int?((int) nullable1.GetValueOrDefault())
+                            : new int?();
+                        int valueOrDefault = nullable2.GetValueOrDefault();
+                        return !(num == valueOrDefault & nullable2.HasValue);
+                    })));
+            string str1 = Regex.Replace(pattern, pattern1, (MatchEvaluator) (c => "\\" + (object) c), RegexOptions.None);
+            StringBuilder stringBuilder = new StringBuilder();
+            for (int index = 0; index < str1.Length; ++index)
+            {
+                char ch = str1[index];
+                char? nullable1;
+                int? nullable2;
+                int num1;
+                if (index > 0)
+                {
+                    int num2 = (int) str1[index - 1];
+                    nullable1 = singleEscapeCharacter;
+                    nullable2 = nullable1.HasValue ? new int?((int) nullable1.GetValueOrDefault()) : new int?();
+                    int valueOrDefault = nullable2.GetValueOrDefault();
+                    num1 = num2 == valueOrDefault & nullable2.HasValue ? 1 : 0;
+                }
+                else
+                    num1 = 0;
+
+                bool flag = num1 != 0;
+                switch (ch)
+                {
+                    case '%':
+                        stringBuilder.Append(flag ? "%" : ".*");
+                        break;
+                    case '_':
+                        stringBuilder.Append(flag ? '_' : '.');
+                        break;
+                    default:
+                        int num3 = (int) ch;
+                        nullable1 = singleEscapeCharacter;
+                        nullable2 = nullable1.HasValue ? new int?((int) nullable1.GetValueOrDefault()) : new int?();
+                        int valueOrDefault1 = nullable2.GetValueOrDefault();
+                        if (!(num3 == valueOrDefault1 & nullable2.HasValue))
+                        {
+                            stringBuilder.Append(ch);
+                            break;
+                        }
+
+                        break;
+                }
+            }
+
+            string str2 = stringBuilder.ToString();
+            return Regex.IsMatch(matchExpression, "\\A" + str2 + "\\s*\\z",
+                RegexOptions.IgnoreCase | RegexOptions.Singleline);
         }
         
         public static bool GreaterThan(object value1, object value2)
