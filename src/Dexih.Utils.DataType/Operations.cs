@@ -64,6 +64,64 @@ namespace Dexih.Utils.DataType
                 return null;
             }
 
+            if (inputValue is JToken jToken)
+            {
+                switch (typeCode)
+                {
+                    case DataType.ETypeCode.Binary:
+                        break;
+                    case DataType.ETypeCode.Byte:
+                        return jToken.Value<byte>();
+                    case DataType.ETypeCode.Char:
+                        return jToken.Value<char>();
+                    case DataType.ETypeCode.SByte:
+                        return jToken.Value<sbyte>();
+                    case DataType.ETypeCode.UInt16:
+                        return jToken.Value<ushort>();
+                    case DataType.ETypeCode.UInt32:
+                        return jToken.Value<uint>();
+                    case DataType.ETypeCode.UInt64:
+                        return jToken.Value<ulong>();
+                    case DataType.ETypeCode.Int16:
+                        return jToken.Value<short>();
+                    case DataType.ETypeCode.Int32:
+                        return jToken.Value<int>();
+                    case DataType.ETypeCode.Int64:
+                        return jToken.Value<long>();
+                    case DataType.ETypeCode.Decimal:
+                        return jToken.Value<decimal>();
+                    case DataType.ETypeCode.Double:
+                        return jToken.Value<double>();
+                    case DataType.ETypeCode.Single:
+                        return jToken.Value<float>();
+                    case DataType.ETypeCode.String:
+                    case DataType.ETypeCode.Text:
+                        return jToken.Value<string>();
+                    case DataType.ETypeCode.Boolean:
+                        return jToken.Value<bool>();
+                    case DataType.ETypeCode.DateTime:
+                        return jToken.Value<DateTime>();
+                    case DataType.ETypeCode.Time:
+                        return jToken.Value<TimeSpan>();
+                    case DataType.ETypeCode.Guid:
+                        return jToken.Value<Guid>();
+                    case DataType.ETypeCode.Unknown:
+                        return jToken.Value<string>();
+                    case DataType.ETypeCode.Json:
+                        return jToken;
+                    case DataType.ETypeCode.Xml:
+                        return jToken.Value<string>();
+                    case DataType.ETypeCode.Enum:
+                        return jToken.Value<byte>();
+                    case DataType.ETypeCode.CharArray:
+                        return jToken.Value<string>();
+                    case DataType.ETypeCode.Object:
+                        return jToken.Value<string>();
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(typeCode), typeCode, null);
+                }
+            }
+                         
             switch (typeCode)
             {
                 case DataType.ETypeCode.Binary:

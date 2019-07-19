@@ -277,6 +277,25 @@ namespace Dexih.Utils.DataType.Tests
             new object[] { ETypeCode.String, new[] {"a", "b", "c"}, "[\"a\",\"b\",\"c\"]"}
         };
 
+        [Theory]
+        [InlineData(ETypeCode.Byte, 2)]
+        [InlineData(ETypeCode.SByte, 2)]
+        [InlineData(ETypeCode.UInt16, 2)]
+        [InlineData(ETypeCode.Int16, -2)]
+        [InlineData(ETypeCode.Int32, -2)]
+        [InlineData(ETypeCode.Int64, -2)]
+        [InlineData(ETypeCode.Double, -2.123)]
+        [InlineData(ETypeCode.String, "hi")]
+        [InlineData(ETypeCode.Text, true)]
+        [InlineData(ETypeCode.Boolean, true)]
+        public void DataType_Parse_JToken(ETypeCode typeCode, object value)
+        {
+            var jToken = JToken.FromObject(value);
+            var parsedValue = Operations.Parse(typeCode, value);
+            var parsedJToken = Operations.Parse(typeCode, jToken);
+            Assert.Equal(parsedValue, parsedJToken);
+        }
+
 
         [Fact]
         public void DataType_Parse_Rank()
