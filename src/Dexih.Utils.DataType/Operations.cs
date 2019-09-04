@@ -6,6 +6,8 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
+using NetTopologySuite.Geometries;
+using NetTopologySuite.IO;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
@@ -69,7 +71,9 @@ namespace Dexih.Utils.DataType
                 switch (typeCode)
                 {
                     case DataType.ETypeCode.Binary:
-                        break;
+                        return jToken.Value<byte[]>();
+                    case DataType.ETypeCode.Geometry:
+                        return jToken.Value<Geometry>();
                     case DataType.ETypeCode.Byte:
                         return jToken.Value<byte>();
                     case DataType.ETypeCode.Char:
@@ -126,6 +130,8 @@ namespace Dexih.Utils.DataType
             {
                 case DataType.ETypeCode.Binary:
                     return inputValue is byte[] ? inputValue : Parse<byte[]>(inputValue);
+                case DataType.ETypeCode.Geometry:
+                    return inputValue is Geometry? inputValue : Parse<Geometry>(inputValue);
                 case DataType.ETypeCode.Byte:
                     return inputValue is byte ? inputValue : Parse<byte>(inputValue);
                 case DataType.ETypeCode.Char:
@@ -554,6 +560,8 @@ namespace Dexih.Utils.DataType
                     throw new Exception($"Cannot compare {typeCode} types.");
                 case DataType.ETypeCode.Binary:
                     return ByteArrayIsGreater((byte[])value1, (byte[])value2,false);
+                case DataType.ETypeCode.Geometry:
+                    return ((Geometry)value1).CompareTo((Geometry)value2) > 0;
                 case DataType.ETypeCode.CharArray:
                     return CharArrayIsGreater((char[])value1, (char[])value2,false);
                 case DataType.ETypeCode.String:
@@ -638,6 +646,8 @@ namespace Dexih.Utils.DataType
                     return CharArrayIsGreater((char[])value1, (char[])value2,true);
                 case DataType.ETypeCode.Binary:
                     return ByteArrayIsGreater((byte[])value1, (byte[])value2,true);
+                case DataType.ETypeCode.Geometry:
+                    return ((Geometry)value1).CompareTo((Geometry)value2) >= 0;
                 case DataType.ETypeCode.String:
                 case DataType.ETypeCode.Text:
                     return string.Compare((string)value1, (string)value2) >= 0;
@@ -717,6 +727,8 @@ namespace Dexih.Utils.DataType
                 case DataType.ETypeCode.Xml:
                 case DataType.ETypeCode.Node:
                     throw new Exception($"Cannot compare {typeCode} types.");
+                case DataType.ETypeCode.Geometry:
+                    return ((Geometry)value1).CompareTo((Geometry)value2) < 0;
                 case DataType.ETypeCode.Binary:
                     return ByteArrayIsLessThan((byte[])value1, (byte[])value2,false);
                 case DataType.ETypeCode.CharArray:
@@ -800,6 +812,8 @@ namespace Dexih.Utils.DataType
                     throw new Exception($"Cannot compare {typeCode} types.");
                 case DataType.ETypeCode.Binary:
                     return ByteArrayIsLessThan((byte[])value1, (byte[])value2,true);
+                case DataType.ETypeCode.Geometry:
+                    return ((Geometry)value1).CompareTo((Geometry)value2) <= 0;
                 case DataType.ETypeCode.CharArray:
                     return CharArrayIsLessThan((char[])value1, (char[])value2,true);
                 case DataType.ETypeCode.String:
@@ -872,6 +886,7 @@ namespace Dexih.Utils.DataType
                 case DataType.ETypeCode.Json:
                 case DataType.ETypeCode.Xml:
                 case DataType.ETypeCode.Node:
+                case DataType.ETypeCode.Geometry:
                     throw new Exception($"Cannot add {typeCode} types.");
                 case DataType.ETypeCode.Time:
                     return (TimeSpan) value1 + (TimeSpan) value2;
@@ -934,6 +949,7 @@ namespace Dexih.Utils.DataType
                 case DataType.ETypeCode.Json:
                 case DataType.ETypeCode.Xml:
                 case DataType.ETypeCode.Node:
+                case DataType.ETypeCode.Geometry:
                     throw new Exception($"Cannot subtract {typeCode} types.");
                 case DataType.ETypeCode.Time:
                     return (TimeSpan) value1 - (TimeSpan) value2;
@@ -997,7 +1013,8 @@ namespace Dexih.Utils.DataType
                 case DataType.ETypeCode.Json:
                 case DataType.ETypeCode.Xml:
                 case DataType.ETypeCode.Node:
-                    throw new Exception($"Cannot add {typeCode} types.");
+                case DataType.ETypeCode.Geometry:
+                    throw new Exception($"Cannot divide {typeCode} types.");
                 case DataType.ETypeCode.Byte:
                     return (byte)((byte) value1 / (byte) value2);
                 case DataType.ETypeCode.Char:
@@ -1058,7 +1075,8 @@ namespace Dexih.Utils.DataType
                 case DataType.ETypeCode.Time:
                 case DataType.ETypeCode.Xml:
                 case DataType.ETypeCode.Node:
-                    throw new Exception($"Cannot add {typeCode} types.");
+                case DataType.ETypeCode.Geometry:
+                    throw new Exception($"Cannot multiply {typeCode} types.");
                 case DataType.ETypeCode.Byte:
                     return (byte)((byte) value1 * (byte) value2);
                 case DataType.ETypeCode.Char:
@@ -1118,7 +1136,8 @@ namespace Dexih.Utils.DataType
                 case DataType.ETypeCode.Time:
                 case DataType.ETypeCode.Xml:
                 case DataType.ETypeCode.Node:
-                    throw new Exception($"Cannot add {typeCode} types.");
+                case DataType.ETypeCode.Geometry:
+                    throw new Exception($"Cannot divide {typeCode} types.");
                 case DataType.ETypeCode.Byte:
                     return (byte)((byte) value1 / value2);
                 case DataType.ETypeCode.Char:
@@ -1181,6 +1200,7 @@ namespace Dexih.Utils.DataType
                 case DataType.ETypeCode.UInt32:
                 case DataType.ETypeCode.UInt64:
                 case DataType.ETypeCode.Node:
+                case DataType.ETypeCode.Geometry:
                     throw new Exception($"Cannot negate {typeCode} types.");
                 case DataType.ETypeCode.Byte:
                     return (byte)((byte) value1 * -1);
@@ -1235,7 +1255,8 @@ namespace Dexih.Utils.DataType
                 case DataType.ETypeCode.Time:
                 case DataType.ETypeCode.Xml:
                 case DataType.ETypeCode.Node:
-                    throw new Exception($"Cannot negate {typeCode} types.");
+                case DataType.ETypeCode.Geometry:
+                    throw new Exception($"Cannot increment {typeCode} types.");
                 case DataType.ETypeCode.Byte:
                     return (byte)((byte) value1 + 1);
                 case DataType.ETypeCode.Char:
@@ -1295,7 +1316,8 @@ namespace Dexih.Utils.DataType
                 case DataType.ETypeCode.Time:
                 case DataType.ETypeCode.Xml:
                 case DataType.ETypeCode.Node:
-                    throw new Exception($"Cannot negate {typeCode} types.");
+                case DataType.ETypeCode.Geometry:
+                    throw new Exception($"Cannot decrement {typeCode} types.");
                 case DataType.ETypeCode.Byte:
                     return (byte)((byte) value1 - 1);
                 case DataType.ETypeCode.Char:
@@ -1360,6 +1382,8 @@ namespace Dexih.Utils.DataType
             {
                 case DataType.ETypeCode.Binary:
                     return ByteArrayCompareTo((byte[])inputValue,(byte[])compareTo);
+                case DataType.ETypeCode.Geometry:
+                    return ((Geometry)inputValue).CompareTo((Geometry)compareTo);
                 case DataType.ETypeCode.Byte:
                     return ((byte)inputValue).CompareTo((byte)compareTo);
                 case DataType.ETypeCode.Char:
@@ -1911,6 +1935,7 @@ namespace Dexih.Utils.DataType
                     else if (dataType == typeof(JToken)) exp = value => value.ToString();
                     else if (dataType == typeof(XmlDocument)) exp = value => (value as XmlDocument)?.InnerXml;
                     else if (dataType == typeof(object)) exp = value => value.ToString();
+                    else if (dataType == typeof(Geometry)) exp = value => (value as Geometry).AsText();
                     else exp = value => throw new NotSupportedException($"The datatype {dataType} is not supported for ToString conversion.");
                     break;
                 default:
@@ -1958,10 +1983,39 @@ namespace Dexih.Utils.DataType
                     return (T) (object) byteArray;
                 }
 
+                if(value is Geometry geometry)
+                {
+                    return (T) (object) geometry.ToBinary();
+                }
+
                 if (value is string stringValue)
                 {
                     return (T) (object) HexToByteArray(stringValue);
                 }
+                throw new DataTypeParseException("Binary type conversion only supported for hex strings.");
+            };
+        }
+
+        private static Func<object, T> ConvertGeometry()
+        {
+            return value =>
+            {
+                if (value is byte[] byteArray)
+                {
+                    var binReader = new WKBReader();
+                    return (T)(object)binReader.Read(byteArray);
+                }
+
+                if (value is Geometry geometry)
+                {
+                    return (T)(object)geometry;
+                }
+
+                if (value is string stringValue)
+                {
+                    return (T)(object)stringValue;
+                }
+
                 throw new DataTypeParseException("Binary type conversion only supported for hex strings.");
             };
         }
@@ -2069,6 +2123,10 @@ namespace Dexih.Utils.DataType
                 {
                     return (T) (object) jValue.Value<string>();
                 }
+                else if (value is Geometry geometry)
+                {
+                    return (T)(object) geometry.ToText();
+                }
                 else if (!DataType.IsSimple(value.GetType()))
                 {
                     return (T) (object) JsonConvert.SerializeObject(value);
@@ -2143,6 +2201,7 @@ namespace Dexih.Utils.DataType
                     else if (dataType == typeof(char[])) exp = ConvertToCharArray();
                     else if (dataType == typeof(JToken)) exp = ConvertToJson();
                     else if (dataType == typeof(XmlDocument)) exp = ConvertToXml();
+                    else if (dataType == typeof(Geometry)) exp = ConvertGeometry();
                     else
                         exp = value =>
                             throw new NotSupportedException($"The datatype {dataType} is not supported for Parse.");

@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Drawing;
 using System.Reflection.Metadata;
 using System.Threading.Tasks;
 using System.Xml;
+using NetTopologySuite.Geometries;
 using Newtonsoft.Json.Linq;
 using Xunit;
 using Xunit.Abstractions;
@@ -42,6 +42,7 @@ namespace Dexih.Utils.DataType.Tests
         [InlineData(ETypeCode.UInt32, EBasicType.Numeric)]
         [InlineData(ETypeCode.UInt64, EBasicType.Numeric)]
         [InlineData(ETypeCode.Unknown, EBasicType.Unknown)]
+        [InlineData(ETypeCode.Geometry, EBasicType.Binary)]
         public void DataType_GetBasicType(ETypeCode inputType, EBasicType expected)
         {
             Assert.Equal(expected, DataType.GetBasicType(inputType));
@@ -65,6 +66,7 @@ namespace Dexih.Utils.DataType.Tests
         [InlineData(typeof(TimeSpan), ETypeCode.Time)]
         [InlineData(typeof(Guid), ETypeCode.Guid)]
         [InlineData(typeof(byte[]), ETypeCode.Binary)]
+        [InlineData(typeof(Geometry), ETypeCode.Geometry)]
         [InlineData(typeof(Int32?), ETypeCode.Int32)]
         [InlineData(typeof(char[]), ETypeCode.CharArray)]
         public void DataType_GetTypeCode(Type dataType, ETypeCode expectedTypeCode)
@@ -92,10 +94,10 @@ namespace Dexih.Utils.DataType.Tests
         [InlineData(typeof(Guid), true)]
         [InlineData(typeof(int[]), false)]
         [InlineData(typeof(string[]), false)]
-        [InlineData(typeof(Point), false)]
         [InlineData(typeof(Int32?), true)]
         [InlineData(typeof(char[]), true)]
         [InlineData(typeof(byte[]), true)]
+        [InlineData(typeof(Geometry), true)]
         public void DataType_IsSimple(Type dataType, bool result)
         {
             Assert.Equal(result, DataType.IsSimple(dataType));
@@ -118,6 +120,7 @@ namespace Dexih.Utils.DataType.Tests
         [InlineData(typeof(DateTime), ETypeCode.DateTime)]
         [InlineData(typeof(TimeSpan), ETypeCode.Time)]
         [InlineData(typeof(Guid), ETypeCode.Guid)]
+        [InlineData(typeof(Geometry), ETypeCode.Geometry)]
         public void DataType_GetType(Type expectedType, ETypeCode typeCode)
         {
             Assert.Equal(expectedType, DataType.GetType(typeCode));
@@ -208,6 +211,7 @@ namespace Dexih.Utils.DataType.Tests
             new object[] { ETypeCode.Binary, new byte[] {1,2}, new byte[] {1,2,3}, -1},
             new object[] { ETypeCode.Binary, new byte[] {1,2,2}, new byte[] {1,2,3}, -1},
             new object[] { ETypeCode.Binary, new byte[] {1,2,3}, new byte[] {1,2,3}, 0},
+            new object[] { ETypeCode.Geometry, new Point(1,1), new Point(1,1), 0}
         };
 
         [Fact]
@@ -274,7 +278,8 @@ namespace Dexih.Utils.DataType.Tests
             new object[] { ETypeCode.CharArray, "123", "123".ToCharArray()},
             new object[] { ETypeCode.String, "123".ToCharArray(), "123"},
             new object[] { ETypeCode.String, new[] {1,2,3}, "[1,2,3]"},
-            new object[] { ETypeCode.String, new[] {"a", "b", "c"}, "[\"a\",\"b\",\"c\"]"}
+            new object[] { ETypeCode.String, new[] {"a", "b", "c"}, "[\"a\",\"b\",\"c\"]"},
+            new object[] { ETypeCode.Geometry, new Point(1,1).AsBinary(), new Point(1,1)}
         };
 
         [Theory]

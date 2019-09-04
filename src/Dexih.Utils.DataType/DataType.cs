@@ -2,6 +2,7 @@
 using System.Data;
 using System.Linq;
 using System.Xml;
+using NetTopologySuite.Geometries;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
@@ -16,7 +17,7 @@ namespace Dexih.Utils.DataType
     /// </summary>
     public static class DataType
     {
-        private static readonly Type[] SimpleTypes = {typeof(string), typeof(decimal), typeof(DateTime), typeof(TimeSpan), typeof(Guid), typeof(byte[]), typeof(char[])};
+        private static readonly Type[] SimpleTypes = {typeof(string), typeof(decimal), typeof(DateTime), typeof(TimeSpan), typeof(Guid), typeof(byte[]), typeof(char[]), typeof(Geometry)};
         private static readonly Type Nullable = typeof(Nullable<>);
 
         /// <summary>
@@ -98,7 +99,8 @@ namespace Dexih.Utils.DataType
             Enum,
             CharArray,
             Object,
-            Node // a reference to another record-set.
+            Node, // a reference to another record-set.
+            Geometry
         }
 
         /// <summary>
@@ -157,6 +159,8 @@ namespace Dexih.Utils.DataType
                     return Guid.Parse("FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF");
                 case ETypeCode.Binary:
                     return new[] { byte.MaxValue, byte.MaxValue, byte.MaxValue };
+                case ETypeCode.Geometry:
+                    return null;
                 default:
                     throw new DataTypeException($"Max value not available for {typeCode}");
             }
@@ -218,6 +222,8 @@ namespace Dexih.Utils.DataType
                     return Guid.Parse("00000000-0000-0000-0000-000000000000");
                 case ETypeCode.Binary:
                     return new[] { byte.MinValue, byte.MinValue, byte.MinValue };
+                case ETypeCode.Geometry:
+                    return null;
                 default:
                     throw new DataTypeException($"Max value not available for {typeCode}");
             }
@@ -257,6 +263,7 @@ namespace Dexih.Utils.DataType
                 case ETypeCode.Time: return EBasicType.Time;
                 case ETypeCode.Binary: return EBasicType.Binary;
                 case ETypeCode.Enum: return EBasicType.Enum;
+                case ETypeCode.Geometry: return EBasicType.Binary;
                 default: return EBasicType.Unknown;
             }
         }
@@ -310,6 +317,7 @@ namespace Dexih.Utils.DataType
                         if (dataType == typeof(char[])) return ETypeCode.CharArray;
                         if (dataType == typeof(JToken)) return ETypeCode.Json;
                         if (dataType == typeof(XmlDocument)) return ETypeCode.Xml;
+                        if (typeof(Geometry).IsAssignableFrom(dataType)) return ETypeCode.Geometry;
                         
                         if (dataType.IsArray)
                         {
@@ -476,6 +484,9 @@ namespace Dexih.Utils.DataType
                 case ETypeCode.Binary:
                     type = typeof(byte[]);
                     break;
+                case ETypeCode.Geometry:
+                    type = typeof(Geometry);
+                    break;
                 case ETypeCode.Unknown:
                     type = typeof(string);
                     break;
@@ -550,6 +561,8 @@ namespace Dexih.Utils.DataType
                 case ETypeCode.Guid:
                     return DbType.Guid;
                 case ETypeCode.Binary:
+                    return DbType.Binary;
+                case ETypeCode.Geometry:
                     return DbType.Binary;
                 default:
                     return DbType.String;
