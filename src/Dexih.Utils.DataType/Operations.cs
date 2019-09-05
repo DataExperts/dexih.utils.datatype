@@ -73,7 +73,7 @@ namespace Dexih.Utils.DataType
                     case DataType.ETypeCode.Binary:
                         return jToken.Value<byte[]>();
                     case DataType.ETypeCode.Geometry:
-                        return jToken.Value<Geometry>();
+                        return jToken.Value<string>();
                     case DataType.ETypeCode.Byte:
                         return jToken.Value<byte>();
                     case DataType.ETypeCode.Char:
@@ -2013,7 +2013,8 @@ namespace Dexih.Utils.DataType
 
                 if (value is string stringValue)
                 {
-                    return (T)(object)stringValue;
+                    var textReader = new WKTReader();
+                    return (T)(object)textReader.Read(stringValue);
                 }
 
                 throw new DataTypeParseException("Binary type conversion only supported for hex strings.");

@@ -42,7 +42,7 @@ namespace Dexih.Utils.DataType.Tests
         [InlineData(ETypeCode.UInt32, EBasicType.Numeric)]
         [InlineData(ETypeCode.UInt64, EBasicType.Numeric)]
         [InlineData(ETypeCode.Unknown, EBasicType.Unknown)]
-        [InlineData(ETypeCode.Geometry, EBasicType.Binary)]
+        [InlineData(ETypeCode.Geometry, EBasicType.Geometry)]
         public void DataType_GetBasicType(ETypeCode inputType, EBasicType expected)
         {
             Assert.Equal(expected, DataType.GetBasicType(inputType));
@@ -279,7 +279,8 @@ namespace Dexih.Utils.DataType.Tests
             new object[] { ETypeCode.String, "123".ToCharArray(), "123"},
             new object[] { ETypeCode.String, new[] {1,2,3}, "[1,2,3]"},
             new object[] { ETypeCode.String, new[] {"a", "b", "c"}, "[\"a\",\"b\",\"c\"]"},
-            new object[] { ETypeCode.Geometry, new Point(1,1).AsBinary(), new Point(1,1)}
+            new object[] { ETypeCode.Geometry, new Point(1,1).AsBinary(), new Point(1,1)},
+            new object[] { ETypeCode.Geometry, new Point(1,1).AsText(), new Point(1,1)}
         };
 
         [Theory]

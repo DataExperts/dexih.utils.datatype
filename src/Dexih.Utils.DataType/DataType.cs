@@ -64,7 +64,8 @@ namespace Dexih.Utils.DataType
             Time,
             Boolean,
             Binary,
-            Enum
+            Enum,
+            Geometry
         }
 
         /// <summary>
@@ -263,7 +264,7 @@ namespace Dexih.Utils.DataType
                 case ETypeCode.Time: return EBasicType.Time;
                 case ETypeCode.Binary: return EBasicType.Binary;
                 case ETypeCode.Enum: return EBasicType.Enum;
-                case ETypeCode.Geometry: return EBasicType.Binary;
+                case ETypeCode.Geometry: return EBasicType.Geometry;
                 default: return EBasicType.Unknown;
             }
         }
@@ -563,7 +564,7 @@ namespace Dexih.Utils.DataType
                 case ETypeCode.Binary:
                     return DbType.Binary;
                 case ETypeCode.Geometry:
-                    return DbType.Binary;
+                    return DbType.String;
                 default:
                     return DbType.String;
             }
