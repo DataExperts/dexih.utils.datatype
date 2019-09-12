@@ -17,7 +17,7 @@ namespace Dexih.Utils.DataType
     // [JsonConverter(typeof(StringEnumConverter))]
     public enum ECompare
     {
-        IsEqual,
+        IsEqual = 1,
         GreaterThan,
         GreaterThanEqual,
         LessThan,

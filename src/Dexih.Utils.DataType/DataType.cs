@@ -75,6 +75,7 @@ namespace Dexih.Utils.DataType
         // [JsonConverter(typeof(StringEnumConverter))]
         public enum ETypeCode : byte
         {
+            Unknown,
             Binary,
             Byte,
             Char,
@@ -94,7 +95,6 @@ namespace Dexih.Utils.DataType
             DateTime,
             Time,
             Guid,
-            Unknown,
             Json,
             Xml,
             Enum,
