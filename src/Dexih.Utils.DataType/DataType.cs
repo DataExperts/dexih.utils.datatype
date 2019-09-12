@@ -54,7 +54,7 @@ namespace Dexih.Utils.DataType
         /// <summary>
         /// A simplified list of primary possible data types.
         /// </summary>
-        [JsonConverter(typeof(StringEnumConverter))]
+        // [JsonConverter(typeof(StringEnumConverter))]
         public enum EBasicType : byte
         {
             Unknown,
@@ -72,7 +72,7 @@ namespace Dexih.Utils.DataType
         /// List of supported type codes.  This is a cut down version of <see cref="TypeCode"/> enum.
         /// <para/> Note: Time, Binary & Unknown differ from the TypeCode.
         /// </summary>
-        [JsonConverter(typeof(StringEnumConverter))]
+        // [JsonConverter(typeof(StringEnumConverter))]
         public enum ETypeCode : byte
         {
             Binary,

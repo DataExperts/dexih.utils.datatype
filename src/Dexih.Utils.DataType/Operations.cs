@@ -14,7 +14,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Dexih.Utils.DataType
 {
-    [JsonConverter(typeof(StringEnumConverter))]
+    // [JsonConverter(typeof(StringEnumConverter))]
     public enum ECompare
     {
         IsEqual,
