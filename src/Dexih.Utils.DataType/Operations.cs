@@ -8,9 +8,7 @@ using System.Text.RegularExpressions;
 using System.Xml;
 using NetTopologySuite.Geometries;
 using NetTopologySuite.IO;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Linq;
+using System.Text.Json;
 
 namespace Dexih.Utils.DataType
 {
@@ -57,8 +55,7 @@ namespace Dexih.Utils.DataType
         public static T Parse<T>(object a) => Operations<T>.Parse.Value(a);
         public static int Compare<T>(T inputValue, T compareTo) => Operations<T>.Compare.Value(inputValue, compareTo);
         public static int Compare<T>(object inputValue, object compareTo) => Operations<object>.Compare.Value(inputValue, compareTo);
-
-       
+        
         public static object Parse(DataType.ETypeCode typeCode, object inputValue)
         {
             if (inputValue == null || inputValue == DBNull.Value)
@@ -66,61 +63,61 @@ namespace Dexih.Utils.DataType
                 return null;
             }
 
-            if (inputValue is JToken jToken)
+            if (inputValue is JsonElement jsonElement)
             {
                 switch (typeCode)
                 {
                     case DataType.ETypeCode.Binary:
-                        return jToken.Value<byte[]>();
+                        return jsonElement.GetBytesFromBase64();
                     case DataType.ETypeCode.Geometry:
-                        return jToken.Value<string>();
+                        return jsonElement.GetString();
                     case DataType.ETypeCode.Byte:
-                        return jToken.Value<byte>();
+                        return jsonElement.GetByte();
                     case DataType.ETypeCode.Char:
-                        return jToken.Value<char>();
+                        return Convert.ToChar(jsonElement.GetSByte());
                     case DataType.ETypeCode.SByte:
-                        return jToken.Value<sbyte>();
+                        return jsonElement.GetSByte();
                     case DataType.ETypeCode.UInt16:
-                        return jToken.Value<ushort>();
+                        return jsonElement.GetUInt16();
                     case DataType.ETypeCode.UInt32:
-                        return jToken.Value<uint>();
+                        return jsonElement.GetUInt32();
                     case DataType.ETypeCode.UInt64:
-                        return jToken.Value<ulong>();
+                        return jsonElement.GetUInt64();
                     case DataType.ETypeCode.Int16:
-                        return jToken.Value<short>();
+                        return jsonElement.GetInt16();
                     case DataType.ETypeCode.Int32:
-                        return jToken.Value<int>();
+                        return jsonElement.GetInt32();
                     case DataType.ETypeCode.Int64:
-                        return jToken.Value<long>();
+                        return jsonElement.GetInt64();
                     case DataType.ETypeCode.Decimal:
-                        return jToken.Value<decimal>();
+                        return jsonElement.GetDecimal();
                     case DataType.ETypeCode.Double:
-                        return jToken.Value<double>();
+                        return jsonElement.GetDouble();
                     case DataType.ETypeCode.Single:
-                        return jToken.Value<float>();
+                        return jsonElement.GetSingle();
                     case DataType.ETypeCode.String:
                     case DataType.ETypeCode.Text:
-                        return jToken.Value<string>();
+                        return jsonElement.GetString();
                     case DataType.ETypeCode.Boolean:
-                        return jToken.Value<bool>();
+                        return jsonElement.GetBoolean();
                     case DataType.ETypeCode.DateTime:
-                        return jToken.Value<DateTime>();
+                        return jsonElement.GetDateTime();
                     case DataType.ETypeCode.Time:
-                        return jToken.Value<TimeSpan>();
+                        return TimeSpan.Parse(jsonElement.GetString());
                     case DataType.ETypeCode.Guid:
-                        return jToken.Value<Guid>();
+                        return jsonElement.GetGuid();
                     case DataType.ETypeCode.Unknown:
-                        return jToken.Value<string>();
+                        return jsonElement.GetString();
                     case DataType.ETypeCode.Json:
-                        return jToken;
+                        return jsonElement;
                     case DataType.ETypeCode.Xml:
-                        return jToken.Value<string>();
+                        return jsonElement.GetString();
                     case DataType.ETypeCode.Enum:
-                        return jToken.Value<byte>();
+                        return jsonElement.GetInt32();
                     case DataType.ETypeCode.CharArray:
-                        return jToken.Value<string>();
+                        return jsonElement.GetString();
                     case DataType.ETypeCode.Object:
-                        return jToken.Value<string>();
+                        return jsonElement.GetString();
                     default:
                         throw new ArgumentOutOfRangeException(nameof(typeCode), typeCode, null);
                 }
@@ -172,7 +169,7 @@ namespace Dexih.Utils.DataType
                     return inputValue is string ? inputValue : Parse<string>(inputValue);
                 case DataType.ETypeCode.Json:
                 case DataType.ETypeCode.Node:
-                    return inputValue is JToken ? inputValue : Parse<JToken>(inputValue);
+                    return inputValue is JsonElement ? inputValue : Parse<JsonElement>(inputValue);
                 case DataType.ETypeCode.Xml:
                     return inputValue is XmlDocument ? inputValue : Parse<XmlDocument>(inputValue);
                 case DataType.ETypeCode.Enum:
@@ -212,12 +209,13 @@ namespace Dexih.Utils.DataType
 
                 var dataType = DataType.GetType(tryDataType);
 
-                if (inputValue is JArray jArray)
+                if (inputValue is JsonElement jArray)
                 {
+                    
                     if (rank == 1)
                     {
-                        var returnValue = Array.CreateInstance(dataType, jArray.Count);
-                        for (var i = 0; i < jArray.Count; i++)
+                        var returnValue = Array.CreateInstance(dataType, jArray.GetArrayLength());
+                        for (var i = 0; i < jArray.GetArrayLength(); i++)
                         {
                             returnValue.SetValue(Parse(tryDataType, 0, jArray[i]), i);
                         }
@@ -226,13 +224,13 @@ namespace Dexih.Utils.DataType
                     }
                     else if (rank == 2)
                     {
-                        var array2 = (JArray) jArray.First();
-                        var returnValue = Array.CreateInstance(dataType, jArray.Count, array2.Count);
+                        var array2 = jArray[0];
+                        var returnValue = Array.CreateInstance(dataType, jArray.GetArrayLength(), array2.GetArrayLength());
 
-                        for (var i = 0; i < jArray.Count; i++)
+                        for (var i = 0; i < jArray.GetArrayLength(); i++)
                         {
-                            array2 = (JArray) jArray[i];
-                            for (var j = 0; j < array2.Count; j++)
+                            array2 = jArray[i];
+                            for (var j = 0; j < array2.GetArrayLength(); j++)
                             {
                                 returnValue.SetValue(Parse(tryDataType, 0, array2[j]), i, j);
                             }
@@ -279,7 +277,7 @@ namespace Dexih.Utils.DataType
                 {
                     var tryType = DataType.GetType(tryDataType);
                     var arrayType = tryType.MakeArrayType(rank);
-                    var result = JsonConvert.DeserializeObject((string) inputValue, arrayType);
+                    var result = JsonSerializer.Deserialize((string) inputValue, arrayType, null);;
                     return result;
                 }
 
@@ -1932,7 +1930,7 @@ namespace Dexih.Utils.DataType
                     else if (dataType == typeof(Guid) || dataType == typeof(Guid?)) exp = value => value.ToString();
                     else if (dataType == typeof(byte[])) exp = value => ByteArrayToHex(value as byte[]);
                     else if (dataType == typeof(char[])) exp = value => new string(value as char[]);
-                    else if (dataType == typeof(JToken)) exp = value => value.ToString();
+                    else if (dataType == typeof(JsonElement)) exp = value => value.ToString();
                     else if (dataType == typeof(XmlDocument)) exp = value => (value as XmlDocument)?.InnerXml;
                     else if (dataType == typeof(object)) exp = value => value.ToString();
                     else if (dataType == typeof(Geometry)) exp = value => (value as Geometry).AsText();
@@ -2071,14 +2069,14 @@ namespace Dexih.Utils.DataType
         {
             return value =>
             {
-                if (value is JToken jToken)
+                if (value is JsonElement jToken)
                 {
                     return (T) (object) jToken;
                 }
 
                 if (value is string stringValue)
                 {
-                    return (T) (object) JToken.Parse(stringValue);
+                    return (T) (object) JsonDocument.Parse(stringValue).RootElement;
                 }
                 throw new DataTypeParseException("Json conversion is only supported for strings.");
             };
@@ -2120,9 +2118,9 @@ namespace Dexih.Utils.DataType
                 {
                     return (T) (object) xmlDocument.InnerXml;
                 }
-                else if (value is JValue jValue)
+                else if (value is JsonElement jValue)
                 {
-                    return (T) (object) jValue.Value<string>();
+                    return (T) (object) jValue.GetString();
                 }
                 else if (value is Geometry geometry)
                 {
@@ -2130,7 +2128,7 @@ namespace Dexih.Utils.DataType
                 }
                 else if (!DataType.IsSimple(value.GetType()))
                 {
-                    return (T) (object) JsonConvert.SerializeObject(value);
+                    return (T) (object) JsonSerializer.Serialize(value);;
                 }
                 else
                 {
@@ -2200,7 +2198,7 @@ namespace Dexih.Utils.DataType
                     else if (dataType == typeof(Guid) || dataType == typeof(Guid?)) exp = ConvertToGuid();
                     else if (dataType == typeof(byte[])) exp = ConvertToByteArray();
                     else if (dataType == typeof(char[])) exp = ConvertToCharArray();
-                    else if (dataType == typeof(JToken)) exp = ConvertToJson();
+                    else if (dataType == typeof(JsonElement)) exp = ConvertToJson();
                     else if (dataType == typeof(XmlDocument)) exp = ConvertToXml();
                     else if (dataType == typeof(Geometry)) exp = ConvertGeometry();
                     else

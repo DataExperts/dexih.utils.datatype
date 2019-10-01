@@ -1,11 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Reflection.Metadata;
-using System.Threading.Tasks;
+using System.Text.Json;
 using System.Xml;
 using NetTopologySuite.Geometries;
-using Newtonsoft.Json.Linq;
 using Xunit;
 using Xunit.Abstractions;
 using static Dexih.Utils.DataType.DataType;
@@ -292,11 +290,12 @@ namespace Dexih.Utils.DataType.Tests
         [InlineData(ETypeCode.Int64, -2)]
         [InlineData(ETypeCode.Double, -2.123)]
         [InlineData(ETypeCode.String, "hi")]
-        [InlineData(ETypeCode.Text, true)]
+        [InlineData(ETypeCode.Text, "some text")]
         [InlineData(ETypeCode.Boolean, true)]
         public void DataType_Parse_JToken(ETypeCode typeCode, object value)
         {
-            var jToken = JToken.FromObject(value);
+            var json = JsonSerializer.Serialize(value);
+            var jToken = JsonDocument.Parse(json).RootElement;
             var parsedValue = Operations.Parse(typeCode, value);
             var parsedJToken = Operations.Parse(typeCode, jToken);
             Assert.Equal(parsedValue, parsedJToken);
@@ -343,11 +342,11 @@ namespace Dexih.Utils.DataType.Tests
         public void DataType_TryParse_Json()
         {
             var result = Operations.Parse(ETypeCode.Json, "{\"note\": \"hi there\"}");
-            Assert.IsType<JObject>(result);
+            Assert.IsType<JsonElement>(result);
 
-            var token = (JObject) result;
+            var token = (JsonElement) result;
 
-            Assert.Equal("hi there", token["note"]);
+            Assert.Equal("hi there", token.GetProperty("note").GetString());
         }
 
 

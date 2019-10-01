@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Data;
 using System.Linq;
+using System.Text.Json;
 using System.Xml;
 using NetTopologySuite.Geometries;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Linq;
 
 namespace Dexih.Utils.DataType
 {
@@ -146,7 +144,7 @@ namespace Dexih.Utils.DataType
                     return xmlDoc;
                 case ETypeCode.Json:
                 case ETypeCode.Node:
-                    return JToken.Parse("{zzzzz: 1}");
+                    return JsonDocument.Parse("{zzzzz: 1}").RootElement;
                 case ETypeCode.String:
                 case ETypeCode.Text:
                     return new string('Z', length);
@@ -209,7 +207,7 @@ namespace Dexih.Utils.DataType
                     return xmlDoc;
                 case ETypeCode.Json:
                 case ETypeCode.Node:
-                    return JToken.Parse("{}");
+                    return JsonDocument.Parse("{}").RootElement;
                 case ETypeCode.String:
                 case ETypeCode.Text:
                     return "";
@@ -316,7 +314,7 @@ namespace Dexih.Utils.DataType
                         if (dataType == typeof(Guid) || dataType == typeof(Guid?)) return ETypeCode.Guid;
                         if (dataType == typeof(byte[])) return ETypeCode.Binary;
                         if (dataType == typeof(char[])) return ETypeCode.CharArray;
-                        if (dataType == typeof(JToken)) return ETypeCode.Json;
+                        if (dataType == typeof(JsonElement)) return ETypeCode.Json;
                         if (dataType == typeof(XmlDocument)) return ETypeCode.Xml;
                         if (typeof(Geometry).IsAssignableFrom(dataType)) return ETypeCode.Geometry;
                         
@@ -373,42 +371,42 @@ namespace Dexih.Utils.DataType
         /// </summary>
         /// <param name="jsonType"></param>
         /// <returns></returns>
-        public static ETypeCode GetTypeCode(JTokenType jsonType)
-        {
-            switch (jsonType)
-            {
-                case JTokenType.Object:
-                case JTokenType.Array:
-                case JTokenType.Constructor:
-                case JTokenType.Property:
-                    return ETypeCode.Json;
-                case JTokenType.None:
-                case JTokenType.Comment:
-                case JTokenType.Null:
-                case JTokenType.Undefined:
-                case JTokenType.Raw:
-                case JTokenType.Uri:
-                case JTokenType.String:
-                    return ETypeCode.String;
-                case JTokenType.Integer:
-                    return ETypeCode.Int32;
-                case JTokenType.Float:
-                    return ETypeCode.Double;
-                case JTokenType.Boolean:
-                    return ETypeCode.Boolean;
-                case JTokenType.Date:
-                    return ETypeCode.DateTime;
-                case JTokenType.Bytes:
-                    return ETypeCode.Binary;
-                case JTokenType.Guid:
-                    return ETypeCode.Guid;
-                case JTokenType.TimeSpan:
-                    return ETypeCode.Time;
-                default:
-                    return ETypeCode.String;
-            }
-
-        }
+//        public static ETypeCode GetTypeCode(JTokenType jsonType)
+//        {
+//            switch (jsonType)
+//            {
+//                case JTokenType.Object:
+//                case JTokenType.Array:
+//                case JTokenType.Constructor:
+//                case JTokenType.Property:
+//                    return ETypeCode.Json;
+//                case JTokenType.None:
+//                case JTokenType.Comment:
+//                case JTokenType.Null:
+//                case JTokenType.Undefined:
+//                case JTokenType.Raw:
+//                case JTokenType.Uri:
+//                case JTokenType.String:
+//                    return ETypeCode.String;
+//                case JTokenType.Integer:
+//                    return ETypeCode.Int32;
+//                case JTokenType.Float:
+//                    return ETypeCode.Double;
+//                case JTokenType.Boolean:
+//                    return ETypeCode.Boolean;
+//                case JTokenType.Date:
+//                    return ETypeCode.DateTime;
+//                case JTokenType.Bytes:
+//                    return ETypeCode.Binary;
+//                case JTokenType.Guid:
+//                    return ETypeCode.Guid;
+//                case JTokenType.TimeSpan:
+//                    return ETypeCode.Time;
+//                default:
+//                    return ETypeCode.String;
+//            }
+//
+//        }
 
         /// <summary>
         /// Gets the <see cref="Type"/> from the <see cref="ETypeCode"/>.
@@ -464,7 +462,7 @@ namespace Dexih.Utils.DataType
                     break;
                 case ETypeCode.Json:
                 case ETypeCode.Node:
-                    type = typeof(JObject);
+                    type = typeof(JsonElement);
                     break;
                 case ETypeCode.String:
                 case ETypeCode.Text:
