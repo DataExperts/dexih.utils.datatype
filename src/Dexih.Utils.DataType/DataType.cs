@@ -365,7 +365,31 @@ namespace Dexih.Utils.DataType
             return GetTypeCode(type, out rank);
         }
 
-
+        public static ETypeCode GetTypeCode(JsonValueKind valueKind)
+        {
+            switch (valueKind)
+            {
+                case JsonValueKind.Undefined:
+                case JsonValueKind.Object:
+                case JsonValueKind.Array:
+                    return ETypeCode.Json;
+                    break;
+                case JsonValueKind.String:
+                case JsonValueKind.Null:
+                    return ETypeCode.String;
+                    break;
+                case JsonValueKind.Number:
+                    return ETypeCode.Double;
+                    break;
+                case JsonValueKind.True:
+                case JsonValueKind.False:
+                    return ETypeCode.Boolean;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(valueKind), valueKind, null);
+            }
+        }
+        
         /// <summary>
         /// Converts a <see cref="JTokenType"/> into an ETypeCode
         /// </summary>

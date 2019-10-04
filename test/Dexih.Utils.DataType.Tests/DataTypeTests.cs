@@ -339,7 +339,7 @@ namespace Dexih.Utils.DataType.Tests
         }
 
         [Fact]
-        public void DataType_TryParse_Json()
+        public void DataType_TryParse_JsonElement()
         {
             var result = Operations.Parse(ETypeCode.Json, "{\"note\": \"hi there\"}");
             Assert.IsType<JsonElement>(result);
@@ -349,6 +349,16 @@ namespace Dexih.Utils.DataType.Tests
             Assert.Equal("hi there", token.GetProperty("note").GetString());
         }
 
+        [Fact]
+        public void DataType_TryParse_JsonDocument()
+        {
+            var result = Operations.Parse<JsonDocument>( "{\"note\": \"hi there\"}");
+            Assert.IsType<JsonDocument>(result);
+
+            var token = (JsonDocument) result;
+
+            Assert.Equal("hi there", token.RootElement.GetProperty("note").GetString());
+        }
 
         //values that should throw a parse error
         [Theory]

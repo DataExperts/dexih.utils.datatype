@@ -2065,13 +2065,13 @@ namespace Dexih.Utils.DataType
             };
         }
 
-        private static Func<object, T> ConvertToJson()
+        private static Func<object, T> ConvertToJsonElement()
         {
             return value =>
             {
-                if (value is JsonElement jToken)
+                if (value is JsonElement jsonElement)
                 {
-                    return (T) (object) jToken;
+                    return (T) (object) jsonElement;
                 }
 
                 if (value is string stringValue)
@@ -2082,6 +2082,22 @@ namespace Dexih.Utils.DataType
             };
         }
 
+        private static Func<object, T> ConvertToJsonDocument()
+        {
+            return value =>
+            {
+                if (value is JsonDocument jsonDocument)
+                {
+                    return (T) (object) jsonDocument;
+                }
+
+                if (value is string stringValue)
+                {
+                    return (T) (object) JsonDocument.Parse(stringValue);
+                }
+                throw new DataTypeParseException("Json conversion is only supported for strings.");
+            };
+        }
         private static Func<object, T> ConvertToXml()
         {
             return value =>
@@ -2198,7 +2214,8 @@ namespace Dexih.Utils.DataType
                     else if (dataType == typeof(Guid) || dataType == typeof(Guid?)) exp = ConvertToGuid();
                     else if (dataType == typeof(byte[])) exp = ConvertToByteArray();
                     else if (dataType == typeof(char[])) exp = ConvertToCharArray();
-                    else if (dataType == typeof(JsonElement)) exp = ConvertToJson();
+                    else if (dataType == typeof(JsonElement)) exp = ConvertToJsonElement();
+                    else if (dataType == typeof(JsonDocument)) exp = ConvertToJsonDocument();
                     else if (dataType == typeof(XmlDocument)) exp = ConvertToXml();
                     else if (dataType == typeof(Geometry)) exp = ConvertGeometry();
                     else
