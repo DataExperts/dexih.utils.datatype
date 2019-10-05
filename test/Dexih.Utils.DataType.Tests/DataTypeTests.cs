@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Text.Json;
 using System.Xml;
 using NetTopologySuite.Geometries;
@@ -511,6 +512,24 @@ namespace Dexih.Utils.DataType.Tests
         public void DataType_Divide(ETypeCode dataType, object value1, object value2, object expected)
         {
             Assert.Equal(expected, Operations.Divide(dataType, value1, value2));
+        }
+
+        [Fact]
+        public void MinMaxValues()
+        {
+            foreach (var typeCode in Enum.GetValues(typeof(ETypeCode)).Cast<ETypeCode>().ToList())
+            {
+                if (typeCode == ETypeCode.Unknown || typeCode == ETypeCode.Object)
+                {
+                    Assert.Throws<DataTypeException>(()=> GetDataTypeMaxValue(typeCode));
+                    Assert.Throws<DataTypeException>(()=> GetDataTypeMinValue(typeCode));
+                }
+                else
+                {
+                    var max = DataType.GetDataTypeMaxValue(typeCode);
+                    var min = DataType.GetDataTypeMinValue(typeCode);
+                }
+            }
         }
 
         public void Timer(string name, Action action)

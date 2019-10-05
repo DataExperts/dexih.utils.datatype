@@ -144,7 +144,7 @@ namespace Dexih.Utils.DataType
                     return xmlDoc;
                 case ETypeCode.Json:
                 case ETypeCode.Node:
-                    return JsonDocument.Parse("{zzzzz: 1}").RootElement;
+                    return JsonDocument.Parse("{\"zzzzz\": 1}").RootElement;
                 case ETypeCode.String:
                 case ETypeCode.Text:
                     return new string('Z', length);
@@ -160,6 +160,8 @@ namespace Dexih.Utils.DataType
                     return new[] { byte.MaxValue, byte.MaxValue, byte.MaxValue };
                 case ETypeCode.Geometry:
                     return null;
+                case ETypeCode.Enum:
+                    return Int32.MaxValue;
                 default:
                     throw new DataTypeException($"Max value not available for {typeCode}");
             }
@@ -223,6 +225,8 @@ namespace Dexih.Utils.DataType
                     return new[] { byte.MinValue, byte.MinValue, byte.MinValue };
                 case ETypeCode.Geometry:
                     return null;
+                case ETypeCode.Enum:
+                    return 0;
                 default:
                     throw new DataTypeException($"Max value not available for {typeCode}");
             }
