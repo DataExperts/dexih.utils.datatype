@@ -278,7 +278,8 @@ namespace Dexih.Utils.DataType.Tests
             new object[] { ETypeCode.String, new[] {1,2,3}, "[1,2,3]"},
             new object[] { ETypeCode.String, new[] {"a", "b", "c"}, "[\"a\",\"b\",\"c\"]"},
             new object[] { ETypeCode.Geometry, new Point(1,1).AsBinary(), new Point(1,1)},
-            new object[] { ETypeCode.Geometry, new Point(1,1).AsText(), new Point(1,1)}
+            new object[] { ETypeCode.Geometry, new Point(1,1).AsText(), new Point(1,1)},
+            new object[] { ETypeCode.String, "memory".AsMemory(), "memory"}
         };
 
         [Theory]
@@ -325,6 +326,15 @@ namespace Dexih.Utils.DataType.Tests
 
             result = Operations.Parse(typeof(string), 0, new [] {1,2,3});
             Assert.Equal("[1,2,3]", result);
+
+            result = Operations.Parse<string>(new [] {new int[]{1,1}, new int[]{1,1}});
+            Assert.Equal("[[1,1],[1,1]]", result);
+
+            result = Operations.Parse<string>(new [,] {{1,1}, {1,1}});
+            Assert.Equal("[[1,1],[1,1]]", result);
+
+            result = Operations.Parse<int[,]>("[[1,1],[1,1]]");
+            Assert.Equal(new [,] {{1,1}, {1,1}}, result);
 
         }
 

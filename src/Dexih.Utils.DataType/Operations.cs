@@ -2118,6 +2118,28 @@ namespace Dexih.Utils.DataType
             };
         }
 
+        private static Func<object, T> ConvertToTwoDimArray()
+        {
+            return value =>
+            {
+                if (value is Array array && array.Rank == 2)
+                {
+                    return (T) (object) array;
+                }
+
+                if (value is string stringValue)
+                {
+                    var elementType = typeof(T).GetElementType();
+                    var arrayType = elementType.MakeArrayType().MakeArrayType();
+                    var jaggedArray = JsonSerializer.Deserialize(stringValue, arrayType);
+                    var returnValue = ConvertToTwoDimArray((Array)jaggedArray, elementType);
+                    return (T) (object) returnValue;
+                }
+                
+                throw new DataTypeParseException("Two Dim Array conversion is only supported for json types.");
+            };
+        }
+        
         private static Func<object, T> ConvertToString()
         {
             return value =>
@@ -2129,6 +2151,14 @@ namespace Dexih.Utils.DataType
                 else if (value is char[] charArray)
                 {
                     return (T) (object) new string(charArray);
+                }
+                else if (value is Memory<char> memory)
+                {
+                    return (T) (object) memory.ToString();
+                }
+                else if (value is ReadOnlyMemory<char> memory2)
+                {
+                    return (T) (object) memory2.ToString();
                 }
                 else if (value is XmlDocument xmlDocument)
                 {
@@ -2142,18 +2172,90 @@ namespace Dexih.Utils.DataType
                 {
                     return (T)(object) geometry.ToText();
                 }
-                else if (!DataType.IsSimple(value.GetType()))
-                {
-                    return (T) (object) JsonSerializer.Serialize(value);;
-                }
                 else
                 {
-                    return (T) (object) value.ToString();
+                    var type = value.GetType();
+                    if (type.IsArray)
+                    {
+                        var rank = type.GetArrayRank();
+                        if (rank == 1)
+                        {
+                            return (T) (object) JsonSerializer.Serialize(value);
+                        }
+
+                        if (rank == 2)
+                        {
+                            var jagged = ConvertToJaggedArray((Array) value);
+                            return (T) (object) JsonSerializer.Serialize(jagged);
+                        }
+
+                        if (rank > 2)
+                        {
+                            throw new ParseException("Arrays with a rank greater than two are not supported.");
+                        }
+                    } else if (DataType.IsSimple(type))
+                    {
+                        return (T) (object) value.ToString();
+                    }
+                    else
+                    {
+                        return (T) (object) (T) (object) JsonSerializer.Serialize(value);
+                    }
                 }
+                
+                // shouldn't get here.
+                throw new ArgumentOutOfRangeException();
 
             };
         }
 
+        private static object[] ConvertToJaggedArray(Array array)
+        {
+            int rowsFirstIndex = array.GetLowerBound(0);
+            int rowsLastIndex = array.GetUpperBound(0);
+            int numberOfRows = rowsLastIndex + 1;
+
+            int columnsFirstIndex = array.GetLowerBound(1);
+            int columnsLastIndex = array.GetUpperBound(1);
+            int numberOfColumns = columnsLastIndex + 1;
+
+            var jaggedArray = new object[numberOfRows][];
+            for (int i = rowsFirstIndex; i <= rowsLastIndex; i++)
+            {
+                jaggedArray[i] = new object[numberOfColumns];
+
+                for (var j = columnsFirstIndex; j <= columnsLastIndex; j++)
+                {
+                    jaggedArray[i][j] = array.GetValue(i, j);
+                }
+            }
+            return jaggedArray;
+        }
+
+        private static object ConvertToTwoDimArray(Array array, Type elementType)
+        {
+            int rowsFirstIndex = array.GetLowerBound(0);
+            int rowsLastIndex = array.GetUpperBound(0);
+            int numberOfRows = rowsLastIndex + 1;
+
+            var firstRow = (Array) array.GetValue(0);
+            int columnsFirstIndex = firstRow.GetLowerBound(0);
+            int columnsLastIndex = firstRow.GetUpperBound(0);
+            int numberOfColumns = columnsLastIndex + 1;
+           
+            var twoDimArray = Array.CreateInstance(elementType, numberOfRows, numberOfColumns);
+            for (int i = rowsFirstIndex; i <= rowsLastIndex; i++)
+            {
+                var row = (Array) array.GetValue(i);
+
+                for (int j = columnsFirstIndex; j <= columnsLastIndex; j++)
+                {
+                    twoDimArray.SetValue(row.GetValue(j), i, j);
+                }
+            }
+            return twoDimArray;
+        }
+        
         private static Lazy<Func<object, T>> CreateParse()
         {
             Func<object, T> exp;
@@ -2218,6 +2320,7 @@ namespace Dexih.Utils.DataType
                     else if (dataType == typeof(JsonDocument)) exp = ConvertToJsonDocument();
                     else if (dataType == typeof(XmlDocument)) exp = ConvertToXml();
                     else if (dataType == typeof(Geometry)) exp = ConvertGeometry();
+                    else if (dataType.IsArray && dataType.GetArrayRank() == 2 ) exp = ConvertToTwoDimArray();
                     else
                         exp = value =>
                             throw new NotSupportedException($"The datatype {dataType} is not supported for Parse.");
