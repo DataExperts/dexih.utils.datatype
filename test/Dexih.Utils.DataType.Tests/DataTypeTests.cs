@@ -337,6 +337,9 @@ namespace Dexih.Utils.DataType.Tests
             result = Operations.Parse<int[,]>("[[1,1],[1,1]]");
             Assert.Equal(new [,] {{1,1}, {1,1}}, result);
 
+            result = Operations.Parse(ETypeCode.Int32, 2, "[[1,1],[2,2]]");
+            Assert.Equal(new [,] {{1,1}, {2,2}}, result);
+
         }
 
         [Fact]

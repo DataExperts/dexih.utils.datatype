@@ -209,27 +209,27 @@ namespace Dexih.Utils.DataType
 
                 var dataType = DataType.GetType(tryDataType);
 
-                if (inputValue is JsonElement jArray)
+                if (inputValue is JsonElement jsonElement)
                 {
                     
                     if (rank == 1)
                     {
-                        var returnValue = Array.CreateInstance(dataType, jArray.GetArrayLength());
-                        for (var i = 0; i < jArray.GetArrayLength(); i++)
+                        var returnValue = Array.CreateInstance(dataType, jsonElement.GetArrayLength());
+                        for (var i = 0; i < jsonElement.GetArrayLength(); i++)
                         {
-                            returnValue.SetValue(Parse(tryDataType, 0, jArray[i]), i);
+                            returnValue.SetValue(Parse(tryDataType, 0, jsonElement[i]), i);
                         }
 
                         return returnValue;
                     }
                     else if (rank == 2)
                     {
-                        var array2 = jArray[0];
-                        var returnValue = Array.CreateInstance(dataType, jArray.GetArrayLength(), array2.GetArrayLength());
+                        var array2 = jsonElement[0];
+                        var returnValue = Array.CreateInstance(dataType, jsonElement.GetArrayLength(), array2.GetArrayLength());
 
-                        for (var i = 0; i < jArray.GetArrayLength(); i++)
+                        for (var i = 0; i < jsonElement.GetArrayLength(); i++)
                         {
-                            array2 = jArray[i];
+                            array2 = jsonElement[i];
                             for (var j = 0; j < array2.GetArrayLength(); j++)
                             {
                                 returnValue.SetValue(Parse(tryDataType, 0, array2[j]), i, j);
@@ -272,13 +272,25 @@ namespace Dexih.Utils.DataType
                     }
                 }
 
-
                 if (type == typeof(string))
                 {
                     var tryType = DataType.GetType(tryDataType);
-                    var arrayType = tryType.MakeArrayType(rank);
-                    var result = JsonSerializer.Deserialize((string) inputValue, arrayType, null);;
-                    return result;
+                    Type arrayType;
+                    if (rank == 1)
+                    {
+                        arrayType = tryType.MakeArrayType();
+                        return JsonSerializer.Deserialize((string) inputValue, arrayType, null);;
+                    }
+                    else if (rank == 2)
+                    {
+                        arrayType = tryType.MakeArrayType().MakeArrayType();
+                        var jaggedArray = JsonSerializer.Deserialize((string) inputValue, arrayType, null);;
+                        return ConvertToTwoDimArray((Array)jaggedArray, tryType);
+                    }
+                    else
+                    {
+                        throw new DataTypeException("Rank must be 1,2,3.");
+                    }
                 }
 
                 return Parse(tryDataType, inputValue);
@@ -1637,6 +1649,53 @@ namespace Dexih.Utils.DataType
                 return (aType);
             }
         }
+        
+        public static object[] ConvertToJaggedArray(Array array)
+        {
+            int rowsFirstIndex = array.GetLowerBound(0);
+            int rowsLastIndex = array.GetUpperBound(0);
+            int numberOfRows = rowsLastIndex + 1;
+
+            int columnsFirstIndex = array.GetLowerBound(1);
+            int columnsLastIndex = array.GetUpperBound(1);
+            int numberOfColumns = columnsLastIndex + 1;
+
+            var jaggedArray = new object[numberOfRows][];
+            for (int i = rowsFirstIndex; i <= rowsLastIndex; i++)
+            {
+                jaggedArray[i] = new object[numberOfColumns];
+
+                for (var j = columnsFirstIndex; j <= columnsLastIndex; j++)
+                {
+                    jaggedArray[i][j] = array.GetValue(i, j);
+                }
+            }
+            return jaggedArray;
+        }
+
+        public static object ConvertToTwoDimArray(Array array, Type elementType)
+        {
+            int rowsFirstIndex = array.GetLowerBound(0);
+            int rowsLastIndex = array.GetUpperBound(0);
+            int numberOfRows = rowsLastIndex + 1;
+
+            var firstRow = (Array) array.GetValue(0);
+            int columnsFirstIndex = firstRow.GetLowerBound(0);
+            int columnsLastIndex = firstRow.GetUpperBound(0);
+            int numberOfColumns = columnsLastIndex + 1;
+           
+            var twoDimArray = Array.CreateInstance(elementType, numberOfRows, numberOfColumns);
+            for (int i = rowsFirstIndex; i <= rowsLastIndex; i++)
+            {
+                var row = (Array) array.GetValue(i);
+
+                for (int j = columnsFirstIndex; j <= columnsLastIndex; j++)
+                {
+                    twoDimArray.SetValue(row.GetValue(j), i, j);
+                }
+            }
+            return twoDimArray;
+        }
     }
 
 
@@ -2132,7 +2191,7 @@ namespace Dexih.Utils.DataType
                     var elementType = typeof(T).GetElementType();
                     var arrayType = elementType.MakeArrayType().MakeArrayType();
                     var jaggedArray = JsonSerializer.Deserialize(stringValue, arrayType);
-                    var returnValue = ConvertToTwoDimArray((Array)jaggedArray, elementType);
+                    var returnValue = Operations.ConvertToTwoDimArray((Array)jaggedArray, elementType);
                     return (T) (object) returnValue;
                 }
                 
@@ -2185,7 +2244,7 @@ namespace Dexih.Utils.DataType
 
                         if (rank == 2)
                         {
-                            var jagged = ConvertToJaggedArray((Array) value);
+                            var jagged = Operations.ConvertToJaggedArray((Array) value);
                             return (T) (object) JsonSerializer.Serialize(jagged);
                         }
 
@@ -2209,52 +2268,7 @@ namespace Dexih.Utils.DataType
             };
         }
 
-        private static object[] ConvertToJaggedArray(Array array)
-        {
-            int rowsFirstIndex = array.GetLowerBound(0);
-            int rowsLastIndex = array.GetUpperBound(0);
-            int numberOfRows = rowsLastIndex + 1;
-
-            int columnsFirstIndex = array.GetLowerBound(1);
-            int columnsLastIndex = array.GetUpperBound(1);
-            int numberOfColumns = columnsLastIndex + 1;
-
-            var jaggedArray = new object[numberOfRows][];
-            for (int i = rowsFirstIndex; i <= rowsLastIndex; i++)
-            {
-                jaggedArray[i] = new object[numberOfColumns];
-
-                for (var j = columnsFirstIndex; j <= columnsLastIndex; j++)
-                {
-                    jaggedArray[i][j] = array.GetValue(i, j);
-                }
-            }
-            return jaggedArray;
-        }
-
-        private static object ConvertToTwoDimArray(Array array, Type elementType)
-        {
-            int rowsFirstIndex = array.GetLowerBound(0);
-            int rowsLastIndex = array.GetUpperBound(0);
-            int numberOfRows = rowsLastIndex + 1;
-
-            var firstRow = (Array) array.GetValue(0);
-            int columnsFirstIndex = firstRow.GetLowerBound(0);
-            int columnsLastIndex = firstRow.GetUpperBound(0);
-            int numberOfColumns = columnsLastIndex + 1;
-           
-            var twoDimArray = Array.CreateInstance(elementType, numberOfRows, numberOfColumns);
-            for (int i = rowsFirstIndex; i <= rowsLastIndex; i++)
-            {
-                var row = (Array) array.GetValue(i);
-
-                for (int j = columnsFirstIndex; j <= columnsLastIndex; j++)
-                {
-                    twoDimArray.SetValue(row.GetValue(j), i, j);
-                }
-            }
-            return twoDimArray;
-        }
+   
         
         private static Lazy<Func<object, T>> CreateParse()
         {
