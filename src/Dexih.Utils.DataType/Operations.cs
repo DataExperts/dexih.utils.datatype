@@ -70,7 +70,7 @@ namespace Dexih.Utils.DataType
                     case DataType.ETypeCode.Binary:
                         return jsonElement.GetBytesFromBase64();
                     case DataType.ETypeCode.Geometry:
-                        return jsonElement.GetString();
+                        return jsonElement.GetRawText();
                     case DataType.ETypeCode.Byte:
                         return jsonElement.GetByte();
                     case DataType.ETypeCode.Char:
@@ -107,17 +107,17 @@ namespace Dexih.Utils.DataType
                     case DataType.ETypeCode.Guid:
                         return jsonElement.GetGuid();
                     case DataType.ETypeCode.Unknown:
-                        return jsonElement.GetString();
+                        return jsonElement.GetRawText();
                     case DataType.ETypeCode.Json:
                         return jsonElement;
                     case DataType.ETypeCode.Xml:
-                        return jsonElement.GetString();
+                        return jsonElement.GetRawText();
                     case DataType.ETypeCode.Enum:
                         return jsonElement.GetInt32();
                     case DataType.ETypeCode.CharArray:
                         return jsonElement.GetString();
                     case DataType.ETypeCode.Object:
-                        return jsonElement.GetString();
+                        return jsonElement.GetRawText();
                     default:
                         throw new ArgumentOutOfRangeException(nameof(typeCode), typeCode, null);
                 }
@@ -2225,7 +2225,7 @@ namespace Dexih.Utils.DataType
                 }
                 else if (value is JsonElement jValue)
                 {
-                    return (T) (object) jValue.GetString();
+                    return (T) (object) jValue.GetRawText();
                 }
                 else if (value is Geometry geometry)
                 {

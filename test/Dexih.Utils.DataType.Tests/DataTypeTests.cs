@@ -343,6 +343,14 @@ namespace Dexih.Utils.DataType.Tests
         }
 
         [Fact]
+        public void ConvertJsonElements()
+        {
+            var minValue = DataType.GetDataTypeMaxValue(ETypeCode.Json);
+            var minString = Operations.Parse<string>(minValue);
+
+        }
+
+        [Fact]
         public void DataType_TryParse_XML()
         {
             var result = Operations.Parse(ETypeCode.Xml, "<note>hi there</note>");
