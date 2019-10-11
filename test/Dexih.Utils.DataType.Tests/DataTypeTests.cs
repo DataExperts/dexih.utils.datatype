@@ -210,7 +210,7 @@ namespace Dexih.Utils.DataType.Tests
             new object[] { ETypeCode.Binary, new byte[] {1,2}, new byte[] {1,2,3}, -1},
             new object[] { ETypeCode.Binary, new byte[] {1,2,2}, new byte[] {1,2,3}, -1},
             new object[] { ETypeCode.Binary, new byte[] {1,2,3}, new byte[] {1,2,3}, 0},
-            new object[] { ETypeCode.Geometry, new Point(1,1), new Point(1,1), 0}
+            new object[] { ETypeCode.Geometry, new Point(1,1), new Point(1,1), 0},
         };
 
         [Fact]
@@ -282,6 +282,13 @@ namespace Dexih.Utils.DataType.Tests
             new object[] { ETypeCode.Geometry, new Point(1,1).AsText(), new Point(1,1)},
             new object[] { ETypeCode.String, "memory".AsMemory(), "memory"}
         };
+
+        [Fact]
+        public void ParseEnum()
+        {
+            var convertedEnum = Operations.Parse<ECompare>(0);
+            Assert.Equal(ECompare.IsEqual, convertedEnum);
+        }
 
         [Theory]
         [InlineData(ETypeCode.Byte, 2)]

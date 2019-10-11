@@ -328,9 +328,7 @@ namespace Dexih.Utils.DataType
                             dataType = dataType.GetElementType();
                             continue;
                         }
-
-                        if (dataType.IsEnum) return ETypeCode.Enum;
-
+                        
                         if (dataType.IsGenericType && dataType.GetGenericTypeDefinition() == typeof(Nullable<>))
                         {
                             // if nullable type, then get the generic type and loop again.
@@ -377,18 +375,14 @@ namespace Dexih.Utils.DataType
                 case JsonValueKind.Object:
                 case JsonValueKind.Array:
                     return ETypeCode.Json;
-                    break;
                 case JsonValueKind.String:
                 case JsonValueKind.Null:
                     return ETypeCode.String;
-                    break;
                 case JsonValueKind.Number:
                     return ETypeCode.Double;
-                    break;
                 case JsonValueKind.True:
                 case JsonValueKind.False:
                     return ETypeCode.Boolean;
-                    break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(valueKind), valueKind, null);
             }
@@ -518,7 +512,7 @@ namespace Dexih.Utils.DataType
                     type = typeof(string);
                     break;
                 case ETypeCode.Enum:
-                    type = typeof(object);
+                    type = typeof(int);
                     break;
                 case ETypeCode.Object:
                     type = typeof(object);

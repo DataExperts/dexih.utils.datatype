@@ -173,7 +173,7 @@ namespace Dexih.Utils.DataType
                 case DataType.ETypeCode.Xml:
                     return inputValue is XmlDocument ? inputValue : Parse<XmlDocument>(inputValue);
                 case DataType.ETypeCode.Enum:
-                    return inputValue is Enum ? inputValue : Parse<string>(inputValue);
+                    return inputValue is Enum ? inputValue : Parse<int>(inputValue);
                 case DataType.ETypeCode.CharArray:
                     return inputValue is char[] ? inputValue : Parse<char[]>(inputValue);
                 default:
@@ -731,7 +731,6 @@ namespace Dexih.Utils.DataType
 
             switch (typeCode)
             {
-
                 case DataType.ETypeCode.Unknown:
                 case DataType.ETypeCode.Json:
                 case DataType.ETypeCode.Xml:
@@ -903,7 +902,7 @@ namespace Dexih.Utils.DataType
                 case DataType.ETypeCode.Byte:
                     return (byte)((byte) value1 + (byte) value2);
                 case DataType.ETypeCode.Char:
-                    return (byte)((char) value1 + (char) value2);
+                    return (char)((char) value1 + (char) value2);
                 case DataType.ETypeCode.SByte:
                     return (sbyte)((sbyte) value1 + (sbyte) value2);
                 case DataType.ETypeCode.UInt16:
@@ -1437,7 +1436,7 @@ namespace Dexih.Utils.DataType
                 case DataType.ETypeCode.Xml:
                     return string.Compare(((XmlDocument)inputValue).InnerXml, ((XmlDocument)compareTo).InnerXml);
                 case DataType.ETypeCode.Enum:
-                    return string.Compare((string) inputValue, (string) compareTo);
+                    return ((int)inputValue).CompareTo((int)compareTo);
                 case DataType.ETypeCode.CharArray:
                     return CharArrayCompareTo((char[])inputValue,(char[])compareTo);
                 default:
@@ -1725,7 +1724,9 @@ namespace Dexih.Utils.DataType
         public static readonly Lazy<Func<T, T, int>> Compare = CreateCompare();
 
         public static bool IsNumericType(Type type)
-        {   
+        {
+            if (type.IsEnum) return false;
+            
             switch (Type.GetTypeCode(type))
             {
                 case TypeCode.UInt16:
@@ -1776,7 +1777,9 @@ namespace Dexih.Utils.DataType
         }
         
         public static bool IsBoolSupportedType(Type type)
-        {   
+        {
+            if (type.IsEnum) return false;
+            
             switch (Type.GetTypeCode(type))
             {
                 case TypeCode.Byte:
@@ -1920,7 +1923,13 @@ namespace Dexih.Utils.DataType
         
         private static Lazy<Func<T, T>> CreateNegate()
         {
-            switch (Type.GetTypeCode(typeof(T)))
+            var type = typeof(T);
+            if (type.IsEnum)
+            {
+                return new Lazy<Func<T, T>>(() => throw new InvalidCastException($"The data type {typeof(T)} is not supported for negate."));
+            }
+            
+            switch (Type.GetTypeCode(type))
             {
                 case TypeCode.Int16:
                 case TypeCode.Int32:
@@ -2128,6 +2137,11 @@ namespace Dexih.Utils.DataType
         {
             return value =>
             {
+                if (value is JsonDocument jsonDocument)
+                {
+                    return (T) (object) jsonDocument.RootElement;
+                }
+
                 if (value is JsonElement jsonElement)
                 {
                     return (T) (object) jsonElement;
@@ -2327,6 +2341,7 @@ namespace Dexih.Utils.DataType
                     break;
                 case TypeCode.Object:
                     if (dataType == typeof(TimeSpan) || dataType == typeof(TimeSpan?)) exp = ConvertToTimeSpan();
+                    else if (dataType.IsEnum) exp = value => (T) (object) Convert.ToInt32(value);
                     else if (dataType == typeof(Guid) || dataType == typeof(Guid?)) exp = ConvertToGuid();
                     else if (dataType == typeof(byte[])) exp = ConvertToByteArray();
                     else if (dataType == typeof(char[])) exp = ConvertToCharArray();
