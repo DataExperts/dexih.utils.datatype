@@ -77,19 +77,19 @@ namespace Dexih.Utils.DataType
             }
         }
 
-        public DataType.ETypeCode GetBestType()
+        public ETypeCode GetBestType()
         {
-            if (!_valueChecked) return DataType.ETypeCode.String;
+            if (!_valueChecked) return ETypeCode.String;
 
-            if (BooleanType) return DataType.ETypeCode.Boolean;
-            if (DateTimeType) return DataType.ETypeCode.DateTime;
-            if (Int32Type) return DataType.ETypeCode.Int32;
-            if (Int64Type) return DataType.ETypeCode.Int64;
-            if (DoubleType) return DataType.ETypeCode.Double;
-            if (CharType) return DataType.ETypeCode.Char;
-            if (StringType) return DataType.ETypeCode.String;
+            if (BooleanType) return ETypeCode.Boolean;
+            if (DateTimeType) return ETypeCode.DateTime;
+            if (Int32Type) return ETypeCode.Int32;
+            if (Int64Type) return ETypeCode.Int64;
+            if (DoubleType) return ETypeCode.Double;
+            if (CharType) return ETypeCode.Char;
+            if (StringType) return ETypeCode.String;
 
-            return DataType.ETypeCode.Text;
+            return ETypeCode.Text;
         }
     }
 }

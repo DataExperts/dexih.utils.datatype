@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dexih.Utils.DataType", "src
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dexih.Utils.DataType.Tests", "test\Dexih.Utils.DataType.Tests\Dexih.Utils.DataType.Tests.csproj", "{426735E6-58B8-479F-9CC7-3A6874DE6D09}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Benchmarks", "test\Benchmarks\Benchmarks.csproj", "{02ABA59F-5565-4317-87EF-9FB87D127842}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{426735E6-58B8-479F-9CC7-3A6874DE6D09}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{426735E6-58B8-479F-9CC7-3A6874DE6D09}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{426735E6-58B8-479F-9CC7-3A6874DE6D09}.Release|Any CPU.Build.0 = Release|Any CPU
+		{02ABA59F-5565-4317-87EF-9FB87D127842}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{02ABA59F-5565-4317-87EF-9FB87D127842}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{02ABA59F-5565-4317-87EF-9FB87D127842}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{02ABA59F-5565-4317-87EF-9FB87D127842}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

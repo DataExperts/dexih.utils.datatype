@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text.Json;
@@ -7,9 +8,6 @@ using NetTopologySuite.Geometries;
 
 namespace Dexih.Utils.DataType
 {
-    
-
-
     /// <summary>
     /// The data type library includes modified versions of the c# datatype functions, plus simple methods to parse and compare datatypes regardless of their base type.
     /// </summary>
@@ -49,57 +47,157 @@ namespace Dexih.Utils.DataType
             return true;
         }
 
-        /// <summary>
-        /// A simplified list of primary possible data types.
-        /// </summary>
-        // [JsonConverter(typeof(StringEnumConverter))]
-        public enum EBasicType : byte
+        public static bool IsString(ETypeCode typeCode)
         {
-            Unknown,
-            String,
-            Numeric,
-            Date,
-            Time,
-            Boolean,
-            Binary,
-            Enum,
-            Geometry
+            switch (typeCode)
+            {
+                case ETypeCode.Guid:
+                case ETypeCode.String:
+                case ETypeCode.Text:
+                case ETypeCode.Json:
+                case ETypeCode.Xml:
+                case ETypeCode.CharArray:
+                    return true;
+            }
+
+            return false;
         }
 
-        /// <summary>
-        /// List of supported type codes.  This is a cut down version of <see cref="TypeCode"/> enum.
-        /// <para/> Note: Time, Binary & Unknown differ from the TypeCode.
-        /// </summary>
-        // [JsonConverter(typeof(StringEnumConverter))]
-        public enum ETypeCode : byte
+        public static bool IsDiscrete(ETypeCode typeCode)
         {
-            Unknown,
-            Binary,
-            Byte,
-            Char,
-            SByte,
-            UInt16,
-            UInt32,
-            UInt64,
-            Int16,
-            Int32,
-            Int64,
-            Decimal,
-            Double,
-            Single,
-            String,
-            Text,
-            Boolean,
-            DateTime,
-            Time,
-            Guid,
-            Json,
-            Xml,
-            Enum,
-            CharArray,
-            Object,
-            Node, // a reference to another record-set.
-            Geometry
+            switch (typeCode)
+            {
+                case ETypeCode.Byte:
+                case ETypeCode.Enum:
+                case ETypeCode.Int16:
+                case ETypeCode.Int32:
+                case ETypeCode.Int64:
+                case ETypeCode.SByte:
+                case ETypeCode.UInt16:
+                case ETypeCode.UInt32:
+                case ETypeCode.UInt64:
+                    return true;
+            }
+
+            return false;
+        }
+
+        public static bool IsDecimal(ETypeCode typeCode)
+        {
+            switch (typeCode)
+            {
+                case ETypeCode.Decimal:
+                case ETypeCode.Double:
+                case ETypeCode.Single:
+                    return true;
+            }
+
+            return false;
+        }
+        
+        public static bool IsNumber(ETypeCode typeCode)
+        {
+            switch (typeCode)
+            {
+                case ETypeCode.Byte:
+                case ETypeCode.Enum:
+                case ETypeCode.Int16:
+                case ETypeCode.Int32:
+                case ETypeCode.Int64:
+                case ETypeCode.SByte:
+                case ETypeCode.UInt16:
+                case ETypeCode.UInt32:
+                case ETypeCode.UInt64:
+                case ETypeCode.Decimal:
+                case ETypeCode.Double:
+                case ETypeCode.Single:
+                    return true;
+            }
+
+            return false;
+        }
+
+        private static readonly Dictionary<ETypeCode, ETypeCode> _nextBestType = new Dictionary<ETypeCode, ETypeCode>()
+        {
+            {ETypeCode.Unknown, ETypeCode.String},
+            {ETypeCode.Binary, ETypeCode.String},
+            {ETypeCode.Byte, ETypeCode.Int16},
+            {ETypeCode.Char, ETypeCode.Int32},
+            {ETypeCode.SByte, ETypeCode.Int16},
+            {ETypeCode.UInt16, ETypeCode.UInt32},
+            {ETypeCode.UInt32, ETypeCode.UInt64},
+            {ETypeCode.UInt64, ETypeCode.Int64},
+            {ETypeCode.Int16, ETypeCode.Int32},
+            {ETypeCode.Int32, ETypeCode.Int64},
+            {ETypeCode.Int64, ETypeCode.Decimal},
+            {ETypeCode.Decimal, ETypeCode.String},
+            {ETypeCode.Double, ETypeCode.Decimal},
+            {ETypeCode.Single, ETypeCode.Double},
+            {ETypeCode.String, ETypeCode.String},
+            {ETypeCode.Text, ETypeCode.String},
+            {ETypeCode.Boolean, ETypeCode.String},
+            {ETypeCode.DateTime, ETypeCode.Int64},
+            {ETypeCode.Time, ETypeCode.Int64},
+            {ETypeCode.Guid, ETypeCode.String},
+            {ETypeCode.Json, ETypeCode.String},
+            {ETypeCode.Xml, ETypeCode.String},
+            {ETypeCode.Enum, ETypeCode.Int32},
+            {ETypeCode.CharArray, ETypeCode.String},
+            {ETypeCode.Object, ETypeCode.String},
+            {ETypeCode.Node, ETypeCode.String},
+            {ETypeCode.Geometry, ETypeCode.String}
+        };
+
+        private static readonly Dictionary<ETypeCode, byte> _typeOrder = new Dictionary<ETypeCode, byte>()
+        {
+            {ETypeCode.Unknown, 254},
+            {ETypeCode.Binary, 253},
+            {ETypeCode.Byte, 1},
+            {ETypeCode.Char, 3},
+            {ETypeCode.SByte, 2},
+            {ETypeCode.UInt16, 10},
+            {ETypeCode.UInt32, 11},
+            {ETypeCode.UInt64, 12},
+            {ETypeCode.Int16, 20},
+            {ETypeCode.Int32, 21},
+            {ETypeCode.Int64, 22},
+            {ETypeCode.Decimal, 32},
+            {ETypeCode.Double, 31},
+            {ETypeCode.Single, 30},
+            {ETypeCode.String, 255},
+            {ETypeCode.Text, 252},
+            {ETypeCode.Boolean, 1},
+            {ETypeCode.DateTime, 1},
+            {ETypeCode.Time, 1},
+            {ETypeCode.Guid, 253},
+            {ETypeCode.Json, 253},
+            {ETypeCode.Xml, 254},
+            {ETypeCode.Enum, 1},
+            {ETypeCode.CharArray, 253},
+            {ETypeCode.Object, 253},
+            {ETypeCode.Node, 253},
+            {ETypeCode.Geometry, 253}
+        };
+        
+        /// <summary>
+        /// Finds a common type that can be used for comparisons.
+        /// </summary>
+        /// <param name="typeCode1"></param>
+        /// <param name="typeCode2"></param>
+        /// <returns></returns>
+        public static ETypeCode BestCompareType(ETypeCode typeCode1, ETypeCode typeCode2)
+        {
+            if (typeCode1 == typeCode2) return typeCode1;
+
+            if (typeCode1 == ETypeCode.String || typeCode2 == ETypeCode.String)
+            {
+                return ETypeCode.String;
+            }
+
+            var tryType1 = BestCompareType(_nextBestType[typeCode1], typeCode2);
+            var tryType2 = BestCompareType(typeCode1, _nextBestType[typeCode2]);
+
+            return _typeOrder[tryType1] > _typeOrder[tryType2] ? tryType1 : tryType2;
         }
 
         /// <summary>

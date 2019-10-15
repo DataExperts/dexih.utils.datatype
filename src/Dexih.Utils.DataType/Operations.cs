@@ -12,25 +12,13 @@ using System.Text.Json;
 
 namespace Dexih.Utils.DataType
 {
-    // [JsonConverter(typeof(StringEnumConverter))]
-    public enum ECompare
-    {
-        IsEqual,
-        GreaterThan,
-        GreaterThanEqual,
-        LessThan,
-        LessThanEqual,
-        NotEqual,
-        IsIn,
-        IsNull,
-        IsNotNull,
-        Like
-    }
-    
+
+
     public static class Operations
     {
-       
-        public static T Add<T>(T a, T b) => Operations<T>.Add.Value(a,b);
+        
+
+    public static T Add<T>(T a, T b) => Operations<T>.Add.Value(a,b);
         public static T Subtract<T>(T a, T b) => Operations<T>.Subtract.Value(a, b);
         public static T Divide<T>(T a, T b) => Operations<T>.Divide.Value(a, b);
         public static T DivideInt<T>(T a, int value2) => Operations<T>.DivideInt.Value(a, value2);
@@ -56,7 +44,7 @@ namespace Dexih.Utils.DataType
         public static int Compare<T>(T inputValue, T compareTo) => Operations<T>.Compare.Value(inputValue, compareTo);
         public static int Compare<T>(object inputValue, object compareTo) => Operations<object>.Compare.Value(inputValue, compareTo);
         
-        public static object Parse(DataType.ETypeCode typeCode, object inputValue)
+        public static object Parse(ETypeCode typeCode, object inputValue)
         {
             if (inputValue == null || inputValue == DBNull.Value)
             {
@@ -67,56 +55,56 @@ namespace Dexih.Utils.DataType
             {
                 switch (typeCode)
                 {
-                    case DataType.ETypeCode.Binary:
+                    case ETypeCode.Binary:
                         return jsonElement.GetBytesFromBase64();
-                    case DataType.ETypeCode.Geometry:
+                    case ETypeCode.Geometry:
                         return jsonElement.GetRawText();
-                    case DataType.ETypeCode.Byte:
+                    case ETypeCode.Byte:
                         return jsonElement.GetByte();
-                    case DataType.ETypeCode.Char:
+                    case ETypeCode.Char:
                         return Convert.ToChar(jsonElement.GetSByte());
-                    case DataType.ETypeCode.SByte:
+                    case ETypeCode.SByte:
                         return jsonElement.GetSByte();
-                    case DataType.ETypeCode.UInt16:
+                    case ETypeCode.UInt16:
                         return jsonElement.GetUInt16();
-                    case DataType.ETypeCode.UInt32:
+                    case ETypeCode.UInt32:
                         return jsonElement.GetUInt32();
-                    case DataType.ETypeCode.UInt64:
+                    case ETypeCode.UInt64:
                         return jsonElement.GetUInt64();
-                    case DataType.ETypeCode.Int16:
+                    case ETypeCode.Int16:
                         return jsonElement.GetInt16();
-                    case DataType.ETypeCode.Int32:
+                    case ETypeCode.Int32:
                         return jsonElement.GetInt32();
-                    case DataType.ETypeCode.Int64:
+                    case ETypeCode.Int64:
                         return jsonElement.GetInt64();
-                    case DataType.ETypeCode.Decimal:
+                    case ETypeCode.Decimal:
                         return jsonElement.GetDecimal();
-                    case DataType.ETypeCode.Double:
+                    case ETypeCode.Double:
                         return jsonElement.GetDouble();
-                    case DataType.ETypeCode.Single:
+                    case ETypeCode.Single:
                         return jsonElement.GetSingle();
-                    case DataType.ETypeCode.String:
-                    case DataType.ETypeCode.Text:
+                    case ETypeCode.String:
+                    case ETypeCode.Text:
                         return jsonElement.GetString();
-                    case DataType.ETypeCode.Boolean:
+                    case ETypeCode.Boolean:
                         return jsonElement.GetBoolean();
-                    case DataType.ETypeCode.DateTime:
+                    case ETypeCode.DateTime:
                         return jsonElement.GetDateTime();
-                    case DataType.ETypeCode.Time:
+                    case ETypeCode.Time:
                         return TimeSpan.Parse(jsonElement.GetString());
-                    case DataType.ETypeCode.Guid:
+                    case ETypeCode.Guid:
                         return jsonElement.GetGuid();
-                    case DataType.ETypeCode.Unknown:
+                    case ETypeCode.Unknown:
                         return jsonElement.GetRawText();
-                    case DataType.ETypeCode.Json:
+                    case ETypeCode.Json:
                         return jsonElement;
-                    case DataType.ETypeCode.Xml:
+                    case ETypeCode.Xml:
                         return jsonElement.GetRawText();
-                    case DataType.ETypeCode.Enum:
+                    case ETypeCode.Enum:
                         return jsonElement.GetInt32();
-                    case DataType.ETypeCode.CharArray:
+                    case ETypeCode.CharArray:
                         return jsonElement.GetString();
-                    case DataType.ETypeCode.Object:
+                    case ETypeCode.Object:
                         return jsonElement.GetRawText();
                     default:
                         throw new ArgumentOutOfRangeException(nameof(typeCode), typeCode, null);
@@ -125,56 +113,56 @@ namespace Dexih.Utils.DataType
                          
             switch (typeCode)
             {
-                case DataType.ETypeCode.Binary:
+                case ETypeCode.Binary:
                     return inputValue is byte[] ? inputValue : Parse<byte[]>(inputValue);
-                case DataType.ETypeCode.Geometry:
+                case ETypeCode.Geometry:
                     return inputValue is Geometry? inputValue : Parse<Geometry>(inputValue);
-                case DataType.ETypeCode.Byte:
+                case ETypeCode.Byte:
                     return inputValue is byte ? inputValue : Parse<byte>(inputValue);
-                case DataType.ETypeCode.Char:
+                case ETypeCode.Char:
                     return inputValue is char ? inputValue : Parse<char>(inputValue);
-                case DataType.ETypeCode.SByte:
+                case ETypeCode.SByte:
                     return inputValue is sbyte ? inputValue : Parse<sbyte>(inputValue);
-                case DataType.ETypeCode.UInt16:
+                case ETypeCode.UInt16:
                     return inputValue is ushort ? inputValue : Parse<ushort>(inputValue);
-                case DataType.ETypeCode.UInt32:
+                case ETypeCode.UInt32:
                     return inputValue is uint ? inputValue : Parse<uint>(inputValue);
-                case DataType.ETypeCode.UInt64:
+                case ETypeCode.UInt64:
                     return inputValue is ulong ? inputValue : Parse<ulong>(inputValue);
-                case DataType.ETypeCode.Int16:
+                case ETypeCode.Int16:
                     return inputValue is short ? inputValue : Parse<short>(inputValue);
-                case DataType.ETypeCode.Int32:
+                case ETypeCode.Int32:
                     return inputValue is int ? inputValue :  Parse<int>(inputValue);
-                case DataType.ETypeCode.Int64:
+                case ETypeCode.Int64:
                     return inputValue is long ? inputValue :  Parse<long>(inputValue);
-                case DataType.ETypeCode.Decimal:
+                case ETypeCode.Decimal:
                     return inputValue is decimal ? inputValue : Parse<decimal>(inputValue);
-                case DataType.ETypeCode.Double:
+                case ETypeCode.Double:
                     return inputValue is double ? inputValue : Parse<double>(inputValue);
-                case DataType.ETypeCode.Single:
+                case ETypeCode.Single:
                     return inputValue is float ? inputValue : Parse<float>(inputValue);
-                case DataType.ETypeCode.String:
+                case ETypeCode.String:
                     return inputValue is string ? inputValue : Parse<string>(inputValue);
-                case DataType.ETypeCode.Text:
+                case ETypeCode.Text:
                     return inputValue is string ? inputValue : Parse<string>(inputValue);
-                case DataType.ETypeCode.Boolean:
+                case ETypeCode.Boolean:
                     return inputValue is bool ? inputValue : Parse<bool>(inputValue);
-                case DataType.ETypeCode.DateTime:
+                case ETypeCode.DateTime:
                     return inputValue is DateTime ? inputValue : Parse<DateTime>(inputValue);
-                case DataType.ETypeCode.Time:
+                case ETypeCode.Time:
                     return inputValue is TimeSpan ? inputValue : Parse<TimeSpan>(inputValue);
-                case DataType.ETypeCode.Guid:
+                case ETypeCode.Guid:
                     return inputValue is Guid ? inputValue : Parse<Guid>(inputValue);
-                case DataType.ETypeCode.Unknown:
+                case ETypeCode.Unknown:
                     return inputValue is string ? inputValue : Parse<string>(inputValue);
-                case DataType.ETypeCode.Json:
-                case DataType.ETypeCode.Node:
+                case ETypeCode.Json:
+                case ETypeCode.Node:
                     return inputValue is JsonElement ? inputValue : Parse<JsonElement>(inputValue);
-                case DataType.ETypeCode.Xml:
+                case ETypeCode.Xml:
                     return inputValue is XmlDocument ? inputValue : Parse<XmlDocument>(inputValue);
-                case DataType.ETypeCode.Enum:
+                case ETypeCode.Enum:
                     return inputValue is Enum ? inputValue : Parse<int>(inputValue);
-                case DataType.ETypeCode.CharArray:
+                case ETypeCode.CharArray:
                     return inputValue is char[] ? inputValue : Parse<char[]>(inputValue);
                 default:
                     throw new ArgumentOutOfRangeException(nameof(typeCode), typeCode, null);
@@ -198,7 +186,7 @@ namespace Dexih.Utils.DataType
 
         }
 
-        public static object Parse(DataType.ETypeCode tryDataType, int rank, object inputValue)
+        public static object Parse(ETypeCode tryDataType, int rank, object inputValue)
         {
             try
             {
@@ -354,7 +342,7 @@ namespace Dexih.Utils.DataType
 
         }
 
-        public static bool Equal(DataType.ETypeCode typeCode, object value1, object value2)
+        public static bool Equal(ETypeCode typeCode, object value1, object value2)
         {
             if ((value1 == null || value1 == DBNull.Value) && (value2 == null || value2 == DBNull.Value))
                 return true;
@@ -362,12 +350,12 @@ namespace Dexih.Utils.DataType
             if (value1 == null || value1 == DBNull.Value || value2 == null || value2 == DBNull.Value)
                 return false;
 
-            if (typeCode == DataType.ETypeCode.Binary || typeCode == DataType.ETypeCode.CharArray)
+            if (typeCode == ETypeCode.Binary || typeCode == ETypeCode.CharArray)
             {
                 var array1 = (Array) value1;
                 var array2 = (Array) value2;
                 if (array1.Length != array2.Length) return false;
-                var elementType = typeCode == DataType.ETypeCode.Binary ? typeof(byte) : typeof(char);
+                var elementType = typeCode == ETypeCode.Binary ? typeof(byte) : typeof(char);
 
                 for (var i = 0; i < array1.Length; i++)
                 {
@@ -384,7 +372,7 @@ namespace Dexih.Utils.DataType
 
         }
 
-        public static bool Evaluate(ECompare Operator, DataType.ETypeCode compareDataType, object value1, object value2)
+        public static bool Evaluate(ECompare Operator, ETypeCode compareDataType, object value1, object value2)
         {
             var parsedValue1 = Parse(compareDataType, value1);
             
@@ -550,7 +538,7 @@ namespace Dexih.Utils.DataType
 
         }
 
-        public static bool GreaterThan(DataType.ETypeCode typeCode,  object value1, object value2)
+        public static bool GreaterThan(ETypeCode typeCode,  object value1, object value2)
         {
             if ((value1 == null || value1 == DBNull.Value))
                 return false;
@@ -563,51 +551,51 @@ namespace Dexih.Utils.DataType
 
             switch (typeCode)
             {
-                case DataType.ETypeCode.Unknown:
-                case DataType.ETypeCode.Json:
-                case DataType.ETypeCode.Xml:
-                case DataType.ETypeCode.Node:
+                case ETypeCode.Unknown:
+                case ETypeCode.Json:
+                case ETypeCode.Xml:
+                case ETypeCode.Node:
                     throw new Exception($"Cannot compare {typeCode} types.");
-                case DataType.ETypeCode.Binary:
+                case ETypeCode.Binary:
                     return ByteArrayIsGreater((byte[])value1, (byte[])value2,false);
-                case DataType.ETypeCode.Geometry:
+                case ETypeCode.Geometry:
                     return ((Geometry)value1).CompareTo((Geometry)value2) > 0;
-                case DataType.ETypeCode.CharArray:
+                case ETypeCode.CharArray:
                     return CharArrayIsGreater((char[])value1, (char[])value2,false);
-                case DataType.ETypeCode.String:
-                case DataType.ETypeCode.Text:
+                case ETypeCode.String:
+                case ETypeCode.Text:
                     return string.Compare((string)value1, (string)value2) > 0;
-                case DataType.ETypeCode.Guid:
+                case ETypeCode.Guid:
                     return string.Compare(value1.ToString(), value2.ToString()) > 0;
-                case DataType.ETypeCode.DateTime:
+                case ETypeCode.DateTime:
                     return (DateTime) value1 > (DateTime) value2;
-                case DataType.ETypeCode.Boolean:
+                case ETypeCode.Boolean:
                     return BoolIsGreaterThan((bool) value1, (bool) value2);
-                case DataType.ETypeCode.Time:
+                case ETypeCode.Time:
                     return (TimeSpan) value1 > (TimeSpan) value2;
-                case DataType.ETypeCode.Byte:
+                case ETypeCode.Byte:
                     return ((byte) value1 > (byte) value2);
-                case DataType.ETypeCode.Char:
+                case ETypeCode.Char:
                     return ((char) value1 > (char) value2);
-                case DataType.ETypeCode.SByte:
+                case ETypeCode.SByte:
                     return ((sbyte) value1 > (sbyte) value2);
-                case DataType.ETypeCode.UInt16:
+                case ETypeCode.UInt16:
                     return ((ushort) value1 > (ushort) value2);
-                case DataType.ETypeCode.UInt32:
+                case ETypeCode.UInt32:
                     return (uint) value1 > (uint) value2;
-                case DataType.ETypeCode.UInt64:
+                case ETypeCode.UInt64:
                     return (ulong) value1 > (ulong) value2;
-                case DataType.ETypeCode.Int16:
+                case ETypeCode.Int16:
                     return ((short) value1 > (short) value2);
-                case DataType.ETypeCode.Int32:
+                case ETypeCode.Int32:
                     return (int) value1 > (int) value2;
-                case DataType.ETypeCode.Int64:
+                case ETypeCode.Int64:
                     return (long) value1 > (long) value2;
-                case DataType.ETypeCode.Decimal:
+                case ETypeCode.Decimal:
                     return (decimal) value1 > (decimal) value2;
-                case DataType.ETypeCode.Double:
+                case ETypeCode.Double:
                     return (double) value1 > (double) value2;
-                case DataType.ETypeCode.Single:
+                case ETypeCode.Single:
                     return (float) value1 > (float) value2;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(typeCode), typeCode, null);
@@ -633,7 +621,7 @@ namespace Dexih.Utils.DataType
 
         }
 
-        public static bool GreaterThanOrEqual(DataType.ETypeCode typeCode,  object value1, object value2)
+        public static bool GreaterThanOrEqual(ETypeCode typeCode,  object value1, object value2)
         {
             if ((value1 == null || value1 == DBNull.Value))
                 return (value2 == null || value2 == DBNull.Value);
@@ -647,51 +635,51 @@ namespace Dexih.Utils.DataType
             switch (typeCode)
             {
 
-                case DataType.ETypeCode.Unknown:
-                case DataType.ETypeCode.Json:
-                case DataType.ETypeCode.Xml:
-                case DataType.ETypeCode.Node:
+                case ETypeCode.Unknown:
+                case ETypeCode.Json:
+                case ETypeCode.Xml:
+                case ETypeCode.Node:
                     throw new Exception($"Cannot compare {typeCode} types.");
-                case DataType.ETypeCode.CharArray:
+                case ETypeCode.CharArray:
                     return CharArrayIsGreater((char[])value1, (char[])value2,true);
-                case DataType.ETypeCode.Binary:
+                case ETypeCode.Binary:
                     return ByteArrayIsGreater((byte[])value1, (byte[])value2,true);
-                case DataType.ETypeCode.Geometry:
+                case ETypeCode.Geometry:
                     return ((Geometry)value1).CompareTo((Geometry)value2) >= 0;
-                case DataType.ETypeCode.String:
-                case DataType.ETypeCode.Text:
+                case ETypeCode.String:
+                case ETypeCode.Text:
                     return string.Compare((string)value1, (string)value2) >= 0;
-                case DataType.ETypeCode.Guid:
+                case ETypeCode.Guid:
                     return string.Compare(value1.ToString(), value2.ToString()) >= 0;
-                case DataType.ETypeCode.DateTime:
+                case ETypeCode.DateTime:
                     return (DateTime) value1 >= (DateTime) value2;
-                case DataType.ETypeCode.Boolean:
+                case ETypeCode.Boolean:
                     return BoolIsGreaterThanOrEqual((bool) value1, (bool) value2);
-                case DataType.ETypeCode.Time:
+                case ETypeCode.Time:
                     return (TimeSpan) value1 >= (TimeSpan) value2;
-                case DataType.ETypeCode.Byte:
+                case ETypeCode.Byte:
                     return ((byte) value1 >= (byte) value2);
-                case DataType.ETypeCode.Char:
+                case ETypeCode.Char:
                     return ((char) value1 >= (char) value2);
-                case DataType.ETypeCode.SByte:
+                case ETypeCode.SByte:
                     return ((sbyte) value1 >= (sbyte) value2);
-                case DataType.ETypeCode.UInt16:
+                case ETypeCode.UInt16:
                     return ((ushort) value1 >= (ushort) value2);
-                case DataType.ETypeCode.UInt32:
+                case ETypeCode.UInt32:
                     return (uint) value1 >= (uint) value2;
-                case DataType.ETypeCode.UInt64:
+                case ETypeCode.UInt64:
                     return (ulong) value1 >= (ulong) value2;
-                case DataType.ETypeCode.Int16:
+                case ETypeCode.Int16:
                     return ((short) value1 >= (short) value2);
-                case DataType.ETypeCode.Int32:
+                case ETypeCode.Int32:
                     return (int) value1 >= (int) value2;
-                case DataType.ETypeCode.Int64:
+                case ETypeCode.Int64:
                     return (long) value1 >= (long) value2;
-                case DataType.ETypeCode.Decimal:
+                case ETypeCode.Decimal:
                     return (decimal) value1 >= (decimal) value2;
-                case DataType.ETypeCode.Double:
+                case ETypeCode.Double:
                     return (double) value1 >= (double) value2;
-                case DataType.ETypeCode.Single:
+                case ETypeCode.Single:
                     return (float) value1 >= (float) value2;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(typeCode), typeCode, null);
@@ -718,7 +706,7 @@ namespace Dexih.Utils.DataType
 
         }
 
-        public static bool LessThan(DataType.ETypeCode typeCode,  object value1, object value2)
+        public static bool LessThan(ETypeCode typeCode,  object value1, object value2)
         {
             if ((value2 == null || value2 == DBNull.Value))
                 return false;
@@ -731,51 +719,51 @@ namespace Dexih.Utils.DataType
 
             switch (typeCode)
             {
-                case DataType.ETypeCode.Unknown:
-                case DataType.ETypeCode.Json:
-                case DataType.ETypeCode.Xml:
-                case DataType.ETypeCode.Node:
+                case ETypeCode.Unknown:
+                case ETypeCode.Json:
+                case ETypeCode.Xml:
+                case ETypeCode.Node:
                     throw new Exception($"Cannot compare {typeCode} types.");
-                case DataType.ETypeCode.Geometry:
+                case ETypeCode.Geometry:
                     return ((Geometry)value1).CompareTo((Geometry)value2) < 0;
-                case DataType.ETypeCode.Binary:
+                case ETypeCode.Binary:
                     return ByteArrayIsLessThan((byte[])value1, (byte[])value2,false);
-                case DataType.ETypeCode.CharArray:
+                case ETypeCode.CharArray:
                     return CharArrayIsLessThan((char[])value1, (char[])value2,false);
-                case DataType.ETypeCode.String:
-                case DataType.ETypeCode.Text:
+                case ETypeCode.String:
+                case ETypeCode.Text:
                     return string.Compare((string)value1, (string)value2) < 0;
-                case DataType.ETypeCode.Guid:
+                case ETypeCode.Guid:
                     return string.Compare(value1.ToString(), value2.ToString()) < 0;
-                case DataType.ETypeCode.DateTime:
+                case ETypeCode.DateTime:
                     return (DateTime) value1 < (DateTime) value2;
-                case DataType.ETypeCode.Boolean:
+                case ETypeCode.Boolean:
                     return BoolIsLessThan((bool) value1, (bool) value2);
-                case DataType.ETypeCode.Time:
+                case ETypeCode.Time:
                     return (TimeSpan) value1 < (TimeSpan) value2;
-                case DataType.ETypeCode.Byte:
+                case ETypeCode.Byte:
                     return ((byte) value1 < (byte) value2);
-                case DataType.ETypeCode.Char:
+                case ETypeCode.Char:
                     return ((char) value1 < (char) value2);
-                case DataType.ETypeCode.SByte:
+                case ETypeCode.SByte:
                     return ((sbyte) value1 < (sbyte) value2);
-                case DataType.ETypeCode.UInt16:
+                case ETypeCode.UInt16:
                     return ((ushort) value1 < (ushort) value2);
-                case DataType.ETypeCode.UInt32:
+                case ETypeCode.UInt32:
                     return (uint) value1 < (uint) value2;
-                case DataType.ETypeCode.UInt64:
+                case ETypeCode.UInt64:
                     return (ulong) value1 < (ulong) value2;
-                case DataType.ETypeCode.Int16:
+                case ETypeCode.Int16:
                     return ((short) value1 < (short) value2);
-                case DataType.ETypeCode.Int32:
+                case ETypeCode.Int32:
                     return (int) value1 < (int) value2;
-                case DataType.ETypeCode.Int64:
+                case ETypeCode.Int64:
                     return (long) value1 < (long) value2;
-                case DataType.ETypeCode.Decimal:
+                case ETypeCode.Decimal:
                     return (decimal) value1 < (decimal) value2;
-                case DataType.ETypeCode.Double:
+                case ETypeCode.Double:
                     return (double) value1 < (double) value2;
-                case DataType.ETypeCode.Single:
+                case ETypeCode.Single:
                     return (float) value1 < (float) value2;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(typeCode), typeCode, null);
@@ -801,7 +789,7 @@ namespace Dexih.Utils.DataType
             return LessThanOrEqual(typeCode, value1, value2);
         }
 
-        public static bool LessThanOrEqual(DataType.ETypeCode typeCode,  object value1, object value2)
+        public static bool LessThanOrEqual(ETypeCode typeCode,  object value1, object value2)
         {
             if ((value2 == null || value2 == DBNull.Value))
                 return (value1 == null || value1 == DBNull.Value);
@@ -814,51 +802,51 @@ namespace Dexih.Utils.DataType
 
             switch (typeCode)
             {
-                case DataType.ETypeCode.Unknown:
-                case DataType.ETypeCode.Json:
-                case DataType.ETypeCode.Xml:
-                case DataType.ETypeCode.Node:
+                case ETypeCode.Unknown:
+                case ETypeCode.Json:
+                case ETypeCode.Xml:
+                case ETypeCode.Node:
                     throw new Exception($"Cannot compare {typeCode} types.");
-                case DataType.ETypeCode.Binary:
+                case ETypeCode.Binary:
                     return ByteArrayIsLessThan((byte[])value1, (byte[])value2,true);
-                case DataType.ETypeCode.Geometry:
+                case ETypeCode.Geometry:
                     return ((Geometry)value1).CompareTo((Geometry)value2) <= 0;
-                case DataType.ETypeCode.CharArray:
+                case ETypeCode.CharArray:
                     return CharArrayIsLessThan((char[])value1, (char[])value2,true);
-                case DataType.ETypeCode.String:
-                case DataType.ETypeCode.Text:
+                case ETypeCode.String:
+                case ETypeCode.Text:
                     return string.Compare((string)value1, (string)value2) <= 0;
-                case DataType.ETypeCode.Guid:
+                case ETypeCode.Guid:
                     return string.Compare(value1.ToString(), value2.ToString()) <= 0;
-                case DataType.ETypeCode.DateTime:
+                case ETypeCode.DateTime:
                     return (DateTime) value1 <= (DateTime) value2;
-                case DataType.ETypeCode.Boolean:
+                case ETypeCode.Boolean:
                     return BoolIsLessThanOrEqual((bool) value1, (bool) value2);
-                case DataType.ETypeCode.Time:
+                case ETypeCode.Time:
                     return (TimeSpan) value1 <= (TimeSpan) value2;
-                case DataType.ETypeCode.Byte:
+                case ETypeCode.Byte:
                     return ((byte) value1 <= (byte) value2);
-                case DataType.ETypeCode.Char:
+                case ETypeCode.Char:
                     return ((char) value1 <= (char) value2);
-                case DataType.ETypeCode.SByte:
+                case ETypeCode.SByte:
                     return ((sbyte) value1 <= (sbyte) value2);
-                case DataType.ETypeCode.UInt16:
+                case ETypeCode.UInt16:
                     return ((ushort) value1 <= (ushort) value2);
-                case DataType.ETypeCode.UInt32:
+                case ETypeCode.UInt32:
                     return (uint) value1 <= (uint) value2;
-                case DataType.ETypeCode.UInt64:
+                case ETypeCode.UInt64:
                     return (ulong) value1 <= (ulong) value2;
-                case DataType.ETypeCode.Int16:
+                case ETypeCode.Int16:
                     return ((short) value1 <= (short) value2);
-                case DataType.ETypeCode.Int32:
+                case ETypeCode.Int32:
                     return (int) value1 <= (int) value2;
-                case DataType.ETypeCode.Int64:
+                case ETypeCode.Int64:
                     return (long) value1 <= (long) value2;
-                case DataType.ETypeCode.Decimal:
+                case ETypeCode.Decimal:
                     return (decimal) value1 <= (decimal) value2;
-                case DataType.ETypeCode.Double:
+                case ETypeCode.Double:
                     return (double) value1 <= (double) value2;
-                case DataType.ETypeCode.Single:
+                case ETypeCode.Single:
                     return (float) value1 <= (float) value2;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(typeCode), typeCode, null);
@@ -877,51 +865,51 @@ namespace Dexih.Utils.DataType
             return Add(typeCode, value1, value2);
         }
 
-        public static object Add(DataType.ETypeCode typeCode,  object value1, object value2)
+        public static object Add(ETypeCode typeCode,  object value1, object value2)
         {
             value1 = Parse(typeCode, value1);
             value2 = Parse(typeCode, value2);
 
             switch (typeCode)
             {
-                case DataType.ETypeCode.Binary:
-                case DataType.ETypeCode.CharArray:
-                case DataType.ETypeCode.String:
-                case DataType.ETypeCode.Text:
-                case DataType.ETypeCode.DateTime:
-                case DataType.ETypeCode.Boolean:
-                case DataType.ETypeCode.Unknown:
-                case DataType.ETypeCode.Guid:
-                case DataType.ETypeCode.Json:
-                case DataType.ETypeCode.Xml:
-                case DataType.ETypeCode.Node:
-                case DataType.ETypeCode.Geometry:
+                case ETypeCode.Binary:
+                case ETypeCode.CharArray:
+                case ETypeCode.String:
+                case ETypeCode.Text:
+                case ETypeCode.DateTime:
+                case ETypeCode.Boolean:
+                case ETypeCode.Unknown:
+                case ETypeCode.Guid:
+                case ETypeCode.Json:
+                case ETypeCode.Xml:
+                case ETypeCode.Node:
+                case ETypeCode.Geometry:
                     throw new Exception($"Cannot add {typeCode} types.");
-                case DataType.ETypeCode.Time:
+                case ETypeCode.Time:
                     return (TimeSpan) value1 + (TimeSpan) value2;
-                case DataType.ETypeCode.Byte:
+                case ETypeCode.Byte:
                     return (byte)((byte) value1 + (byte) value2);
-                case DataType.ETypeCode.Char:
+                case ETypeCode.Char:
                     return (char)((char) value1 + (char) value2);
-                case DataType.ETypeCode.SByte:
+                case ETypeCode.SByte:
                     return (sbyte)((sbyte) value1 + (sbyte) value2);
-                case DataType.ETypeCode.UInt16:
+                case ETypeCode.UInt16:
                     return (ushort)((ushort) value1 + (ushort) value2);
-                case DataType.ETypeCode.UInt32:
+                case ETypeCode.UInt32:
                     return (uint) value1 + (uint) value2;
-                case DataType.ETypeCode.UInt64:
+                case ETypeCode.UInt64:
                     return (ulong) value1 + (ulong) value2;
-                case DataType.ETypeCode.Int16:
+                case ETypeCode.Int16:
                     return (short)((short) value1 + (short) value2);
-                case DataType.ETypeCode.Int32:
+                case ETypeCode.Int32:
                     return (int) value1 + (int) value2;
-                case DataType.ETypeCode.Int64:
+                case ETypeCode.Int64:
                     return (long) value1 + (long) value2;
-                case DataType.ETypeCode.Decimal:
+                case ETypeCode.Decimal:
                     return (decimal) value1 + (decimal) value2;
-                case DataType.ETypeCode.Double:
+                case ETypeCode.Double:
                     return (double) value1 + (double) value2;
-                case DataType.ETypeCode.Single:
+                case ETypeCode.Single:
                     return (float) value1 + (float) value2;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(typeCode), typeCode, null);
@@ -940,51 +928,51 @@ namespace Dexih.Utils.DataType
             return Subtract(typeCode, value1, value2);
         }
 
-        public static object Subtract(DataType.ETypeCode typeCode,  object value1, object value2)
+        public static object Subtract(ETypeCode typeCode,  object value1, object value2)
         {
             value1 = Parse(typeCode, value1);
             value2 = Parse(typeCode, value2);
 
             switch (typeCode)
             {
-                case DataType.ETypeCode.Binary:
-                case DataType.ETypeCode.CharArray:
-                case DataType.ETypeCode.String:
-                case DataType.ETypeCode.Text:
-                case DataType.ETypeCode.DateTime:
-                case DataType.ETypeCode.Boolean:
-                case DataType.ETypeCode.Unknown:
-                case DataType.ETypeCode.Guid:
-                case DataType.ETypeCode.Json:
-                case DataType.ETypeCode.Xml:
-                case DataType.ETypeCode.Node:
-                case DataType.ETypeCode.Geometry:
+                case ETypeCode.Binary:
+                case ETypeCode.CharArray:
+                case ETypeCode.String:
+                case ETypeCode.Text:
+                case ETypeCode.DateTime:
+                case ETypeCode.Boolean:
+                case ETypeCode.Unknown:
+                case ETypeCode.Guid:
+                case ETypeCode.Json:
+                case ETypeCode.Xml:
+                case ETypeCode.Node:
+                case ETypeCode.Geometry:
                     throw new Exception($"Cannot subtract {typeCode} types.");
-                case DataType.ETypeCode.Time:
+                case ETypeCode.Time:
                     return (TimeSpan) value1 - (TimeSpan) value2;
-                case DataType.ETypeCode.Byte:
+                case ETypeCode.Byte:
                     return (byte)((byte) value1 - (byte) value2);
-                case DataType.ETypeCode.Char:
+                case ETypeCode.Char:
                     return (char)((char) value1 - (char) value2);
-                case DataType.ETypeCode.SByte:
+                case ETypeCode.SByte:
                     return (sbyte)((sbyte) value1 - (sbyte) value2);
-                case DataType.ETypeCode.UInt16:
+                case ETypeCode.UInt16:
                     return (ushort)((ushort) value1 - (ushort) value2);
-                case DataType.ETypeCode.UInt32:
+                case ETypeCode.UInt32:
                     return (uint) value1 - (uint) value2;
-                case DataType.ETypeCode.UInt64:
+                case ETypeCode.UInt64:
                     return (ulong) value1 - (ulong) value2;
-                case DataType.ETypeCode.Int16:
+                case ETypeCode.Int16:
                     return (short)((short) value1 - (short) value2);
-                case DataType.ETypeCode.Int32:
+                case ETypeCode.Int32:
                     return (int) value1 - (int) value2;
-                case DataType.ETypeCode.Int64:
+                case ETypeCode.Int64:
                     return (long) value1 - (long) value2;
-                case DataType.ETypeCode.Decimal:
+                case ETypeCode.Decimal:
                     return (decimal) value1 - (decimal) value2;
-                case DataType.ETypeCode.Double:
+                case ETypeCode.Double:
                     return (double) value1 - (double) value2;
-                case DataType.ETypeCode.Single:
+                case ETypeCode.Single:
                     return (float) value1 - (float) value2;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(typeCode), typeCode, null);
@@ -1003,50 +991,50 @@ namespace Dexih.Utils.DataType
             return Divide(typeCode, value1, value2);
         }
 
-        public static object Divide(DataType.ETypeCode typeCode,  object value1, object value2)
+        public static object Divide(ETypeCode typeCode,  object value1, object value2)
         {
             value1 = Parse(typeCode, value1);
             value2 = Parse(typeCode, value2);
 
             switch (typeCode)
             {
-                case DataType.ETypeCode.Binary:
-                case DataType.ETypeCode.CharArray:
-                case DataType.ETypeCode.String:
-                case DataType.ETypeCode.Text:
-                case DataType.ETypeCode.DateTime:
-                case DataType.ETypeCode.Boolean:
-                case DataType.ETypeCode.Unknown:
-                case DataType.ETypeCode.Time:
-                case DataType.ETypeCode.Guid:
-                case DataType.ETypeCode.Json:
-                case DataType.ETypeCode.Xml:
-                case DataType.ETypeCode.Node:
-                case DataType.ETypeCode.Geometry:
+                case ETypeCode.Binary:
+                case ETypeCode.CharArray:
+                case ETypeCode.String:
+                case ETypeCode.Text:
+                case ETypeCode.DateTime:
+                case ETypeCode.Boolean:
+                case ETypeCode.Unknown:
+                case ETypeCode.Time:
+                case ETypeCode.Guid:
+                case ETypeCode.Json:
+                case ETypeCode.Xml:
+                case ETypeCode.Node:
+                case ETypeCode.Geometry:
                     throw new Exception($"Cannot divide {typeCode} types.");
-                case DataType.ETypeCode.Byte:
+                case ETypeCode.Byte:
                     return (byte)((byte) value1 / (byte) value2);
-                case DataType.ETypeCode.Char:
+                case ETypeCode.Char:
                     return (char)((char) value1 / (char) value2);
-                case DataType.ETypeCode.SByte:
+                case ETypeCode.SByte:
                     return (sbyte)((sbyte) value1 / (sbyte) value2);
-                case DataType.ETypeCode.UInt16:
+                case ETypeCode.UInt16:
                     return (ushort)((ushort) value1 / (ushort) value2);
-                case DataType.ETypeCode.UInt32:
+                case ETypeCode.UInt32:
                     return (uint) value1 / (uint) value2;
-                case DataType.ETypeCode.UInt64:
+                case ETypeCode.UInt64:
                     return (ulong) value1 / (ulong) value2;
-                case DataType.ETypeCode.Int16:
+                case ETypeCode.Int16:
                     return (short)((short) value1 / (short) value2);
-                case DataType.ETypeCode.Int32:
+                case ETypeCode.Int32:
                     return (int) value1 / (int) value2;
-                case DataType.ETypeCode.Int64:
+                case ETypeCode.Int64:
                     return (long) value1 / (long) value2;
-                case DataType.ETypeCode.Decimal:
+                case ETypeCode.Decimal:
                     return (decimal) value1 / (decimal) value2;
-                case DataType.ETypeCode.Double:
+                case ETypeCode.Double:
                     return (double) value1 / (double) value2;
-                case DataType.ETypeCode.Single:
+                case ETypeCode.Single:
                     return (float) value1 / (float) value2;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(typeCode), typeCode, null);
@@ -1065,50 +1053,50 @@ namespace Dexih.Utils.DataType
             return Multiply(typeCode, value1, value2);
         }
 
-        public static object Multiply(DataType.ETypeCode typeCode,  object value1, object value2)
+        public static object Multiply(ETypeCode typeCode,  object value1, object value2)
         {
             value1 = Parse(typeCode, value1);
             value2 = Parse(typeCode, value2);
 
             switch (typeCode)
             {
-                case DataType.ETypeCode.Binary:
-                case DataType.ETypeCode.CharArray:
-                case DataType.ETypeCode.String:
-                case DataType.ETypeCode.Text:
-                case DataType.ETypeCode.DateTime:
-                case DataType.ETypeCode.Boolean:
-                case DataType.ETypeCode.Unknown:
-                case DataType.ETypeCode.Guid:
-                case DataType.ETypeCode.Json:
-                case DataType.ETypeCode.Time:
-                case DataType.ETypeCode.Xml:
-                case DataType.ETypeCode.Node:
-                case DataType.ETypeCode.Geometry:
+                case ETypeCode.Binary:
+                case ETypeCode.CharArray:
+                case ETypeCode.String:
+                case ETypeCode.Text:
+                case ETypeCode.DateTime:
+                case ETypeCode.Boolean:
+                case ETypeCode.Unknown:
+                case ETypeCode.Guid:
+                case ETypeCode.Json:
+                case ETypeCode.Time:
+                case ETypeCode.Xml:
+                case ETypeCode.Node:
+                case ETypeCode.Geometry:
                     throw new Exception($"Cannot multiply {typeCode} types.");
-                case DataType.ETypeCode.Byte:
+                case ETypeCode.Byte:
                     return (byte)((byte) value1 * (byte) value2);
-                case DataType.ETypeCode.Char:
+                case ETypeCode.Char:
                     return (char)((char) value1 * (char) value2);
-                case DataType.ETypeCode.SByte:
+                case ETypeCode.SByte:
                     return (sbyte)((sbyte) value1 * (sbyte) value2);
-                case DataType.ETypeCode.UInt16:
+                case ETypeCode.UInt16:
                     return (ushort)((ushort) value1 * (ushort) value2);
-                case DataType.ETypeCode.UInt32:
+                case ETypeCode.UInt32:
                     return (uint) value1 * (uint) value2;
-                case DataType.ETypeCode.UInt64:
+                case ETypeCode.UInt64:
                     return (ulong) value1 * (ulong) value2;
-                case DataType.ETypeCode.Int16:
+                case ETypeCode.Int16:
                     return (short)((short) value1 * (short) value2);
-                case DataType.ETypeCode.Int32:
+                case ETypeCode.Int32:
                     return (int) value1 * (int) value2;
-                case DataType.ETypeCode.Int64:
+                case ETypeCode.Int64:
                     return (long) value1 * (long) value2;
-                case DataType.ETypeCode.Decimal:
+                case ETypeCode.Decimal:
                     return (decimal) value1 * (decimal) value2;
-                case DataType.ETypeCode.Double:
+                case ETypeCode.Double:
                     return (double) value1 * (double) value2;
-                case DataType.ETypeCode.Single:
+                case ETypeCode.Single:
                     return (float) value1 * (float) value2;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(typeCode), typeCode, null);
@@ -1127,49 +1115,49 @@ namespace Dexih.Utils.DataType
             return DivideInt(typeCode, value1, value2);
         }
 
-        public static object DivideInt(DataType.ETypeCode typeCode,  object value1, int value2)
+        public static object DivideInt(ETypeCode typeCode,  object value1, int value2)
         {
             value1 = Parse(typeCode, value1);
 
             switch (typeCode)
             {
-                case DataType.ETypeCode.Binary:
-                case DataType.ETypeCode.CharArray:
-                case DataType.ETypeCode.String:
-                case DataType.ETypeCode.Text:
-                case DataType.ETypeCode.DateTime:
-                case DataType.ETypeCode.Boolean:
-                case DataType.ETypeCode.Unknown:
-                case DataType.ETypeCode.Guid:
-                case DataType.ETypeCode.Json:
-                case DataType.ETypeCode.Time:
-                case DataType.ETypeCode.Xml:
-                case DataType.ETypeCode.Node:
-                case DataType.ETypeCode.Geometry:
+                case ETypeCode.Binary:
+                case ETypeCode.CharArray:
+                case ETypeCode.String:
+                case ETypeCode.Text:
+                case ETypeCode.DateTime:
+                case ETypeCode.Boolean:
+                case ETypeCode.Unknown:
+                case ETypeCode.Guid:
+                case ETypeCode.Json:
+                case ETypeCode.Time:
+                case ETypeCode.Xml:
+                case ETypeCode.Node:
+                case ETypeCode.Geometry:
                     throw new Exception($"Cannot divide {typeCode} types.");
-                case DataType.ETypeCode.Byte:
+                case ETypeCode.Byte:
                     return (byte)((byte) value1 / value2);
-                case DataType.ETypeCode.Char:
+                case ETypeCode.Char:
                     return (char)((char) value1 / value2);
-                case DataType.ETypeCode.SByte:
+                case ETypeCode.SByte:
                     return (sbyte)((sbyte) value1 / value2);
-                case DataType.ETypeCode.UInt16:
+                case ETypeCode.UInt16:
                     return (ushort)((ushort) value1 / value2);
-                case DataType.ETypeCode.UInt32:
+                case ETypeCode.UInt32:
                     return (uint) value1 / value2;
-                case DataType.ETypeCode.UInt64:
+                case ETypeCode.UInt64:
                     return (ulong) value1 / Convert.ToUInt64(value2);
-                case DataType.ETypeCode.Int16:
+                case ETypeCode.Int16:
                     return (short)((short) value1 / value2);
-                case DataType.ETypeCode.Int32:
+                case ETypeCode.Int32:
                     return (int) value1 / value2;
-                case DataType.ETypeCode.Int64:
+                case ETypeCode.Int64:
                     return (long) value1 / value2;
-                case DataType.ETypeCode.Decimal:
+                case ETypeCode.Decimal:
                     return (decimal) value1 / value2;
-                case DataType.ETypeCode.Double:
+                case ETypeCode.Double:
                     return (double) value1 / value2;
-                case DataType.ETypeCode.Single:
+                case ETypeCode.Single:
                     return (float) value1 / value2;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(typeCode), typeCode, null);
@@ -1188,46 +1176,46 @@ namespace Dexih.Utils.DataType
             return Negate(typeCode, value);
         }
 
-        public static object Negate(DataType.ETypeCode typeCode,  object value1)
+        public static object Negate(ETypeCode typeCode,  object value1)
         {
             value1 = Parse(typeCode, value1);
 
             switch (typeCode)
             {
-                case DataType.ETypeCode.Binary:
-                case DataType.ETypeCode.CharArray:
-                case DataType.ETypeCode.String:
-                case DataType.ETypeCode.Text:
-                case DataType.ETypeCode.DateTime:
-                case DataType.ETypeCode.Boolean:
-                case DataType.ETypeCode.Unknown:
-                case DataType.ETypeCode.Guid:
-                case DataType.ETypeCode.Json:
-                case DataType.ETypeCode.Time:
-                case DataType.ETypeCode.Xml:
-                case DataType.ETypeCode.UInt16:
-                case DataType.ETypeCode.UInt32:
-                case DataType.ETypeCode.UInt64:
-                case DataType.ETypeCode.Node:
-                case DataType.ETypeCode.Geometry:
+                case ETypeCode.Binary:
+                case ETypeCode.CharArray:
+                case ETypeCode.String:
+                case ETypeCode.Text:
+                case ETypeCode.DateTime:
+                case ETypeCode.Boolean:
+                case ETypeCode.Unknown:
+                case ETypeCode.Guid:
+                case ETypeCode.Json:
+                case ETypeCode.Time:
+                case ETypeCode.Xml:
+                case ETypeCode.UInt16:
+                case ETypeCode.UInt32:
+                case ETypeCode.UInt64:
+                case ETypeCode.Node:
+                case ETypeCode.Geometry:
                     throw new Exception($"Cannot negate {typeCode} types.");
-                case DataType.ETypeCode.Byte:
+                case ETypeCode.Byte:
                     return (byte)((byte) value1 * -1);
-                case DataType.ETypeCode.Char:
+                case ETypeCode.Char:
                     return (char)((char) value1 * -1);
-                case DataType.ETypeCode.SByte:
+                case ETypeCode.SByte:
                     return (sbyte)((sbyte) value1 * -1);
-                case DataType.ETypeCode.Int16:
+                case ETypeCode.Int16:
                     return (short)((short) value1 * -1);
-                case DataType.ETypeCode.Int32:
+                case ETypeCode.Int32:
                     return (int) value1 * -1;
-                case DataType.ETypeCode.Int64:
+                case ETypeCode.Int64:
                     return (long) value1 * -1;
-                case DataType.ETypeCode.Decimal:
+                case ETypeCode.Decimal:
                     return (decimal) value1 * -1;
-                case DataType.ETypeCode.Double:
+                case ETypeCode.Double:
                     return (double) value1 * -1;
-                case DataType.ETypeCode.Single:
+                case ETypeCode.Single:
                     return (float) value1 * -1;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(typeCode), typeCode, null);
@@ -1246,49 +1234,49 @@ namespace Dexih.Utils.DataType
             return Increment(typeCode, value);
         }
 
-        public static object Increment(DataType.ETypeCode typeCode,  object value1)
+        public static object Increment(ETypeCode typeCode,  object value1)
         {
             value1 = Parse(typeCode, value1);
 
             switch (typeCode)
             {
-                case DataType.ETypeCode.Binary:
-                case DataType.ETypeCode.CharArray:
-                case DataType.ETypeCode.String:
-                case DataType.ETypeCode.Text:
-                case DataType.ETypeCode.DateTime:
-                case DataType.ETypeCode.Boolean:
-                case DataType.ETypeCode.Unknown:
-                case DataType.ETypeCode.Guid:
-                case DataType.ETypeCode.Json:
-                case DataType.ETypeCode.Time:
-                case DataType.ETypeCode.Xml:
-                case DataType.ETypeCode.Node:
-                case DataType.ETypeCode.Geometry:
+                case ETypeCode.Binary:
+                case ETypeCode.CharArray:
+                case ETypeCode.String:
+                case ETypeCode.Text:
+                case ETypeCode.DateTime:
+                case ETypeCode.Boolean:
+                case ETypeCode.Unknown:
+                case ETypeCode.Guid:
+                case ETypeCode.Json:
+                case ETypeCode.Time:
+                case ETypeCode.Xml:
+                case ETypeCode.Node:
+                case ETypeCode.Geometry:
                     throw new Exception($"Cannot increment {typeCode} types.");
-                case DataType.ETypeCode.Byte:
+                case ETypeCode.Byte:
                     return (byte)((byte) value1 + 1);
-                case DataType.ETypeCode.Char:
+                case ETypeCode.Char:
                     return (char)((char) value1 + 1);
-                case DataType.ETypeCode.SByte:
+                case ETypeCode.SByte:
                     return (sbyte)((sbyte) value1 + 1);
-                case DataType.ETypeCode.Int16:
+                case ETypeCode.Int16:
                     return (short)((short) value1 + 1);
-                case DataType.ETypeCode.Int32:
+                case ETypeCode.Int32:
                     return (int) value1 + 1;
-                case DataType.ETypeCode.Int64:
+                case ETypeCode.Int64:
                     return (long) value1 + 1;
-                case DataType.ETypeCode.UInt16:
+                case ETypeCode.UInt16:
                     return (ushort) value1 + 1;
-                case DataType.ETypeCode.UInt32:
+                case ETypeCode.UInt32:
                     return (uint) value1 + 1;
-                case DataType.ETypeCode.UInt64:
+                case ETypeCode.UInt64:
                     return (ulong) value1 + 1;
-                case DataType.ETypeCode.Decimal:
+                case ETypeCode.Decimal:
                     return (decimal) value1 + 1;
-                case DataType.ETypeCode.Double:
+                case ETypeCode.Double:
                     return (double) value1 + 1;
-                case DataType.ETypeCode.Single:
+                case ETypeCode.Single:
                     return (float) value1 + 1;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(typeCode), typeCode, null);
@@ -1307,49 +1295,49 @@ namespace Dexih.Utils.DataType
             return Decrement(typeCode, value);
         }
 
-        public static object Decrement(DataType.ETypeCode typeCode,  object value1)
+        public static object Decrement(ETypeCode typeCode,  object value1)
         {
             value1 = Parse(typeCode, value1);
 
             switch (typeCode)
             {
-                case DataType.ETypeCode.Binary:
-                case DataType.ETypeCode.CharArray:
-                case DataType.ETypeCode.String:
-                case DataType.ETypeCode.Text:
-                case DataType.ETypeCode.DateTime:
-                case DataType.ETypeCode.Boolean:
-                case DataType.ETypeCode.Unknown:
-                case DataType.ETypeCode.Guid:
-                case DataType.ETypeCode.Json:
-                case DataType.ETypeCode.Time:
-                case DataType.ETypeCode.Xml:
-                case DataType.ETypeCode.Node:
-                case DataType.ETypeCode.Geometry:
+                case ETypeCode.Binary:
+                case ETypeCode.CharArray:
+                case ETypeCode.String:
+                case ETypeCode.Text:
+                case ETypeCode.DateTime:
+                case ETypeCode.Boolean:
+                case ETypeCode.Unknown:
+                case ETypeCode.Guid:
+                case ETypeCode.Json:
+                case ETypeCode.Time:
+                case ETypeCode.Xml:
+                case ETypeCode.Node:
+                case ETypeCode.Geometry:
                     throw new Exception($"Cannot decrement {typeCode} types.");
-                case DataType.ETypeCode.Byte:
+                case ETypeCode.Byte:
                     return (byte)((byte) value1 - 1);
-                case DataType.ETypeCode.Char:
+                case ETypeCode.Char:
                     return (char)((char) value1 - 1);
-                case DataType.ETypeCode.SByte:
+                case ETypeCode.SByte:
                     return (sbyte)((sbyte) value1 - 1);
-                case DataType.ETypeCode.Int16:
+                case ETypeCode.Int16:
                     return (short)((short) value1 - 1);
-                case DataType.ETypeCode.Int32:
+                case ETypeCode.Int32:
                     return (int) value1 - 1;
-                case DataType.ETypeCode.Int64:
+                case ETypeCode.Int64:
                     return (long) value1 - 1;
-                case DataType.ETypeCode.UInt16:
+                case ETypeCode.UInt16:
                     return (ushort) value1 - 1;
-                case DataType.ETypeCode.UInt32:
+                case ETypeCode.UInt32:
                     return (uint) value1 - 1;
-                case DataType.ETypeCode.UInt64:
+                case ETypeCode.UInt64:
                     return (ulong) value1 - 1;
-                case DataType.ETypeCode.Decimal:
+                case ETypeCode.Decimal:
                     return (decimal) value1 - 1;
-                case DataType.ETypeCode.Double:
+                case ETypeCode.Double:
                     return (double) value1 - 1;
-                case DataType.ETypeCode.Single:
+                case ETypeCode.Single:
                     return (float) value1 - 1;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(typeCode), typeCode, null);
@@ -1376,7 +1364,7 @@ namespace Dexih.Utils.DataType
 
         }
 
-        public static int Compare(DataType.ETypeCode typeCode, object inputValue, object compareTo)
+        public static int Compare(ETypeCode typeCode, object inputValue, object compareTo)
         {
             if ((inputValue == null || inputValue == DBNull.Value) && (compareTo == null || compareTo == DBNull.Value))
                 return 0;
@@ -1389,55 +1377,55 @@ namespace Dexih.Utils.DataType
 
             switch (typeCode)
             {
-                case DataType.ETypeCode.Binary:
+                case ETypeCode.Binary:
                     return ByteArrayCompareTo((byte[])inputValue,(byte[])compareTo);
-                case DataType.ETypeCode.Geometry:
+                case ETypeCode.Geometry:
                     return ((Geometry)inputValue).CompareTo((Geometry)compareTo);
-                case DataType.ETypeCode.Byte:
+                case ETypeCode.Byte:
                     return ((byte)inputValue).CompareTo((byte)compareTo);
-                case DataType.ETypeCode.Char:
+                case ETypeCode.Char:
                     return ((char)inputValue).CompareTo((char)compareTo);
-                case DataType.ETypeCode.SByte:
+                case ETypeCode.SByte:
                     return ((sbyte)inputValue).CompareTo((sbyte)compareTo);
-                case DataType.ETypeCode.UInt16:
+                case ETypeCode.UInt16:
                     return ((ushort)inputValue).CompareTo((ushort)compareTo);
-                case DataType.ETypeCode.UInt32:
+                case ETypeCode.UInt32:
                     return ((uint)inputValue).CompareTo((uint)compareTo);
-                case DataType.ETypeCode.UInt64:
+                case ETypeCode.UInt64:
                     return ((ulong)inputValue).CompareTo((ulong)compareTo);
-                case DataType.ETypeCode.Int16:
+                case ETypeCode.Int16:
                     return ((short)inputValue).CompareTo((short)compareTo);
-                case DataType.ETypeCode.Int32:
+                case ETypeCode.Int32:
                     return ((int)inputValue).CompareTo((int)compareTo);
-                case DataType.ETypeCode.Int64:
+                case ETypeCode.Int64:
                     return ((long)inputValue).CompareTo((long)compareTo);
-                case DataType.ETypeCode.Decimal:
+                case ETypeCode.Decimal:
                     return ((decimal)inputValue).CompareTo((decimal)compareTo);
-                case DataType.ETypeCode.Double:
+                case ETypeCode.Double:
                     return ((double)inputValue).CompareTo((double)compareTo);
-                case DataType.ETypeCode.Single:
+                case ETypeCode.Single:
                     return ((float)inputValue).CompareTo((float)compareTo);
-                case DataType.ETypeCode.String:
-                case DataType.ETypeCode.Text:
+                case ETypeCode.String:
+                case ETypeCode.Text:
                     return string.Compare((string) inputValue, (string) compareTo);
-                case DataType.ETypeCode.Boolean:
+                case ETypeCode.Boolean:
                     return ((bool)inputValue).CompareTo((bool)compareTo);
-                case DataType.ETypeCode.DateTime:
+                case ETypeCode.DateTime:
                     return ((DateTime)inputValue).CompareTo((DateTime)compareTo);
-                case DataType.ETypeCode.Time:
+                case ETypeCode.Time:
                     return ((TimeSpan)inputValue).CompareTo((TimeSpan)compareTo);
-                case DataType.ETypeCode.Guid:
+                case ETypeCode.Guid:
                     return ((Guid)inputValue).CompareTo((Guid)compareTo);
-                case DataType.ETypeCode.Unknown:
+                case ETypeCode.Unknown:
                     return string.Compare((inputValue.ToString()), compareTo.ToString(), StringComparison.Ordinal);
-                case DataType.ETypeCode.Json:
-                case DataType.ETypeCode.Node:
+                case ETypeCode.Json:
+                case ETypeCode.Node:
                     return string.Compare(inputValue.ToString(), compareTo.ToString());
-                case DataType.ETypeCode.Xml:
+                case ETypeCode.Xml:
                     return string.Compare(((XmlDocument)inputValue).InnerXml, ((XmlDocument)compareTo).InnerXml);
-                case DataType.ETypeCode.Enum:
+                case ETypeCode.Enum:
                     return ((int)inputValue).CompareTo((int)compareTo);
-                case DataType.ETypeCode.CharArray:
+                case ETypeCode.CharArray:
                     return CharArrayCompareTo((char[])inputValue,(char[])compareTo);
                 default:
                     throw new ArgumentOutOfRangeException(nameof(typeCode), typeCode, null);
@@ -1824,6 +1812,14 @@ namespace Dexih.Utils.DataType
                 }
                 return new Lazy<Func<T, T, int>>(() => Compare);
             }
+            else if (type == typeof(byte[]))
+            {
+                int Compare(T a, T b)
+                {
+                    return Operations.ByteArrayCompareTo( (byte[])(object) a, (byte[])(object) b);
+                }
+                return new Lazy<Func<T, T, int>>(() => Compare);
+            }           
             else if(type == typeof(object))
             {
                 int Compare(T a, T b)
@@ -1889,6 +1885,22 @@ namespace Dexih.Utils.DataType
                 
                 return new Lazy<Func<T, T, bool>>(() => Condition);
             }
+            else if (type == typeof(char[]))
+            {
+                bool Condition(T a, T b)
+                {
+                    return compareResults.Contains(Operations.CharArrayCompareTo((char[]) (object) a, (char[]) (object) b));
+                }
+                return new Lazy<Func<T, T, bool>>(() => Condition);
+            }
+            else if (type == typeof(byte[]))
+            {
+                bool Condition(T a, T b)
+                {
+                    return compareResults.Contains(Operations.ByteArrayCompareTo((byte[]) (object) a, (byte[]) (object) b));
+                }
+                return new Lazy<Func<T, T, bool>>(() => Condition);
+            }  
             else if (type == typeof(object))
             {
                 bool Condition(T a, T b)

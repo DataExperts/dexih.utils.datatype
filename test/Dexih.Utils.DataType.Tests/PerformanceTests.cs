@@ -77,7 +77,7 @@ namespace Dexih.Utils.DataType.Tests
             {
                 for(var i = 0; i< iterations; i++)
                 {
-                    var c = Operations.Add(DataType.ETypeCode.Int32, e, f);
+                    var c = Operations.Add(ETypeCode.Int32, e, f);
                 }
             });
         }
@@ -135,7 +135,7 @@ namespace Dexih.Utils.DataType.Tests
             {
                 for(var i = 0; i< iterations; i++)
                 {
-                    var c = Operations.GreaterThan(DataType.ETypeCode.Int32, e, f);
+                    var c = Operations.GreaterThan(ETypeCode.Int32, e, f);
                 }
             });
         }
@@ -160,7 +160,7 @@ namespace Dexih.Utils.DataType.Tests
 //            {
 //                for(var i = 0; i< iterations; i++)
 //                {
-//                    values.Select(c=> DataType.TryParse(DataType.ETypeCode.Decimal, c)).ToArray();
+//                    values.Select(c=> DataType.TryParse(ETypeCode.Decimal, c)).ToArray();
 //                }
 //            });
             
@@ -177,7 +177,7 @@ namespace Dexih.Utils.DataType.Tests
             {
                 for(var i = 0; i< iterations; i++)
                 {
-                    values.Select(c=> Operations.Parse(DataType.ETypeCode.Decimal, c)).ToArray();
+                    values.Select(c=> Operations.Parse(ETypeCode.Decimal, c)).ToArray();
                 }
             });
 
@@ -191,7 +191,7 @@ namespace Dexih.Utils.DataType.Tests
             {
                 for(var i = 0; i< iterations; i++)
                 {
-                    Operations.Parse(DataType.ETypeCode.Int32, (object) 123);
+                    Operations.Parse(ETypeCode.Int32, (object) 123);
                 }
             });
 
@@ -199,7 +199,7 @@ namespace Dexih.Utils.DataType.Tests
             {
                 for(var i = 0; i< iterations; i++)
                 {
-                    Operations.Parse(DataType.ETypeCode.Int32, (object) "123");
+                    Operations.Parse(ETypeCode.Int32, (object) "123");
                 }
             });
 
@@ -207,7 +207,7 @@ namespace Dexih.Utils.DataType.Tests
             {
                 for(var i = 0; i< iterations; i++)
                 {
-                    Operations.Parse(DataType.ETypeCode.Int32, (object) 123L);
+                    Operations.Parse(ETypeCode.Int32, (object) 123L);
                 }
             });
 
