@@ -242,7 +242,7 @@ namespace Dexih.Utils.DataType
                     return xmlDoc;
                 case ETypeCode.Json:
                 case ETypeCode.Node:
-                    return JsonDocument.Parse("{\"zzzzz\": 1}").RootElement;
+                    return JsonDocument.Parse("{\"zzzzz\":1}").RootElement;
                 case ETypeCode.String:
                 case ETypeCode.Text:
                     return new string('Z', length);

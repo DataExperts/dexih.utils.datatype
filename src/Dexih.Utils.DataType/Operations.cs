@@ -229,31 +229,54 @@ namespace Dexih.Utils.DataType
                 }
 
                 var type = inputValue.GetType();
-                if ((type.IsArray) && type != typeof(byte[]) && type != typeof(char[]))
+                
+                // matrix, 2 dim array handling
+                if (rank == 2 && inputValue is Array inputArray && inputArray.Rank >= 2)
+                {
+                    var returnValue =
+                        Array.CreateInstance(dataType, inputArray.GetLength(0), inputArray.GetLength(1));
+
+                    for (var i = 0; i < inputArray.GetLength(0); i++)
+                    {
+                        for (var j = 0; j < inputArray.GetLength(1); j++)
+                        {
+                            returnValue.SetValue(Parse(tryDataType, 0, inputArray.GetValue(i, j)), i, j);
+                        }
+                    }
+                    return returnValue;
+                }
+
+                if (inputValue is ICollection collection && type != typeof(byte[]) && type != typeof(char[]) && rank >= 1)
                 {
                     if (rank == 1)
                     {
-                        var inputArray = (Array) inputValue;
-                        var returnValue = Array.CreateInstance(dataType, inputArray.Length);
-                        for (var i = 0; i < inputArray.Length; i++)
+                        var returnValue = Array.CreateInstance(dataType, collection.Count);
+                        var i = 0;
+                        foreach (var item in collection)
                         {
-                            returnValue.SetValue(Parse(tryDataType, 0, inputArray.GetValue(i)), i);
+                            returnValue.SetValue(Parse(tryDataType, 0, item), i);
+                            i++;
                         }
 
                         return returnValue;
                     }
-                    else if (rank == 2)
-                    {
-                        var inputArray = (Array) inputValue;
-                        var returnValue =
-                            Array.CreateInstance(dataType, inputArray.GetLength(0), inputArray.GetLength(1));
 
-                        for (var i = 0; i < inputArray.GetLength(0); i++)
+                    if (rank == 2)
+                    {
+                        var first = collection.OfType<ICollection>().FirstOrDefault();
+                        
+                        var returnValue = Array.CreateInstance(dataType, collection.Count, first.Count);
+                        var i = 0;
+                        foreach (var row in collection.OfType<ICollection>())
                         {
-                            for (var j = 0; j < inputArray.GetLength(1); j++)
+                            var j = 0;
+                            foreach (var value in row)
                             {
-                                returnValue.SetValue(Parse(tryDataType, 0, inputArray.GetValue(i, j)), i, j);
+                                returnValue.SetValue(Parse(tryDataType, 0, value), i, j);
+                                j++;
                             }
+                                
+                            i++;
                         }
 
                         return returnValue;
@@ -263,6 +286,7 @@ namespace Dexih.Utils.DataType
                 if (type == typeof(string))
                 {
                     var tryType = DataType.GetType(tryDataType);
+                    
                     Type arrayType;
                     if (rank == 1)
                     {
@@ -277,7 +301,7 @@ namespace Dexih.Utils.DataType
                     }
                     else
                     {
-                        throw new DataTypeException("Rank must be 1,2,3.");
+                        throw new DataTypeException("Rank must be 1,2.");
                     }
                 }
 
@@ -2163,13 +2187,16 @@ namespace Dexih.Utils.DataType
                 {
                     return (T) (object) JsonDocument.Parse(stringValue).RootElement;
                 }
-                throw new DataTypeParseException("Json conversion is only supported for strings.");
+
+                var json = JsonSerializer.Serialize(value);
+                return (T) (object) JsonDocument.Parse(json).RootElement;
+//                throw new DataTypeParseException("Json conversion is only supported for strings.");
             };
         }
 
         private static Func<object, T> ConvertToJsonDocument()
         {
-            return value =>
+            return value => 
             {
                 if (value is JsonDocument jsonDocument)
                 {
@@ -2180,6 +2207,8 @@ namespace Dexih.Utils.DataType
                 {
                     return (T) (object) JsonDocument.Parse(stringValue);
                 }
+                var json = JsonSerializer.Serialize(value);
+                return (T) (object) JsonDocument.Parse(json);
                 throw new DataTypeParseException("Json conversion is only supported for strings.");
             };
         }
