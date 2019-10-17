@@ -22,7 +22,7 @@ test_script:
   - appveyor-retry dotnet restore -v Minimal
   - dotnet test -c %CONFIGURATION% .\test\Dexih.Utils.DataType.Tests\
 artifacts:
-  - path: c:\artifacts\Dexih.Utils.DataType*.nupkg
+  - path: ../../artifacts/Dexih.Utils.DataType*.nupkg
 deploy:
  - provider: NuGet
    server: https://www.nuget.org/api/v2/package
@@ -47,8 +47,7 @@ for:
   build_script:
   - appveyor-retry dotnet restore -v Minimal
   - dotnet build -c %CONFIGURATION%
-  - dotnet pack -c %CONFIGURATION% --no-build /p:Version=%APPVEYOR_BUILD_VERSION% -o c:\artifacts
-  - del c:\artifacts\Benchmarks*
+  - dotnet pack -c %CONFIGURATION% --no-build /p:Version=%APPVEYOR_BUILD_VERSION% -o ../../artifacts
   
 # test branch produces a nuget package with the version suffix added.
 -
@@ -60,8 +59,7 @@ for:
   build_script:
   - appveyor-retry dotnet restore -v Minimal
   - dotnet build -c %CONFIGURATION%
-  - dotnet pack -c %CONFIGURATION% --no-build /p:Version=%APPVEYOR_BUILD_VERSION%-ALPHA -o c:\artifacts
-  - del c:\artifacts\Benchmarks*
+  - dotnet pack -c %CONFIGURATION% --no-build /p:Version=%APPVEYOR_BUILD_VERSION%-ALPHA -o ../../artifacts
   
 # master and dev branchs runs test only, no publishing packages
 -
