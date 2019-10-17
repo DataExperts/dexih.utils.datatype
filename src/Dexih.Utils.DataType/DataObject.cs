@@ -1,15 +1,10 @@
 using System;
 using System.Data;
-using System.Data.SqlTypes;
-using System.Diagnostics;
-using System.Globalization;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Xml;
 using NetTopologySuite.Geometries;
-using NetTopologySuite.IO;
-using NetTopologySuite.Planargraph;
 
 namespace Dexih.Utils.DataType
 {
@@ -19,13 +14,13 @@ namespace Dexih.Utils.DataType
         #region Storage
         internal struct NumericInfo {
             // This is used to store Decimal data
-            internal Int32 data1;
-            internal Int32 data2;
-            internal Int32 data3;
-            internal Int32 data4;
-            internal Byte  precision;
-            internal Byte  scale;
-            internal Boolean positive;
+            internal Int32 Data1;
+            internal Int32 Data2;
+            internal Int32 Data3;
+            internal Int32 Data4;
+            internal Byte  Precision;
+            internal Byte  Scale;
+            internal Boolean Positive;
         }
         
 
@@ -233,23 +228,23 @@ namespace Dexih.Utils.DataType
                 ThrowIfNull();
 
                 if (ETypeCode.Decimal == _typeCode) {
-                    if (_value._numericInfo.data4 != 0 && _value._numericInfo.scale > 28) {
+                    if (_value._numericInfo.Data4 != 0 && _value._numericInfo.Scale > 28) {
                         throw new OverflowException();
                     }
-                    return new Decimal(_value._numericInfo.data1, _value._numericInfo.data2, _value._numericInfo.data3, !_value._numericInfo.positive, _value._numericInfo.scale);
+                    return new Decimal(_value._numericInfo.Data1, _value._numericInfo.Data2, _value._numericInfo.Data3, !_value._numericInfo.Positive, _value._numericInfo.Scale);
                 }
                 throw new InvalidTypeException(ETypeCode.Decimal, _typeCode);
             }
             set
             {
                 var bytes = Decimal.GetBits(value);
-                _value._numericInfo.data1 = bytes[0];
-                _value._numericInfo.data2 = bytes[1];
-                _value._numericInfo.data3 = bytes[2];
-                _value._numericInfo.data4 = bytes[3];
-                _value._numericInfo.precision = 38;
-                _value._numericInfo.scale = (byte) ((bytes[3] >> 16) & 0x7F);
-                _value._numericInfo.positive = (bytes[3] & 0x80000000) == 0;
+                _value._numericInfo.Data1 = bytes[0];
+                _value._numericInfo.Data2 = bytes[1];
+                _value._numericInfo.Data3 = bytes[2];
+                _value._numericInfo.Data4 = bytes[3];
+                _value._numericInfo.Precision = 38;
+                _value._numericInfo.Scale = (byte) ((bytes[3] >> 16) & 0x7F);
+                _value._numericInfo.Positive = (bytes[3] & 0x80000000) == 0;
                 _typeCode = ETypeCode.Decimal;
                 _isNull = false;
                 _isArray = false;
@@ -611,7 +606,7 @@ namespace Dexih.Utils.DataType
 
                 if (_typeCode == ETypeCode.Decimal)
                 {
-                    return _value._numericInfo.scale;
+                    return _value._numericInfo.Scale;
                 }
                 
                 throw new DataException("Scale is only available for decimal types.");
@@ -626,7 +621,7 @@ namespace Dexih.Utils.DataType
 
                 if (_typeCode == ETypeCode.Decimal)
                 {
-                    return _value._numericInfo.precision;
+                    return _value._numericInfo.Precision;
                 }
                 
                 throw new DataException("Precision is only available for decimal types.");
@@ -652,6 +647,16 @@ namespace Dexih.Utils.DataType
         
         #region Operators
 
+        public override bool Equals(object obj)
+        {
+            return ((DataObject) obj) == this;
+        }
+
+        public override int GetHashCode()
+        {
+            return this.Value.GetHashCode();
+        }
+
         public static bool operator ==(DataObject a, DataObject b)
         {
             if (a.IsArray)
@@ -675,8 +680,8 @@ namespace Dexih.Utils.DataType
                     ETypeCode.Int32 => (a.Int32 == b.Int32),
                     ETypeCode.Int64 => (a.Int64 == b.Int64),
                     ETypeCode.Decimal => (a.Decimal == b.Decimal),
-                    ETypeCode.Double => (a.Double == b.Double),
-                    ETypeCode.Single => (a.Single == b.Single),
+                    ETypeCode.Double => (Math.Abs(a.Double - b.Double) < 0.00001),
+                    ETypeCode.Single => (Math.Abs(a.Single - b.Single) < 0.00001),
                     ETypeCode.String => (a.String == b.String),
                     ETypeCode.Text => (a.Text == b.Text),
                     ETypeCode.Boolean => (a.Boolean == b.Boolean),
@@ -1102,7 +1107,6 @@ namespace Dexih.Utils.DataType
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
-                return null; // need to return the value as an object of some CLS type
             }
         }
         
@@ -1210,7 +1214,7 @@ namespace Dexih.Utils.DataType
             return _typeCode;
         }
 
-        public Type GetType ()
+        public Type GetItemType ()
         {
             return DataType.GetType(_typeCode);
         }
@@ -1242,13 +1246,13 @@ namespace Dexih.Utils.DataType
         }
         
         public void SetToDecimal(byte precision, byte scale, bool positive, int[] bits) {
-            _value._numericInfo.precision = precision;
-            _value._numericInfo.scale = scale;
-            _value._numericInfo.positive = positive;
-            _value._numericInfo.data1 = bits[0];
-            _value._numericInfo.data2 = bits[1];
-            _value._numericInfo.data3 = bits[2];
-            _value._numericInfo.data4 = bits[3];
+            _value._numericInfo.Precision = precision;
+            _value._numericInfo.Scale = scale;
+            _value._numericInfo.Positive = positive;
+            _value._numericInfo.Data1 = bits[0];
+            _value._numericInfo.Data2 = bits[1];
+            _value._numericInfo.Data3 = bits[2];
+            _value._numericInfo.Data4 = bits[3];
             _typeCode = ETypeCode.Decimal;
             _isNull = false;
         }

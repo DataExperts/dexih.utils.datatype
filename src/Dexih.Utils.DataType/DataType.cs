@@ -117,7 +117,7 @@ namespace Dexih.Utils.DataType
             return false;
         }
 
-        private static readonly Dictionary<ETypeCode, ETypeCode> _nextBestType = new Dictionary<ETypeCode, ETypeCode>()
+        private static readonly Dictionary<ETypeCode, ETypeCode> NextBestType = new Dictionary<ETypeCode, ETypeCode>()
         {
             {ETypeCode.Unknown, ETypeCode.String},
             {ETypeCode.Binary, ETypeCode.String},
@@ -148,7 +148,7 @@ namespace Dexih.Utils.DataType
             {ETypeCode.Geometry, ETypeCode.String}
         };
 
-        private static readonly Dictionary<ETypeCode, byte> _typeOrder = new Dictionary<ETypeCode, byte>()
+        private static readonly Dictionary<ETypeCode, byte> TypeOrder = new Dictionary<ETypeCode, byte>()
         {
             {ETypeCode.Unknown, 254},
             {ETypeCode.Binary, 253},
@@ -194,10 +194,10 @@ namespace Dexih.Utils.DataType
                 return ETypeCode.String;
             }
 
-            var tryType1 = BestCompareType(_nextBestType[typeCode1], typeCode2);
-            var tryType2 = BestCompareType(typeCode1, _nextBestType[typeCode2]);
+            var tryType1 = BestCompareType(NextBestType[typeCode1], typeCode2);
+            var tryType2 = BestCompareType(typeCode1, NextBestType[typeCode2]);
 
-            return _typeOrder[tryType1] > _typeOrder[tryType2] ? tryType1 : tryType2;
+            return TypeOrder[tryType1] > TypeOrder[tryType2] ? tryType1 : tryType2;
         }
 
         /// <summary>

@@ -42,7 +42,7 @@ namespace Benchmarks
         public decimal GenericMathAdd() => Generic.Math.GenericMath.Add((decimal)value1, (decimal)value2);
 
         [Benchmark]
-        public decimal OperationsAdd1() => (decimal) Operations.Add((decimal)value1, (decimal)value2);
+        public decimal OperationsAdd1() => Operations.Add((decimal)value1, (decimal)value2);
 
         [Benchmark]
         public decimal OperationsAdd2() => (decimal) Operations.Add(ETypeCode.Decimal, value1, value2);
