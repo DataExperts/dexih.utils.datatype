@@ -48,7 +48,7 @@ for:
   - appveyor-retry dotnet restore -v Minimal
   - dotnet build -c %CONFIGURATION%
   - dotnet pack -c %CONFIGURATION% --no-build /p:Version=%APPVEYOR_BUILD_VERSION% -o ../../artifacts
-  - del .\artifacts\Benchmarks*
+  - del ..\..\artifacts\Benchmarks*
   
 # test branch produces a nuget package with the version suffix added.
 -
@@ -61,7 +61,7 @@ for:
   - appveyor-retry dotnet restore -v Minimal
   - dotnet build -c %CONFIGURATION%
   - dotnet pack -c %CONFIGURATION% --no-build /p:Version=%APPVEYOR_BUILD_VERSION%-ALPHA -o ../../artifacts
-  - del .\artifacts\Benchmarks*
+  - del ..\..\artifacts\Benchmarks*
   
 # master and dev branchs runs test only, no publishing packages
 -
