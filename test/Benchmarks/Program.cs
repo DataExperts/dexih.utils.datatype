@@ -1,4 +1,6 @@
-﻿using BenchmarkDotNet.Running;
+﻿using System;
+using BenchmarkDotNet.Running;
+using Dexih.Utils.DataType;
 
 namespace Benchmarks
 {
@@ -6,11 +8,11 @@ namespace Benchmarks
     {
         static void Main(string[] args)
         {
-            
             // BenchmarkRunner.Run<Equals>();
-            // BenchmarkRunner.Run<AddInt>();
+            BenchmarkRunner.Run<AddInt>();
             // BenchmarkRunner.Run<AddDecimal>();
-            BenchmarkRunner.Run<Assignment>();
+            // BenchmarkRunner.Run<Assignment>();
+            // BenchmarkRunner.Run<SumObjects>();
         }
     }
 }

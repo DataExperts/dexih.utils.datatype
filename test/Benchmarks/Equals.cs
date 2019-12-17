@@ -12,19 +12,23 @@ namespace Benchmarks
         [GlobalSetup]
         public void Setup()
         {
-            value1 = 123;
-            value2 = 456;
-            da1 = new DataObject() {Int32 = 123};
-            da2 = new DataObject() {Int32 = 123};
+            value1 = Operations.Parse(ETypeCode.Int32, "123");
+            value2 = Operations.Parse(ETypeCode.Int32, "123");
+            dv1 = new DataValue(123);
+            dv2 = new DataValue(123);
+            do1 = new DataObject(123);
+            do2 = new DataObject(123);
         }
 
         private object value1;
         private object value2;
-        private DataObject da1;
-        private DataObject da2;
+        private DataValue dv1;
+        private DataValue dv2;
+        private DataObject do1;
+        private DataObject do2;
 
         [Benchmark]
-        public bool ObjectEquals() => object.Equals(value1, value2);
+        public bool ObjectEquals() => Equals(value1, value2);
 
         [Benchmark]
         public bool UnboxEquals() => (int) value1 == (int) value2;
@@ -33,10 +37,10 @@ namespace Benchmarks
         public bool OperationsEquals() => Operations.Equal(ETypeCode.Int32, value1, value2);
         
         [Benchmark]
-        public bool DataObjectEquals() => da1 == da2;
+        public bool DataObjectEquals() => do1 == do2;
 
         [Benchmark]
-        public bool DataObjectEquals2() => da1.Int32 == da2.Int32;
+        public bool DataObjectEquals2() => do1.Int32 == do2.Int32;
 
         
     }

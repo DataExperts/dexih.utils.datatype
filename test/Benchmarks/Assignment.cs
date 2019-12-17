@@ -13,28 +13,36 @@ namespace Benchmarks
         public void Setup()
         {
             value1 = new String('A', 1000);
-            da1 = new DataObject() {String = (string) value1};
+            value2 = 123;
+            da1 = new DataObject((string)value1);
+            dv1 = new DataValue(123);
         }
 
         private object value1;
         private object value2;
         private DataObject da1;
         private DataObject da2;
+        private DataValue dv1;
+        private DataValue dv2;
 
         [Benchmark]
-        public void ObjectAssign() => value2 = (string) value1;
+        public void VariableAssignString() => value2 = (string) value1;
 
         [Benchmark]
-        public void DACreate() => da2 = new DataObject();
+        public void DataObjectAssignString() => da2 = new DataObject((string) value1);
         
         [Benchmark]
-        public void ObjectToDA() => da2 = new DataObject(value1, ETypeCode.String);
+        public void DataValueAssignExplicit() => dv1 = new DataValue(123);
 
         [Benchmark]
-        public void DAToDaRef() => da2 = da1;
+        public void DataValueAssignObject() => dv1 = new DataValue(value2, ETypeCode.String);
 
         [Benchmark]
-        public void DAToDaCopy() => da2 = new DataObject(da1);
+        public void DataObjectCopy() => da2 = new DataObject(da1);
+
+        [Benchmark]
+        public void DataValueCopy() => dv2 = dv1;
+
 
 
     }

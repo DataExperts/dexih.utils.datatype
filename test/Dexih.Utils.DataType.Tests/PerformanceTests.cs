@@ -15,8 +15,8 @@ namespace Dexih.Utils.DataType.Tests
         {
             this._output = output;
         }
-        
-        public void Timer(string name, Action action)
+
+        private void Timer(string name, Action action)
         {
             var start = Stopwatch.StartNew();
             action.Invoke();

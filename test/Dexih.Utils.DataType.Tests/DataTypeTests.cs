@@ -216,11 +216,11 @@ namespace Dexih.Utils.DataType.Tests
         [Fact]
         public void DataType_TypeCompare()
         {
-            Assert.Equal(true, Operations.GreaterThan(2,1));
-            Assert.Equal(true, Operations.LessThan(1,2));
-            Assert.Equal(true, Operations.LessThanOrEqual(1,2));
-            Assert.Equal(true, Operations.GreaterThanOrEqual(2,1));
-            Assert.Equal(true, Operations.Equal(1,1));
+            Assert.True(Operations.GreaterThan(2,1));
+            Assert.True(Operations.LessThan(1,2));
+            Assert.True(Operations.LessThanOrEqual(1,2));
+            Assert.True(Operations.GreaterThanOrEqual(2,1));
+            Assert.True(Operations.Equal(1,1));
         }
         
         [Theory]
@@ -550,7 +550,7 @@ namespace Dexih.Utils.DataType.Tests
             }
         }
 
-        public void Timer(string name, Action action)
+        private void Timer(string name, Action action)
         {
             var start = Stopwatch.StartNew();
             action.Invoke();

@@ -1222,7 +1222,7 @@ namespace Dexih.Utils.DataType
                 case ETypeCode.UInt64:
                 case ETypeCode.Node:
                 case ETypeCode.Geometry:
-                    throw new Exception($"Cannot negate {typeCode} types.");
+                    throw new Exception($"Cannot negate {typeCode} type.");
                 case ETypeCode.Byte:
                     return (byte)((byte) value1 * -1);
                 case ETypeCode.Char:

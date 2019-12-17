@@ -18,8 +18,8 @@ namespace Benchmarks
             val2 = NextDecimal(rnd);
             value1 = val1;
             value2 = val2;
-            da1 = new DataObject() {Decimal = val1};
-            da2 = new DataObject() {Decimal = val2};
+            da1 = new DataValue(val1);
+            da2 = new DataValue(val2);
 
             // cache 
             Operations.Add(ETypeCode.Int32, 1, 1);
@@ -29,8 +29,8 @@ namespace Benchmarks
         private Decimal val2;
         private object value1;
         private object value2;
-        private DataObject da1;
-        private DataObject da2;
+        private DataValue da1;
+        private DataValue da2;
 
         [Benchmark]
         public Decimal PureAdd() => val1 + val2;
@@ -51,7 +51,10 @@ namespace Benchmarks
         public decimal OperationsAdd3() => (decimal) Operations.Add(value1, value2);
 
         [Benchmark]
-        public DataObject DataObjectAdd() => da1 + da2;
+        public DataValue DataObjectAdd() => da1 + da2;
+        
+        [Benchmark]
+        public decimal DataObjectAdd2() => da1.Decimal + da2.Decimal;
 
         public static decimal NextDecimal(Random rng)
         {

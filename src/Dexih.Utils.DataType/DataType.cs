@@ -47,7 +47,7 @@ namespace Dexih.Utils.DataType
             return true;
         }
 
-        public static bool IsString(ETypeCode typeCode)
+        public static bool IsString(this ETypeCode typeCode)
         {
             switch (typeCode)
             {
@@ -63,7 +63,7 @@ namespace Dexih.Utils.DataType
             return false;
         }
 
-        public static bool IsDiscrete(ETypeCode typeCode)
+        public static bool IsDiscrete(this ETypeCode typeCode)
         {
             switch (typeCode)
             {
@@ -82,7 +82,7 @@ namespace Dexih.Utils.DataType
             return false;
         }
 
-        public static bool IsDecimal(ETypeCode typeCode)
+        public static bool IsDecimal(this ETypeCode typeCode)
         {
             switch (typeCode)
             {
@@ -95,7 +95,7 @@ namespace Dexih.Utils.DataType
             return false;
         }
         
-        public static bool IsNumber(ETypeCode typeCode)
+        public static bool IsNumber(this ETypeCode typeCode)
         {
             switch (typeCode)
             {
@@ -111,6 +111,36 @@ namespace Dexih.Utils.DataType
                 case ETypeCode.Decimal:
                 case ETypeCode.Double:
                 case ETypeCode.Single:
+                    return true;
+            }
+
+            return false;
+        }
+        
+        /// <summary>
+        /// Indicates the type is a valueType which can be stored on the stack and in the DataValue struct.
+        /// </summary>
+        /// <param name="typeCode"></param>
+        /// <returns></returns>
+        public static bool IsValueType(this ETypeCode typeCode)
+        {
+            switch (typeCode)
+            {
+                case ETypeCode.Byte:
+                case ETypeCode.Char:
+                case ETypeCode.SByte:
+                case ETypeCode.UInt16:
+                case ETypeCode.UInt32:
+                case ETypeCode.UInt64:
+                case ETypeCode.Int16:
+                case ETypeCode.Int32:
+                case ETypeCode.Int64:
+                case ETypeCode.Decimal:
+                case ETypeCode.Double:
+                case ETypeCode.Single:
+                case ETypeCode.Boolean:
+                case ETypeCode.DateTime:
+                case ETypeCode.Time:
                     return true;
             }
 
@@ -336,7 +366,7 @@ namespace Dexih.Utils.DataType
         /// </summary>
         /// <param name="dataType">Data Type</param>
         /// <returns>Basic Datatype</returns>
-        public static EBasicType GetBasicType(ETypeCode dataType)
+        public static EBasicType GetBasicType(this ETypeCode dataType)
         {
             switch (dataType)
             {
@@ -487,53 +517,11 @@ namespace Dexih.Utils.DataType
         }
         
         /// <summary>
-        /// Converts a <see cref="JTokenType"/> into an ETypeCode
-        /// </summary>
-        /// <param name="jsonType"></param>
-        /// <returns></returns>
-//        public static ETypeCode GetTypeCode(JTokenType jsonType)
-//        {
-//            switch (jsonType)
-//            {
-//                case JTokenType.Object:
-//                case JTokenType.Array:
-//                case JTokenType.Constructor:
-//                case JTokenType.Property:
-//                    return ETypeCode.Json;
-//                case JTokenType.None:
-//                case JTokenType.Comment:
-//                case JTokenType.Null:
-//                case JTokenType.Undefined:
-//                case JTokenType.Raw:
-//                case JTokenType.Uri:
-//                case JTokenType.String:
-//                    return ETypeCode.String;
-//                case JTokenType.Integer:
-//                    return ETypeCode.Int32;
-//                case JTokenType.Float:
-//                    return ETypeCode.Double;
-//                case JTokenType.Boolean:
-//                    return ETypeCode.Boolean;
-//                case JTokenType.Date:
-//                    return ETypeCode.DateTime;
-//                case JTokenType.Bytes:
-//                    return ETypeCode.Binary;
-//                case JTokenType.Guid:
-//                    return ETypeCode.Guid;
-//                case JTokenType.TimeSpan:
-//                    return ETypeCode.Time;
-//                default:
-//                    return ETypeCode.String;
-//            }
-//
-//        }
-
-        /// <summary>
         /// Gets the <see cref="Type"/> from the <see cref="ETypeCode"/>.
         /// </summary>
         /// <param name="typeCode"></param>
         /// <returns></returns>
-        public static Type GetType(ETypeCode typeCode, int rank = 0)
+        public static Type GetType(this ETypeCode typeCode, int rank = 0)
         {
             Type type;
             switch (typeCode)
@@ -634,7 +622,7 @@ namespace Dexih.Utils.DataType
         /// </summary>
         /// <param name="typeCode"></param>
         /// <returns></returns>
-        public static DbType GetDbType(ETypeCode typeCode)
+        public static DbType GetDbType(this ETypeCode typeCode)
         {
             switch (typeCode)
             {

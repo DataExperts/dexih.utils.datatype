@@ -10,8 +10,7 @@ namespace Dexih.Utils.DataType.Tests
         [Fact]
         void DataObject_Bool()
         {
-            var obj = new DataObject();
-            obj.Boolean = true;
+            var obj = new DataValue(true);
             Assert.Equal(true, obj.Value);
         }
         
@@ -29,13 +28,19 @@ namespace Dexih.Utils.DataType.Tests
         [MemberData(nameof(OtherAddTypes))]
         void DataObject_Add(ETypeCode typeCode1, object value1, ETypeCode typeCode2, object value2, object expected)
         {
-            var da1 = new DataObject(value1, typeCode1);
-            var da2 = new DataObject(value2, typeCode2);
+            var dv1 = new DataValue(value1, typeCode1);
+            var dv2 = new DataValue(value2, typeCode2);
 
-            var result = da1 + da2;
+            var dvResult = dv1 + dv2;
             
-            Assert.Equal(expected, result.Value);
+            Assert.Equal(expected, dvResult.Value);
             
+            var do1 = new DataObject(value1, typeCode1);
+            var do2 = new DataObject(value2, typeCode2);
+
+            var doResult = do1 + do2;
+            
+            Assert.Equal(expected, doResult.Value);
         }
         
         public static IEnumerable<object[]> OtherAddTypes => new[]
@@ -58,13 +63,19 @@ namespace Dexih.Utils.DataType.Tests
         [MemberData(nameof(OtherSubtractTypes))]
         void DataObject_Subtract(ETypeCode typeCode1, object value1, ETypeCode typeCode2, object value2, object expected)
         {
-            var da1 = new DataObject(value1, typeCode1);
-            var da2 = new DataObject(value2, typeCode2);
+            var dv1 = new DataValue(value1, typeCode1);
+            var dv2 = new DataValue(value2, typeCode2);
 
-            var result = da1 - da2;
+            var dvResult = dv1 - dv2;
             
-            Assert.Equal(expected, result.Value);
+            Assert.Equal(expected, dvResult.Value);
             
+            var do1 = new DataObject(value1, typeCode1);
+            var do2 = new DataObject(value2, typeCode2);
+
+            var doResult = do1 - do2;
+            
+            Assert.Equal(expected, doResult.Value);
         }
         
         public static IEnumerable<object[]> OtherSubtractTypes => new[]
@@ -86,13 +97,19 @@ namespace Dexih.Utils.DataType.Tests
         [MemberData(nameof(OtherMultiplyTypes))]
         void DataObject_Multiply(ETypeCode typeCode1, object value1, ETypeCode typeCode2, object value2, object expected)
         {
-            var da1 = new DataObject(value1, typeCode1);
-            var da2 = new DataObject(value2, typeCode2);
+            var dv1 = new DataValue(value1, typeCode1);
+            var dv2 = new DataValue(value2, typeCode2);
 
-            var result = da1 * da2;
+            var dvResult = dv1 * dv2;
             
-            Assert.Equal(expected, result.Value);
+            Assert.Equal(expected, dvResult.Value);
             
+            var do1 = new DataObject(value1, typeCode1);
+            var do2 = new DataObject(value2, typeCode2);
+
+            var doResult = do1 * do2;
+            
+            Assert.Equal(expected, doResult.Value);
         }
         
         public static IEnumerable<object[]> OtherMultiplyTypes => new[]
@@ -114,13 +131,19 @@ namespace Dexih.Utils.DataType.Tests
         [MemberData(nameof(OtherDivideTypes))]
         void DataObject_Divide(ETypeCode typeCode1, object value1, ETypeCode typeCode2, object value2, object expected)
         {
-            var da1 = new DataObject(value1, typeCode1);
-            var da2 = new DataObject(value2, typeCode2);
+            var dv1 = new DataValue(value1, typeCode1);
+            var dv2 = new DataValue(value2, typeCode2);
 
-            var result = da1 / da2;
+            var dvResult = dv1 / dv2;
             
-            Assert.Equal(expected, result.Value);
+            Assert.Equal(expected, dvResult.Value);
             
+            var do1 = new DataObject(value1, typeCode1);
+            var do2 = new DataObject(value2, typeCode2);
+
+            var doResult = do1 / do2;
+            
+            Assert.Equal(expected, doResult.Value);
         }
         
         public static IEnumerable<object[]> OtherDivideTypes => new[]
@@ -211,7 +234,7 @@ namespace Dexih.Utils.DataType.Tests
             new object[] { ETypeCode.Binary, new byte[] {1,2}, new byte[] {1,2,3}, -1},
             new object[] { ETypeCode.Binary, new byte[] {1,2,2}, new byte[] {1,2,3}, -1},
             new object[] { ETypeCode.Binary, new byte[] {1,2,3}, new byte[] {1,2,3}, 0},
-            new object[] { ETypeCode.Geometry, new Point(1,1), new Point(1,1), 0},
+            // new object[] { ETypeCode.Geometry, new Point(1,1), new Point(1,1), 0},
         };
     }
 }
