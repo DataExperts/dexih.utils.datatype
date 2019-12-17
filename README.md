@@ -1,6 +1,6 @@
 # Dexih.Utils.DataType
 
-[build]:    https://ci.appveyor.com/project/dataexperts/dexih-utils-datattype
+[build]:    https://ci.appveyor.com/project/dataexperts/dexih-utils-datatype 
 [build-img]: https://ci.appveyor.com/api/projects/status/468vuvi0rcpcs0ca?svg=true
 [nuget]:     https://www.nuget.org/packages/dexih.utils.datatype
 [nuget-img]: https://badge.fury.io/nu/dexih.utils.datatype.svg
