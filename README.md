@@ -5,7 +5,7 @@
 [nuget]:     https://www.nuget.org/packages/dexih.utils.datatype
 [nuget-img]: https://badge.fury.io/nu/dexih.utils.datatype.svg
 [nuget-name]: dexih.utils.datatype
-[dex-img]: http://dataexpertsgroup.com/assets/img/dex_web_logo.png
+[dex-img]: https://dataexpertsgroup.com/assets/img/dex_web_logo.png
 [dex]: https://dataexpertsgroup.com
 
 [![][dex-img]][dex]
