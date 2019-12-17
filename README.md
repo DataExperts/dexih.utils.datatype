@@ -25,13 +25,13 @@ The primary benefits:
 
 ## Installation
 
-Add the [latest version][nuget] of the package "Dexih.Utils.ManagedTasks" to a .net core/.net project.  This requires .net standard framework 2.0 or newer, or the .net framework 4.6 or newer.
+Add the [latest version][nuget] of the package "dexih.utils.datatype" to a .net core/.net project.  This requires .net standard framework 2.0 or newer, or the .net framework 4.6 or newer.
 
 ---
 
 ## Dynamic Parsing
 
-To parse any value, use the parse function.  The function has a number of syntaxes which can be used.
+To parse any value, use the `Parse` method.  The method has a number of syntaxes which can be used.
 
 Syntax 1: object Parse(ETypeCode typeCode, object inputValue)
 
@@ -133,7 +133,7 @@ result = Operations.Compare(v1, v2);
 
 The library contains two objects which can be used for dynamic storage of unknown data types.
 
-* DataValue  - Stores only [Value Types](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/value-types) and can be used to perform fast operations such as arithmetic and comparisons.  This uses a `struct` meaning like value types it is stored on the stack and not subject to garbage collection, making it idea for intense processing tasks.
+* DataValue - Stores only [Value Types](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/value-types) and can be used to perform fast operations such as arithmetic and comparisons.  This uses a `struct` which is stored on the stack and not subject to garbage collection, making it idea for long running and intense processing tasks.
 * DataObject - Stores any value data type, and allows operations like the `DataValue`.  The disadvantage of this construct is there is a performance consideration due to allowing non ValueType values.,
 
 Data Value Example:
