@@ -161,7 +161,7 @@ var result = dataObject1 > dataObject2
 
 This library is provided free of charge under the MIT licence and is actively maintained by the [Data Experts Group](https://dataexpertsgroup.com)
 
-Raise issues or bugs through the issues section of the git hub repository ([here](https://github.com/DataExperts/Dexih.Utils.ManagedTasks/issues)).  
+Raise issues or bugs through the issues section of the git hub repository ([here](https://github.com/DataExperts/Dexih.Utils.DataType/issues)).  
 
 Pull requests are welcomed.
 

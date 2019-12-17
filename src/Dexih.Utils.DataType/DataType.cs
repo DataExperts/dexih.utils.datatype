@@ -259,7 +259,7 @@ namespace Dexih.Utils.DataType
                 case ETypeCode.Int64:
                     return long.MaxValue;
                 case ETypeCode.Decimal:
-                    return (decimal)9999999999999999999;
+                    return Decimal.MaxValue;
                 case ETypeCode.Double:
                     return double.MaxValue;
                 case ETypeCode.Single:
@@ -324,7 +324,7 @@ namespace Dexih.Utils.DataType
                 case ETypeCode.Int64:
                     return long.MinValue;
                 case ETypeCode.Decimal:
-                    return (decimal)-999999999999999999;
+                    return Decimal.MinValue;
                 case ETypeCode.Double:
                     return double.MinValue;
                 case ETypeCode.Single:
