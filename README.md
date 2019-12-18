@@ -129,6 +129,25 @@ result = Operations.Equal(v1, v2);
 result = Operations.Compare(v1, v2);
 ```
 
+The operators can be used anywhere.  For example using a `Compare` to sort a list of different types [see fiddle](https://dotnetfiddle.net/3Yoesl):
+
+```csharp
+var list = new List<object>();
+list.Add(1.2);
+list.Add(1);
+list.Add(1.6);
+
+// throws exception
+// list.Sort();
+
+list.Sort((a, b) => Operations.Compare(a, b));
+
+foreach(var item in list)
+{
+    Console.WriteLine(item);
+}
+```
+
 ## Dynamic Storage
 
 The library contains two objects which can be used for dynamic storage of unknown data types.

@@ -2,7 +2,12 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Description>Functions for converting and comparing datatypes.</Description>
+    <Description>Provides dynamic datatype conversion functions and a high performing alternative to the `object`type when dealing with data types that are unknown at compile time.</Description>
+    <AssemblyTitle>Data Experts Group - DataType</AssemblyTitle>
+    <Authors>Gary Holland</Authors>
+    <PackageTags>datatype;generics;operations;math;arithmetic;compare;object</PackageTags>
+    <PackageReleaseNotes>Refer to the project url (https://github.com/DataExperts/Dexih.Utils.DataType) for documentation and raising issues</PackageReleaseNotes>
+    <PackageProjectUrl>https://github.com/DataExperts/Dexih.Utils.DataType</PackageProjectUrl>    
     <LangVersion>8</LangVersion>
   </PropertyGroup>
 
