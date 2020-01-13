@@ -400,18 +400,26 @@ namespace Dexih.Utils.DataType
         {
             var parsedValue1 = Parse(compareDataType, value1);
             
-            if(Operator == ECompare.IsIn && value2.GetType().IsArray)
+            if(Operator == ECompare.IsIn)
             {
-                foreach(var value in (IEnumerable)value2)
+                if (value2 == null)
                 {
-                    var parsedValue = Parse(compareDataType, value);
-                    var compare = Equal(compareDataType, parsedValue1, parsedValue);
-                    if(compare)
-                    {
-                        return true;
-                    }
+                    return false;
                 }
-                return false;
+                if(value2.GetType().IsArray)
+                {
+                    foreach (var value in (IEnumerable) value2)
+                    {
+                        var parsedValue = Parse(compareDataType, value);
+                        var compare = Equal(compareDataType, parsedValue1, parsedValue);
+                        if (compare)
+                        {
+                            return true;
+                        }
+                    }
+
+                    return false;
+                }
             }
             
             var parsedValue2 = Parse(compareDataType, value2);

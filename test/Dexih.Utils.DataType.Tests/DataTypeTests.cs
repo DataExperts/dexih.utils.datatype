@@ -221,6 +221,23 @@ namespace Dexih.Utils.DataType.Tests
             Assert.True(Operations.LessThanOrEqual(1,2));
             Assert.True(Operations.GreaterThanOrEqual(2,1));
             Assert.True(Operations.Equal(1,1));
+            
+            Assert.True(Operations.Evaluate( ECompare.GreaterThan, ETypeCode.Int32, 2,1));
+            Assert.True(Operations.Evaluate(ECompare.LessThan, ETypeCode.Int32,1,2));
+            Assert.True(Operations.Evaluate(ECompare.LessThanEqual, ETypeCode.Int32,1,2));
+            Assert.True(Operations.Evaluate(ECompare.GreaterThanEqual, ETypeCode.Int32,2,1));
+            Assert.True(Operations.Evaluate(ECompare.IsEqual, ETypeCode.Int32,1,1));
+
+        }
+
+        [Fact]
+        public void IsInCompare()
+        {
+            var array = new[] {"a", "b", "c"};
+            
+            Assert.True(Operations.Evaluate(ECompare.IsIn, ETypeCode.String, "a", array));
+            Assert.False(Operations.Evaluate(ECompare.IsIn, ETypeCode.String, "d", array));
+            Assert.False(Operations.Evaluate(ECompare.IsIn, ETypeCode.String, "d", null));
         }
         
         [Theory]
