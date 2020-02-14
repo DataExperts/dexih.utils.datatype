@@ -213,7 +213,10 @@ namespace Dexih.Utils.DataType.Tests
 
             var comp2 = Operations.Compare(inputValue, compareValue);
             Assert.Equal(expectedResult, comp2);
-            
+
+            var comp3 = Operations.Compare<object>(inputValue, compareValue);
+            Assert.Equal(expectedResult, comp3);
+
             var input = new DataObject(inputValue, dataType);
             var compare = new DataObject(compareValue, dataType);
             

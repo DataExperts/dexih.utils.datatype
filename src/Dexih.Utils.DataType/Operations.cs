@@ -1875,29 +1875,33 @@ namespace Dexih.Utils.DataType
 
                         if (a is byte[] aByte && b is byte[] bByte)
                         {
-                            int compare = 0;
-                            for (var i = 0; i < aByte.Length; i++)
-                            {
-                                compare = aByte[i].CompareTo(bByte[i]);
-                                if (compare != 0) return compare;
-                            }
+                            return Operations.ByteArrayCompareTo(aByte, bByte);
+                        }
 
-                            return compare;
+                        if (a is char[] aChar && b is char[] bChar)
+                        {
+                            return Operations.CharArrayCompareTo(aChar, bChar);
                         }
                     }
 
                     // if types don't match, attempt to convert to common type.
-                    var aType = a.GetType();
-                    var aTypeCode = Type.GetTypeCode(aType);
-                    var bType = b.GetType();
-                    var bTypeCode = Type.GetTypeCode(bType);
+                    // var aType = a.GetType();
+                    // var aTypeCode = Type.GetTypeCode(aType);
+                    // var bType = b.GetType();
+                    // var bTypeCode = Type.GetTypeCode(bType);
+                    
+                    var aTypeCode = DataType.GetTypeCode(a, out _); // Type.GetTypeCode(aType);
+                    var bTypeCode = DataType.GetTypeCode(b, out _); // Type.GetTypeCode(bType);
+                    
                     if (aTypeCode < bTypeCode)
                     {
-                        var a1 = Operations.Parse(bType, a);
-                        return ((IComparable) a1).CompareTo(b);
+                        var a1 = Operations.Parse(bTypeCode, a);
+                        return Operations.Compare(bTypeCode, a1, b);
+                        // return ((IComparable) a1).CompareTo(b);
                     }
-                    var b1 = Operations.Parse(aType, b);
-                    return ((IComparable) b1).CompareTo(b);
+                    var b1 = Operations.Parse(aTypeCode, b);
+                    return Operations.Compare(aTypeCode, a, b1);
+                    // return ((IComparable) b1).CompareTo(b);
                 }
                 
                 return new Lazy<Func<T, T, int>>(() => Compare);
@@ -1953,18 +1957,22 @@ namespace Dexih.Utils.DataType
                     }
 
                     // if types don't match, attempt to convert to common type.
-                    var aType = a.GetType();
-                    var aTypeCode = Type.GetTypeCode(aType);
-                    var bType = b.GetType();
-                    var bTypeCode = Type.GetTypeCode(bType);
+                    // var aType = a.GetType();
+                    var aTypeCode = DataType.GetTypeCode(a, out _); // Type.GetTypeCode(aType);
+                    // var bType = b.GetType();
+                    var bTypeCode = DataType.GetTypeCode(b, out _); // Type.GetTypeCode(bType);
                     if (aTypeCode < bTypeCode)
                     {
-                        var a1 = Operations.Parse(bType, a);
-                        return compareResults.Contains(((IComparable) a).CompareTo((IComparable) b));
+                        var a1 = Operations.Parse(bTypeCode, a);
+                        return compareResults.Contains(Operations.Compare(bTypeCode, a1, b));
+                        
+                        // return compareResults.Contains(((IComparable) a).CompareTo((IComparable) b));
                     }
 
-                    var b1 = Operations.Parse(aType, b);
-                    return compareResults.Contains(((IComparable) a).CompareTo((IComparable) b));
+                    var b1 = Operations.Parse(aTypeCode, b);
+                    return compareResults.Contains(Operations.Compare(aTypeCode, a, b1));
+
+                    // return compareResults.Contains(((IComparable) a).CompareTo((IComparable) b));
                 }
 
                 return new Lazy<Func<T, T, bool>>(() => Condition);
