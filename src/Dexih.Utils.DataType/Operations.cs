@@ -1856,6 +1856,16 @@ namespace Dexih.Utils.DataType
             {
                 int Compare(T a, T b)
                 {
+                    if (a is null)
+                    {
+                        return b is null ? 0 : -1;
+                    }
+
+                    if (b is null)
+                    {
+                        return 1;
+                    }
+                    
                     if (a.GetType() == b.GetType())
                     {
                         if (a is IComparable comparable)
