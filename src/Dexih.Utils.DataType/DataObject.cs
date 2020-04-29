@@ -536,6 +536,8 @@ namespace Dexih.Utils.DataType
                         return _dataValue.Byte;
                     case ETypeCode.DateTime:        
                         return _dataValue.DateTime;
+                    case ETypeCode.Date:        
+                        return _dataValue.DateTime.Date;
                     case ETypeCode.Decimal:         
                         return _dataValue.Decimal;
                     case ETypeCode.Double:          

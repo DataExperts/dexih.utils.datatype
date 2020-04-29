@@ -140,6 +140,7 @@ namespace Dexih.Utils.DataType
                 case ETypeCode.Single:
                 case ETypeCode.Boolean:
                 case ETypeCode.DateTime:
+                case ETypeCode.Date:
                 case ETypeCode.Time:
                     return true;
             }
@@ -167,6 +168,7 @@ namespace Dexih.Utils.DataType
             {ETypeCode.Text, ETypeCode.String},
             {ETypeCode.Boolean, ETypeCode.String},
             {ETypeCode.DateTime, ETypeCode.Int64},
+            {ETypeCode.Date, ETypeCode.Int64},
             {ETypeCode.Time, ETypeCode.Int64},
             {ETypeCode.Guid, ETypeCode.String},
             {ETypeCode.Json, ETypeCode.String},
@@ -198,6 +200,7 @@ namespace Dexih.Utils.DataType
             {ETypeCode.Text, 252},
             {ETypeCode.Boolean, 1},
             {ETypeCode.DateTime, 1},
+            {ETypeCode.Date, 2},
             {ETypeCode.Time, 1},
             {ETypeCode.Guid, 253},
             {ETypeCode.Json, 253},
@@ -280,6 +283,8 @@ namespace Dexih.Utils.DataType
                     return true;
                 case ETypeCode.DateTime:
                     return DateTime.MaxValue;
+                case ETypeCode.Date:
+                    return DateTime.MaxValue.Date;
                 case ETypeCode.Time:
                     return TimeSpan.FromDays(1) - TimeSpan.FromMilliseconds(1);
                 case ETypeCode.Guid:
@@ -345,6 +350,8 @@ namespace Dexih.Utils.DataType
                     return false;
                 case ETypeCode.DateTime:
                     return new DateTime(0001, 01, 01); // new DateTime(1753,01,01);
+                case ETypeCode.Date:
+                    return new DateTime(0001, 01, 01); // new DateTime(1753,01,01);
                 case ETypeCode.Time:
                     return TimeSpan.FromDays(0);
                 case ETypeCode.Guid:
@@ -391,6 +398,7 @@ namespace Dexih.Utils.DataType
                 case ETypeCode.String: return EBasicType.String;
                 case ETypeCode.Boolean: return EBasicType.Boolean;
                 case ETypeCode.DateTime: return EBasicType.Date;
+                case ETypeCode.Date: return EBasicType.Date;
                 case ETypeCode.Time: return EBasicType.Time;
                 case ETypeCode.Binary: return EBasicType.Binary;
                 case ETypeCode.Enum: return EBasicType.Enum;
@@ -582,6 +590,9 @@ namespace Dexih.Utils.DataType
                 case ETypeCode.DateTime:
                     type = typeof(DateTime);
                     break;
+                case ETypeCode.Date:
+                    type = typeof(DateTime);
+                    break;
                 case ETypeCode.Time:
                     type = typeof(TimeSpan);
                     break;
@@ -663,6 +674,8 @@ namespace Dexih.Utils.DataType
                     return DbType.Boolean;
                 case ETypeCode.DateTime:
                     return DbType.DateTime;
+                case ETypeCode.Date:
+                    return DbType.Date;
                 case ETypeCode.Time:
                     return DbType.Time;
                 case ETypeCode.Guid:

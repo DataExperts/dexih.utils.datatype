@@ -24,6 +24,7 @@ namespace Dexih.Utils.DataType.Tests
         [InlineData(ETypeCode.Boolean, EBasicType.Boolean)]
         [InlineData(ETypeCode.Byte, EBasicType.Numeric)]
         [InlineData(ETypeCode.DateTime, EBasicType.Date)]
+        [InlineData(ETypeCode.Date, EBasicType.Date)]
         [InlineData(ETypeCode.Decimal, EBasicType.Numeric)]
         [InlineData(ETypeCode.Double, EBasicType.Numeric)]
         [InlineData(ETypeCode.Guid, EBasicType.String)]
@@ -171,6 +172,9 @@ namespace Dexih.Utils.DataType.Tests
         [InlineData(ETypeCode.DateTime, "2001-01-01", "2000-12-31", 1)]
         [InlineData(ETypeCode.DateTime, "2001-01-01", "2001-01-01", 0)]
         [InlineData(ETypeCode.DateTime, "2000-01-02", "2000-01-03", -1)]
+        [InlineData(ETypeCode.Date, "2001-01-01", "2000-12-31", 1)]
+        [InlineData(ETypeCode.Date, "2001-01-01", "2001-01-01", 0)]
+        [InlineData(ETypeCode.Date, "2000-01-02", "2000-01-03", -1)]
         [InlineData(ETypeCode.Time, "00:01:00", "00:00:59", 1)]
         [InlineData(ETypeCode.Time, "00:00:59", "00:00:59", 0)]
         [InlineData(ETypeCode.Time, "00:01:00", "00:01:01", -1)]
@@ -212,6 +216,7 @@ namespace Dexih.Utils.DataType.Tests
             new object[] { ETypeCode.DateTime, new DateTime(2000, 01,01), new DateTime(2000, 01,02), -1},
             new object[] { ETypeCode.DateTime, null, new DateTime(2000, 01,02), -1},
             new object[] { ETypeCode.DateTime, new DateTime(2000, 01,02), null, 1},
+            new object[] { ETypeCode.Date, new DateTime(2000, 01,01, 10, 10, 10), new DateTime(2000, 01,01), 0},
             new object[] { ETypeCode.CharArray, "001".ToCharArray(), "01".ToCharArray(), -1},
             new object[] { ETypeCode.CharArray, "01".ToCharArray(), "001".ToCharArray(), 1},
             new object[] { ETypeCode.CharArray, "021".ToCharArray(), "01".ToCharArray(), 1},
@@ -302,6 +307,8 @@ namespace Dexih.Utils.DataType.Tests
             new object[] { ETypeCode.Decimal, "-2.123", (Decimal)(-2.123)},
             new object[] { ETypeCode.DateTime, "2001-01-01", new DateTime(2001,01,01)},
             new object[] { ETypeCode.DateTime, "2001-01-01T12:59:59", new DateTime(2001,01,01, 12, 59, 59)},
+            new object[] { ETypeCode.Date, "2001-01-01", new DateTime(2001,01,01)},
+            new object[] { ETypeCode.Date, "2001-01-01T12:59:59", new DateTime(2001,01,01)},
             new object[] { ETypeCode.Time, "12:59:59", new TimeSpan(12, 59, 59)},
             new object[] { ETypeCode.Time, 10000000, new TimeSpan(0, 0, 0, 1)},
             new object[] { ETypeCode.Guid, "6d5bba83-e71b-4ce1-beb8-006085a0a77d", new Guid("6d5bba83-e71b-4ce1-beb8-006085a0a77d")},

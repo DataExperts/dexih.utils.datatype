@@ -50,7 +50,8 @@ namespace Dexih.Utils.DataType
             CharArray,
             Object,
             Node, // a reference to another record-set.
-            Geometry
+            Geometry,
+            Date
         }
         
         // [JsonConverter(typeof(StringEnumConverter))]

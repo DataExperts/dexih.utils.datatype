@@ -280,6 +280,9 @@ namespace Dexih.Utils.DataType
                 case ETypeCode.DateTime:
                     _value = new Storage((DateTime)value);
                     break;
+                case ETypeCode.Date:
+                    _value = new Storage((DateTime)value);
+                    break;
                 case ETypeCode.Time:
                     _value = new Storage((TimeSpan)value);
                     break;
@@ -335,6 +338,9 @@ namespace Dexih.Utils.DataType
             get {
                 if (ETypeCode.DateTime == _typeCode) {
                     return new DateTime(_value._int64);
+                }
+                if (ETypeCode.Date == _typeCode) {
+                    return new DateTime(_value._int64).Date;
                 }
                 throw new InvalidTypeException(ETypeCode.DateTime, _typeCode);
             }
@@ -515,6 +521,7 @@ namespace Dexih.Utils.DataType
                     ETypeCode.Single => (Math.Abs(a.Single - b.Single) < 0.00001),
                     ETypeCode.Boolean => (a.Boolean == b.Boolean),
                     ETypeCode.DateTime => (a._value._int64 == b._value._int64),
+                    ETypeCode.Date => (a._value._int64 == b._value._int64),
                     ETypeCode.Time => (a._value._int64 == b._value._int64),
                     ETypeCode.Json => throw new CompareTypeException(ETypeCode.Json),
                     ETypeCode.Xml => throw new CompareTypeException(ETypeCode.Xml),
@@ -558,6 +565,7 @@ namespace Dexih.Utils.DataType
                     // ETypeCode.Text => Operations.LessThan(a.Text, b.Text),
                     ETypeCode.Boolean => Operations.LessThan(a.Boolean, b.Boolean),
                     ETypeCode.DateTime => (a._value._int64 < b._value._int64),
+                    ETypeCode.Date => (a._value._int64 < b._value._int64),
                     ETypeCode.Time => (a._value._int64 < b._value._int64),
                     // ETypeCode.Guid => Operations.LessThan(a.Guid, b.Guid),
                     ETypeCode.Json => throw new CompareTypeException(ETypeCode.Json),
@@ -598,6 +606,7 @@ namespace Dexih.Utils.DataType
                     // ETypeCode.Text => Operations.GreaterThan(a.Text, b.Text),
                     ETypeCode.Boolean => Operations.GreaterThan(a.Boolean, b.Boolean),
                     ETypeCode.DateTime => (a._value._int64 > b._value._int64),
+                    ETypeCode.Date => (a._value._int64 > b._value._int64),
                     ETypeCode.Time => (a._value._int64 > b._value._int64),
                     // ETypeCode.Guid => Operations.GreaterThan(a.Guid, b.Guid),
                     ETypeCode.Json => throw new CompareTypeException(ETypeCode.Json),
@@ -638,6 +647,7 @@ namespace Dexih.Utils.DataType
                     // ETypeCode.Text => Operations.LessThanOrEqual(a.Text, b.Text),
                     ETypeCode.Boolean => Operations.LessThanOrEqual(a.Boolean, b.Boolean),
                     ETypeCode.DateTime => (a._value._int64 <= b._value._int64),
+                    ETypeCode.Date => (a._value._int64 <= b._value._int64),
                     ETypeCode.Time => (a._value._int64 <= b._value._int64),
                     // ETypeCode.Guid => Operations.LessThanOrEqual(a.Guid, b.Guid),
                     ETypeCode.Json => throw new CompareTypeException(ETypeCode.Json),
@@ -678,6 +688,7 @@ namespace Dexih.Utils.DataType
                     // ETypeCode.Text => Operations.GreaterThanOrEqual(a.Text, b.Text),
                     ETypeCode.Boolean => Operations.GreaterThanOrEqual(a.Boolean, b.Boolean),
                     ETypeCode.DateTime => (a._value._int64 >= b._value._int64),
+                    ETypeCode.Date => (a._value._int64 >= b._value._int64),
                     ETypeCode.Time => (a._value._int64 >= b._value._int64),
                     // ETypeCode.Guid => Operations.GreaterThanOrEqual(a.Guid, b.Guid),
                     ETypeCode.Json => throw new CompareTypeException(ETypeCode.Json),

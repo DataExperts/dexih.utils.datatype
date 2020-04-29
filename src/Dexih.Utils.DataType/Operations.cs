@@ -90,6 +90,8 @@ namespace Dexih.Utils.DataType
                         return jsonElement.GetBoolean();
                     case ETypeCode.DateTime:
                         return jsonElement.GetDateTime();
+                    case ETypeCode.Date:
+                        return jsonElement.GetDateTime().Date;
                     case ETypeCode.Time:
                         return TimeSpan.Parse(jsonElement.GetString());
                     case ETypeCode.Guid:
@@ -149,6 +151,8 @@ namespace Dexih.Utils.DataType
                     return inputValue is bool ? inputValue : Parse<bool>(inputValue);
                 case ETypeCode.DateTime:
                     return inputValue is DateTime ? inputValue : Parse<DateTime>(inputValue);
+                case ETypeCode.Date:
+                    return inputValue is DateTime dateTime ? dateTime.Date : Parse<DateTime>(inputValue).Date;
                 case ETypeCode.Time:
                     return inputValue is TimeSpan ? inputValue : Parse<TimeSpan>(inputValue);
                 case ETypeCode.Guid:
@@ -601,6 +605,8 @@ namespace Dexih.Utils.DataType
                     return string.Compare(value1.ToString(), value2.ToString()) > 0;
                 case ETypeCode.DateTime:
                     return (DateTime) value1 > (DateTime) value2;
+                case ETypeCode.Date:
+                    return ((DateTime) value1).Date > ((DateTime) value2).Date;
                 case ETypeCode.Boolean:
                     return BoolIsGreaterThan((bool) value1, (bool) value2);
                 case ETypeCode.Time:
@@ -685,6 +691,8 @@ namespace Dexih.Utils.DataType
                     return string.Compare(value1.ToString(), value2.ToString()) >= 0;
                 case ETypeCode.DateTime:
                     return (DateTime) value1 >= (DateTime) value2;
+                case ETypeCode.Date:
+                    return ((DateTime) value1).Date >= ((DateTime) value2).Date;
                 case ETypeCode.Boolean:
                     return BoolIsGreaterThanOrEqual((bool) value1, (bool) value2);
                 case ETypeCode.Time:
@@ -769,6 +777,8 @@ namespace Dexih.Utils.DataType
                     return string.Compare(value1.ToString(), value2.ToString()) < 0;
                 case ETypeCode.DateTime:
                     return (DateTime) value1 < (DateTime) value2;
+                case ETypeCode.Date:
+                    return ((DateTime) value1).Date < ((DateTime) value2).Date;
                 case ETypeCode.Boolean:
                     return BoolIsLessThan((bool) value1, (bool) value2);
                 case ETypeCode.Time:
@@ -852,6 +862,8 @@ namespace Dexih.Utils.DataType
                     return string.Compare(value1.ToString(), value2.ToString()) <= 0;
                 case ETypeCode.DateTime:
                     return (DateTime) value1 <= (DateTime) value2;
+                case ETypeCode.Date:
+                    return ((DateTime) value1).Date <= ((DateTime) value2).Date;
                 case ETypeCode.Boolean:
                     return BoolIsLessThanOrEqual((bool) value1, (bool) value2);
                 case ETypeCode.Time:
@@ -909,6 +921,7 @@ namespace Dexih.Utils.DataType
                 case ETypeCode.String:
                 case ETypeCode.Text:
                 case ETypeCode.DateTime:
+                case ETypeCode.Date:
                 case ETypeCode.Boolean:
                 case ETypeCode.Unknown:
                 case ETypeCode.Guid:
@@ -972,6 +985,7 @@ namespace Dexih.Utils.DataType
                 case ETypeCode.String:
                 case ETypeCode.Text:
                 case ETypeCode.DateTime:
+                case ETypeCode.Date:
                 case ETypeCode.Boolean:
                 case ETypeCode.Unknown:
                 case ETypeCode.Guid:
@@ -1035,6 +1049,7 @@ namespace Dexih.Utils.DataType
                 case ETypeCode.String:
                 case ETypeCode.Text:
                 case ETypeCode.DateTime:
+                case ETypeCode.Date:
                 case ETypeCode.Boolean:
                 case ETypeCode.Unknown:
                 case ETypeCode.Time:
@@ -1097,6 +1112,7 @@ namespace Dexih.Utils.DataType
                 case ETypeCode.String:
                 case ETypeCode.Text:
                 case ETypeCode.DateTime:
+                case ETypeCode.Date:
                 case ETypeCode.Boolean:
                 case ETypeCode.Unknown:
                 case ETypeCode.Guid:
@@ -1158,6 +1174,7 @@ namespace Dexih.Utils.DataType
                 case ETypeCode.String:
                 case ETypeCode.Text:
                 case ETypeCode.DateTime:
+                case ETypeCode.Date:
                 case ETypeCode.Boolean:
                 case ETypeCode.Unknown:
                 case ETypeCode.Guid:
@@ -1219,6 +1236,7 @@ namespace Dexih.Utils.DataType
                 case ETypeCode.String:
                 case ETypeCode.Text:
                 case ETypeCode.DateTime:
+                case ETypeCode.Date:
                 case ETypeCode.Boolean:
                 case ETypeCode.Unknown:
                 case ETypeCode.Guid:
@@ -1277,6 +1295,7 @@ namespace Dexih.Utils.DataType
                 case ETypeCode.String:
                 case ETypeCode.Text:
                 case ETypeCode.DateTime:
+                case ETypeCode.Date:
                 case ETypeCode.Boolean:
                 case ETypeCode.Unknown:
                 case ETypeCode.Guid:
@@ -1338,6 +1357,7 @@ namespace Dexih.Utils.DataType
                 case ETypeCode.String:
                 case ETypeCode.Text:
                 case ETypeCode.DateTime:
+                case ETypeCode.Date:
                 case ETypeCode.Boolean:
                 case ETypeCode.Unknown:
                 case ETypeCode.Guid:
@@ -1444,6 +1464,8 @@ namespace Dexih.Utils.DataType
                     return ((bool)inputValue).CompareTo((bool)compareTo);
                 case ETypeCode.DateTime:
                     return ((DateTime)inputValue).CompareTo((DateTime)compareTo);
+                case ETypeCode.Date:
+                    return ((DateTime)inputValue).Date.CompareTo(((DateTime)compareTo).Date);
                 case ETypeCode.Time:
                     return ((TimeSpan)inputValue).CompareTo((TimeSpan)compareTo);
                 case ETypeCode.Guid:
