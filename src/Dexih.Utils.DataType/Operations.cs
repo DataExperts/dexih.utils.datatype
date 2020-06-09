@@ -404,25 +404,25 @@ namespace Dexih.Utils.DataType
         {
             var parsedValue1 = Parse(compareDataType, value1);
             
-            if(Operator == ECompare.IsIn)
+            if(Operator == ECompare.IsIn || Operator == ECompare.IsNotIn)
             {
                 if (value2 == null)
                 {
                     return false;
                 }
-                if(value2.GetType().IsArray)
+                if(value2 is Array arrayValue1)
                 {
-                    foreach (var value in (IEnumerable) value2)
+                    foreach (var value in arrayValue1)
                     {
                         var parsedValue = Parse(compareDataType, value);
                         var compare = Equal(compareDataType, parsedValue1, parsedValue);
                         if (compare)
                         {
-                            return true;
+                            return Operator == ECompare.IsIn;
                         }
                     }
 
-                    return false;
+                    return Operator != ECompare.IsIn;
                 }
             }
             
@@ -442,6 +442,7 @@ namespace Dexih.Utils.DataType
             switch (Operator)
             {
                 case ECompare.IsEqual:
+                case ECompare.IsIn:
                     return Equal(compareDataType, parsedValue1, parsedValue2);
                 case ECompare.GreaterThan:
                     return GreaterThan(compareDataType, parsedValue1, parsedValue2);
@@ -452,6 +453,7 @@ namespace Dexih.Utils.DataType
                 case ECompare.LessThanEqual:
                     return LessThanOrEqual(compareDataType, parsedValue1, parsedValue2);
                 case ECompare.NotEqual:
+                case ECompare.IsNotIn:
                     return !Equal(compareDataType, parsedValue1, parsedValue2);
                 case ECompare.Like:
                     return Like(parsedValue1?.ToString(), parsedValue2?.ToString());

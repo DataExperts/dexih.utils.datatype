@@ -260,6 +260,9 @@ namespace Dexih.Utils.DataType.Tests
             Assert.True(Operations.Evaluate(ECompare.IsIn, ETypeCode.String, "a", array));
             Assert.False(Operations.Evaluate(ECompare.IsIn, ETypeCode.String, "d", array));
             Assert.False(Operations.Evaluate(ECompare.IsIn, ETypeCode.String, "d", null));
+            Assert.False(Operations.Evaluate(ECompare.IsNotIn, ETypeCode.String, "a", array));
+            Assert.True(Operations.Evaluate(ECompare.IsNotIn, ETypeCode.String, "d", array));
+            Assert.False(Operations.Evaluate(ECompare.IsNotIn, ETypeCode.String, "d", null));
         }
         
         [Theory]

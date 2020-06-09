@@ -66,6 +66,7 @@ namespace Dexih.Utils.DataType
             IsIn,
             IsNull,
             IsNotNull,
-            Like
+            Like,
+            IsNotIn
         }
 }
