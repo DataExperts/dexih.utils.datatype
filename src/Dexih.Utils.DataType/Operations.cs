@@ -311,7 +311,7 @@ namespace Dexih.Utils.DataType
 
                 return Parse(tryDataType, inputValue);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 #if DEBUG
                 throw new DataTypeException($"The value {inputValue} could not be parsed to type {tryDataType} rank {rank}", ex);
