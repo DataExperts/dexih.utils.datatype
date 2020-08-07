@@ -23,6 +23,10 @@ The primary benefits:
  * A datatype which stores any types and can used for operations without the [boxing/unboxing](https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/types/boxing-and-unboxing) overhead of the `object` type.
 ---
 
+## Release 1.0.143
+
+* Breaking - Note there is a change in this release which might be breaking.  The sort order of nulls is now consistent with sql, with nulls being last in the sort order.
+
 ## Installation
 
 Add the [latest version][nuget] of the package "dexih.utils.datatype" to a .net core/.net project.  This requires .net standard framework 2.0 or newer, or the .net framework 4.6 or newer.
