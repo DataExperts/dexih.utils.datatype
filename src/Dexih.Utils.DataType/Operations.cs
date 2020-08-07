@@ -566,10 +566,10 @@ namespace Dexih.Utils.DataType
         public static bool GreaterThan(Type type, object value1, object value2)
         {
             if ((value1 == null || value1 == DBNull.Value))
-                return false;
+                return !(value2 == null || value2 == DBNull.Value);
 
             if (value2 == null || value2 == DBNull.Value)
-                return true;
+                return false;
             
             var typeCode = DataType.GetTypeCode(type, out _);
             return GreaterThan(typeCode, value1, value2);
@@ -579,10 +579,10 @@ namespace Dexih.Utils.DataType
         public static bool GreaterThan(ETypeCode typeCode,  object value1, object value2)
         {
             if ((value1 == null || value1 == DBNull.Value))
-                return false;
+                return !(value2 == null || value2 == DBNull.Value);
 
             if (value2 == null || value2 == DBNull.Value)
-                return true;
+                return false;
 
             value1 = Parse(typeCode, value1);
             value2 = Parse(typeCode, value2);
@@ -650,11 +650,12 @@ namespace Dexih.Utils.DataType
         
         public static bool GreaterThanOrEqual(Type type, object value1, object value2)
         {
+            // if the value is null it is always greater or equal.
             if ((value1 == null || value1 == DBNull.Value))
-                return (value2 == null || value2 == DBNull.Value);
+                return true;
 
             if (value2 == null || value2 == DBNull.Value)
-                return true;
+                return false;
 
             var typeCode = DataType.GetTypeCode(type, out _);
             return GreaterThanOrEqual(typeCode, value1, value2);
@@ -663,11 +664,12 @@ namespace Dexih.Utils.DataType
 
         public static bool GreaterThanOrEqual(ETypeCode typeCode,  object value1, object value2)
         {
+            // if the value is null it is always greater or equal.
             if ((value1 == null || value1 == DBNull.Value))
-                return (value2 == null || value2 == DBNull.Value);
+                return true;
 
             if (value2 == null || value2 == DBNull.Value)
-                return true;
+                return false;                
 
             value1 = Parse(typeCode, value1);
             value2 = Parse(typeCode, value2);
@@ -738,10 +740,10 @@ namespace Dexih.Utils.DataType
         public static bool LessThan(Type type, object value1, object value2)
         {
             if ((value2 == null || value2 == DBNull.Value))
-                return false;
+                return !(value1 == null || value1 == DBNull.Value);
 
             if (value1 == null || value1 == DBNull.Value)
-                return true;
+                return false;
 
             var typeCode = DataType.GetTypeCode(type, out _);
             return LessThan(typeCode, value1, value2);
@@ -751,10 +753,10 @@ namespace Dexih.Utils.DataType
         public static bool LessThan(ETypeCode typeCode,  object value1, object value2)
         {
             if ((value2 == null || value2 == DBNull.Value))
-                return false;
+                return !(value1 == null || value1 == DBNull.Value);
 
             if (value1 == null || value1 == DBNull.Value)
-                return true;
+                return false;
             
             value1 = Parse(typeCode, value1);
             value2 = Parse(typeCode, value2);
@@ -823,11 +825,12 @@ namespace Dexih.Utils.DataType
         
         public static bool LessThanOrEqual(Type type, object value1, object value2)
         {
+            // if value 2 is null it is always less than equal
             if ((value2 == null || value2 == DBNull.Value))
-                return (value1 == null || value1 == DBNull.Value);
+                return true;
 
             if (value1 == null || value1 == DBNull.Value)
-                return true;
+                return false;
 
             var typeCode = DataType.GetTypeCode(type, out _);
             return LessThanOrEqual(typeCode, value1, value2);
@@ -835,11 +838,12 @@ namespace Dexih.Utils.DataType
 
         public static bool LessThanOrEqual(ETypeCode typeCode,  object value1, object value2)
         {
+            // if value 2 is null it is always less than equal
             if ((value2 == null || value2 == DBNull.Value))
-                return (value1 == null || value1 == DBNull.Value);
+                return true;
 
             if (value1 == null || value1 == DBNull.Value)
-                return true;
+                return false;
             
             value1 = Parse(typeCode, value1);
             value2 = Parse(typeCode, value2);
@@ -1411,7 +1415,7 @@ namespace Dexih.Utils.DataType
                 return 0;
 
             if (inputValue == null || inputValue == DBNull.Value || compareTo == null || compareTo == DBNull.Value)
-                return (inputValue == null || inputValue is DBNull) ? -1 : 1;
+                return (inputValue == null || inputValue is DBNull) ? 1 : -1;
 
             var typeCode = DataType.GetTypeCode(type, out _);
             return Compare(typeCode, inputValue, compareTo);
@@ -1424,7 +1428,7 @@ namespace Dexih.Utils.DataType
                 return 0;
 
             if (inputValue == null || inputValue == DBNull.Value || compareTo == null || compareTo == DBNull.Value)
-                return (inputValue == null || inputValue is DBNull) ? -1 : 1;
+                return (inputValue == null || inputValue is DBNull) ? 1 : -1;
             
             inputValue = Parse(typeCode, inputValue);
             compareTo = Parse(typeCode, compareTo);

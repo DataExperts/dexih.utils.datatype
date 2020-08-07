@@ -181,10 +181,10 @@ namespace Dexih.Utils.DataType.Tests
         [InlineData(ETypeCode.Guid, "6d5bba83-e71b-4ce1-beb8-006085a0a77d", "6d5bba83-e71b-4ce1-beb8-006085a0a77c", 1)]
         [InlineData(ETypeCode.Guid, "6d5bba83-e71b-4ce1-beb8-006085a0a77c", "6d5bba83-e71b-4ce1-beb8-006085a0a77c", 0)]
         [InlineData(ETypeCode.Guid, "6d5bba83-e71b-4ce1-beb8-006085a0a77c", "6d5bba83-e71b-4ce1-beb8-006085a0a77d", -1)]
-        [InlineData(ETypeCode.Decimal, 1.1, null, 1)]
-        [InlineData(ETypeCode.String, "1", null, 1)]
-        [InlineData(ETypeCode.Decimal, null, 1.1, -1)]
-        [InlineData(ETypeCode.String, null, "1", -1)]
+        [InlineData(ETypeCode.Decimal, 1.1, null, -1)]
+        [InlineData(ETypeCode.String, "1", null, -1)]
+        [InlineData(ETypeCode.Decimal, null, 1.1, 1)]
+        [InlineData(ETypeCode.String, null, "1", 1)]
         [InlineData(ETypeCode.String, null, null, 0)]
         [MemberData(nameof(OtherCompareTypes))]
         public void DataType_Compare(ETypeCode dataType, object v1, object v2, int expectedResult)
@@ -214,8 +214,8 @@ namespace Dexih.Utils.DataType.Tests
             new object[] { ETypeCode.DateTime, new DateTime(2000, 01,02), new DateTime(2000, 01,01), 1},
             new object[] { ETypeCode.DateTime, new DateTime(2000, 01,01), new DateTime(2000, 01,01), 0},
             new object[] { ETypeCode.DateTime, new DateTime(2000, 01,01), new DateTime(2000, 01,02), -1},
-            new object[] { ETypeCode.DateTime, null, new DateTime(2000, 01,02), -1},
-            new object[] { ETypeCode.DateTime, new DateTime(2000, 01,02), null, 1},
+            new object[] { ETypeCode.DateTime, null, new DateTime(2000, 01,02), 1},
+            new object[] { ETypeCode.DateTime, new DateTime(2000, 01,02), null, -1},
             new object[] { ETypeCode.Date, new DateTime(2000, 01,01, 10, 10, 10), new DateTime(2000, 01,01), 0},
             new object[] { ETypeCode.CharArray, "001".ToCharArray(), "01".ToCharArray(), -1},
             new object[] { ETypeCode.CharArray, "01".ToCharArray(), "001".ToCharArray(), 1},
