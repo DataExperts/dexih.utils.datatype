@@ -602,7 +602,7 @@ namespace Dexih.Utils.DataType
                     return CharArrayIsGreater((char[])value1, (char[])value2,false);
                 case ETypeCode.String:
                 case ETypeCode.Text:
-                    return string.Compare((string)value1, (string)value2) > 0;
+                    return string.Compare((string)value1, (string)value2, StringComparison.Ordinal) > 0;
                 case ETypeCode.Guid:
                     return string.Compare(value1.ToString(), value2.ToString()) > 0;
                 case ETypeCode.DateTime:
@@ -690,7 +690,7 @@ namespace Dexih.Utils.DataType
                     return ((Geometry)value1).CompareTo((Geometry)value2) >= 0;
                 case ETypeCode.String:
                 case ETypeCode.Text:
-                    return string.Compare((string)value1, (string)value2) >= 0;
+                    return string.Compare((string)value1, (string)value2, StringComparison.Ordinal) >= 0;
                 case ETypeCode.Guid:
                     return string.Compare(value1.ToString(), value2.ToString()) >= 0;
                 case ETypeCode.DateTime:
@@ -776,7 +776,7 @@ namespace Dexih.Utils.DataType
                     return CharArrayIsLessThan((char[])value1, (char[])value2,false);
                 case ETypeCode.String:
                 case ETypeCode.Text:
-                    return string.Compare((string)value1, (string)value2) < 0;
+                    return string.Compare((string)value1, (string)value2, StringComparison.Ordinal) < 0;
                 case ETypeCode.Guid:
                     return string.Compare(value1.ToString(), value2.ToString()) < 0;
                 case ETypeCode.DateTime:
@@ -863,7 +863,7 @@ namespace Dexih.Utils.DataType
                     return CharArrayIsLessThan((char[])value1, (char[])value2,true);
                 case ETypeCode.String:
                 case ETypeCode.Text:
-                    return string.Compare((string)value1, (string)value2) <= 0;
+                    return string.Compare((string)value1, (string)value2, StringComparison.Ordinal) <= 0;
                 case ETypeCode.Guid:
                     return string.Compare(value1.ToString(), value2.ToString()) <= 0;
                 case ETypeCode.DateTime:
@@ -1411,11 +1411,15 @@ namespace Dexih.Utils.DataType
 
         public static int Compare(Type type, object inputValue, object compareTo)
         {
-            if ((inputValue == null || inputValue == DBNull.Value) && (compareTo == null || compareTo == DBNull.Value))
-                return 0;
+            if (inputValue == null || inputValue is DBNull)
+            {
+                return (compareTo == null || compareTo is DBNull) ? 0 : 1;
+            }
 
-            if (inputValue == null || inputValue == DBNull.Value || compareTo == null || compareTo == DBNull.Value)
-                return (inputValue == null || inputValue is DBNull) ? 1 : -1;
+            if (compareTo == null || compareTo is DBNull)
+            {
+                return -1;
+            }
 
             var typeCode = DataType.GetTypeCode(type, out _);
             return Compare(typeCode, inputValue, compareTo);
@@ -1424,11 +1428,15 @@ namespace Dexih.Utils.DataType
 
         public static int Compare(ETypeCode typeCode, object inputValue, object compareTo)
         {
-            if ((inputValue == null || inputValue == DBNull.Value) && (compareTo == null || compareTo == DBNull.Value))
-                return 0;
+            if (inputValue == null || inputValue is DBNull)
+            {
+                return (compareTo == null || compareTo is DBNull) ? 0 : 1;
+            }
 
-            if (inputValue == null || inputValue == DBNull.Value || compareTo == null || compareTo == DBNull.Value)
-                return (inputValue == null || inputValue is DBNull) ? 1 : -1;
+            if (compareTo == null || compareTo is DBNull)
+            {
+                return -1;
+            }
             
             inputValue = Parse(typeCode, inputValue);
             compareTo = Parse(typeCode, compareTo);
@@ -1465,7 +1473,8 @@ namespace Dexih.Utils.DataType
                     return ((float)inputValue).CompareTo((float)compareTo);
                 case ETypeCode.String:
                 case ETypeCode.Text:
-                    return string.Compare((string) inputValue, (string) compareTo);
+                    var compare = string.Compare((string) inputValue, (string) compareTo, StringComparison.Ordinal);
+                    return compare < 0 ? -1 : compare > 0 ? 1 : 0;
                 case ETypeCode.Boolean:
                     return ((bool)inputValue).CompareTo((bool)compareTo);
                 case ETypeCode.DateTime:
@@ -1848,9 +1857,6 @@ namespace Dexih.Utils.DataType
                     return false;
             }
         }
-
-      
-
         
         private static Lazy<Func<T, T, int>> CreateCompare()
         {
@@ -1884,18 +1890,24 @@ namespace Dexih.Utils.DataType
             {
                 int Compare(T a, T b)
                 {
-                    if (a is null)
+                    if (a == null || a is DBNull)
                     {
-                        return b is null ? 0 : -1;
+                        return (b == null || b is DBNull) ? 0 : 1;
                     }
 
-                    if (b is null)
+                    if (b == null || b is DBNull)
                     {
-                        return 1;
+                        return -1;
                     }
                     
                     if (a.GetType() == b.GetType())
                     {
+                        if (a is string aString && b is string bString)
+                        {
+                            var compare = string.Compare(aString, bString, StringComparison.Ordinal);
+                            return compare < 0 ? -1 : compare > 0 ? 1 : 0;
+                        }
+                        
                         if (a is IComparable comparable)
                         {
                             return comparable.CompareTo(b);

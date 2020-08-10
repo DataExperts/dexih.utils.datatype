@@ -186,6 +186,8 @@ namespace Dexih.Utils.DataType.Tests
         [InlineData(ETypeCode.Decimal, null, 1.1, 1)]
         [InlineData(ETypeCode.String, null, "1", 1)]
         [InlineData(ETypeCode.String, null, null, 0)]
+        [InlineData(ETypeCode.String, "US", "Uganda", -1)]
+        [InlineData(ETypeCode.String, "Us", "Uganda", 1)]
         [MemberData(nameof(OtherCompareTypes))]
         public void DataType_Compare(ETypeCode dataType, object v1, object v2, int expectedResult)
         {
@@ -196,6 +198,9 @@ namespace Dexih.Utils.DataType.Tests
 
             var comp2 = Operations.Compare(inputValue, compareValue);
             Assert.Equal(expectedResult, comp2);
+
+            var comp3 = Operations.Compare<object>(inputValue, compareValue);
+            Assert.Equal(expectedResult, comp3);
             
             Assert.Equal(comp1 == -1, Operations.LessThan(dataType, inputValue, compareValue));
             Assert.Equal(comp1 == -1, Operations.LessThan(inputValue, compareValue));
@@ -208,6 +213,8 @@ namespace Dexih.Utils.DataType.Tests
             Assert.Equal(comp1 >= 0, Operations.GreaterThanOrEqual(dataType, inputValue, compareValue));
             Assert.Equal(comp1 >= 0, Operations.GreaterThanOrEqual(inputValue, compareValue));
         }
+        
+
 
         public static IEnumerable<object[]> OtherCompareTypes => new[]
         {
@@ -249,7 +256,7 @@ namespace Dexih.Utils.DataType.Tests
         public void NullCompare()
         {
             var comp2 = Operations.Compare<object>(null, 1);
-            Assert.Equal(-1, comp2);
+            Assert.Equal(1, comp2);
         }
 
         [Fact]
