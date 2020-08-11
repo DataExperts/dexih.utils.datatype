@@ -35,7 +35,28 @@ namespace Dexih.Utils.DataType.Tests
             Assert.Equal(available.Contains(ETypeCode.Xml), avail.XmlType);
             Assert.Equal(available.Contains(ETypeCode.Json), avail.JsonType);
             Assert.Equal(available.Contains(ETypeCode.Guid), avail.GuidType);
-            
         }
+
+        [Fact]
+        void AvailableDataTypesNulls()
+        {
+            var avail = new AvailableDataTypes();
+            avail.CheckValue("1");
+            avail.CheckValue(null);
+            Assert.True(avail.HasNulls);
+            Assert.True(avail.Int32Type);
+        }
+        
+        [Fact]
+        void AvailableDataTypesBlanks()
+        {
+            var avail = new AvailableDataTypes();
+            avail.CheckValue("1");
+            avail.CheckValue(null);
+            Assert.True(avail.HasNulls);
+            Assert.True(avail.Int32Type);
+        }
+
+        
     }
 }

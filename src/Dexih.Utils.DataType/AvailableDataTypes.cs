@@ -1,4 +1,5 @@
 using System;
+using System.Data.Common;
 using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Xml;
@@ -14,22 +15,22 @@ namespace Dexih.Utils.DataType
     {
         private bool _valueChecked;
 
-        public bool CharType { get; set; }
-        
-        public bool CharArrayType { get; set; }
-        public bool JsonType { get; set; }
-        public bool XmlType { get; set; }
-        public bool GuidType { get; set; }
-        public bool DateType { get; set; }
-        public bool TimeType { get; set; }
-        public bool Int32Type { get; set; }
-        public bool Int64Type { get; set; }
-        public bool DoubleType { get; set; }
-        public bool BooleanType { get; set; }
-        public bool DateTimeType { get; set; }
-
-        public int MinLength { get; set; }
-        public int MaxLength { get; set; }
+        public bool CharType { get; private set; }
+        public bool CharArrayType { get; private set; }
+        public bool JsonType { get; private  set; }
+        public bool XmlType { get; private  set; }
+        public bool GuidType { get; private  set; }
+        public bool DateType { get; private  set; }
+        public bool TimeType { get; private  set; }
+        public bool Int32Type { get; private  set; }
+        public bool Int64Type { get; private  set; }
+        public bool DoubleType { get; private  set; }
+        public bool BooleanType { get; private  set; }
+        public bool DateTimeType { get; private  set; }
+        public int MinLength { get; private set; }
+        public int MaxLength { get; private  set; }
+        public bool HasNulls { get; private  set; }
+        public bool HasBlanks { get; private set; }
 
         public void Reset()
         {
@@ -43,8 +44,6 @@ namespace Dexih.Utils.DataType
         /// <param name="value"></param>
         public void CheckValue(string value)
         {
-            if (value == null) return;
-
             if (!_valueChecked)
             {
                 CharType = true;
@@ -60,9 +59,23 @@ namespace Dexih.Utils.DataType
                 CharArrayType = true;
                 MinLength = Int32.MaxValue;
                 MaxLength = 0;
+                HasNulls = false;
+                HasBlanks = false;
             }
 
             _valueChecked = true;
+
+            if (value == null)
+            {
+                HasNulls = true;
+                return;
+            }
+
+            if (value is string stringValue && string.IsNullOrWhiteSpace(stringValue))
+            {
+                HasBlanks = true;
+                return;
+            }
 
             if (CharType && value.Length > 1)
             {
