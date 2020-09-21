@@ -242,5 +242,30 @@ namespace Dexih.Utils.DataType.Tests
             new object[] { ETypeCode.Binary, new byte[] {1,2,3}, new byte[] {1,2,3}, 0},
             // new object[] { ETypeCode.Geometry, new Point(1,1), new Point(1,1), 0},
         };
+
+
+        [Theory]
+        [InlineData((int) 1000, "1,000", "##,#" )]
+        [InlineData((short) 1000, "1,000", "##,#" )]
+        [InlineData((long) 1000, "1,000", "##,#" )]
+        [InlineData((ushort) 1000, "1,000", "##,#" )]
+        [InlineData((ulong) 1000, "1,000", "##,#" )]
+        [InlineData((uint) 1000, "1,000", "##,#" )]
+        [InlineData((double) 1000, "1,000", "##,#" )]
+        [InlineData((float) 1000, "1,000", "##,#" )]
+        [MemberData(nameof(OtherFormatTypes))]
+        public void DataType_Format(object value, object expected, string format)
+        {
+            var result = Operations.Format(value, format);
+            
+            Assert.Equal(expected, result);
+        }
+        
+        public static IEnumerable<object[]> OtherFormatTypes => new[]
+        {
+            new object[] {(Decimal) 1000, "1,000", "##,#"},
+            new object[] {DateTime.Parse("2020-01-01"), "20-01-01", "yy-MM-dd"},
+            new object[] {TimeSpan.Parse("01:01:01"), "0101", "hhmm"},
+        };
     }
 }

@@ -333,6 +333,51 @@ namespace Dexih.Utils.DataType
             return Parse(typeCode, rank, inputValue);
 
         }
+
+        
+        /// <summary>
+        /// Formats a value based on the datatype.
+        /// </summary>
+        /// <param name="inputValue"></param>
+        /// <param name="format"></param>
+        /// <returns>The formatted value, or if the format is null or the variable type cannot be formatted returns the original number</returns>
+        public static object Format(object inputValue, string format)
+        {
+            if (format == null)
+            {
+                return inputValue;
+            }
+            
+            switch (inputValue)
+            {
+                case byte byteValue:
+                    return byteValue.ToString(format);
+                case short shortValue:
+                    return shortValue.ToString(format);
+                case int intValue:
+                    return intValue.ToString(format);
+                case long longValue:
+                    return longValue.ToString(format);
+                case ushort ushortValue:
+                    return ushortValue.ToString(format);
+                case uint uintValue:
+                    return uintValue.ToString(format);
+                case ulong ulongValue:
+                    return ulongValue.ToString(format);
+                case decimal decimalValue:
+                    return decimalValue.ToString(format);
+                case float floatValue:
+                    return floatValue.ToString(format);
+                case double doubleValue:
+                    return doubleValue.ToString(format);
+                case DateTime dateTimeValue:
+                    return dateTimeValue.ToString(format);
+                case TimeSpan timeSpanValue:
+                    return timeSpanValue.ToString(format);
+            }
+
+            return inputValue;
+        }
         
         public static bool Equal(object inputValue, object compareTo)
         {
@@ -462,7 +507,7 @@ namespace Dexih.Utils.DataType
             }
         }
         
-           private static readonly char[] _regexSpecialChars = new char[12]
+        private static readonly char[] _regexSpecialChars = new char[12]
         {
             '.',
             '$',
