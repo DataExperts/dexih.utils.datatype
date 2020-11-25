@@ -63,6 +63,7 @@ namespace Dexih.Utils.DataType.Tests
         [InlineData(typeof(String), ETypeCode.String)]
         [InlineData(typeof(Boolean), ETypeCode.Boolean)]
         [InlineData(typeof(DateTime), ETypeCode.DateTime)]
+        [InlineData(typeof(DateTimeOffset), ETypeCode.DateTime)]
         [InlineData(typeof(TimeSpan), ETypeCode.Time)]
         [InlineData(typeof(Guid), ETypeCode.Guid)]
         [InlineData(typeof(byte[]), ETypeCode.Binary)]

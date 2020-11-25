@@ -13,7 +13,7 @@ namespace Dexih.Utils.DataType
     /// </summary>
     public static class DataType
     {
-        private static readonly Type[] SimpleTypes = {typeof(string), typeof(decimal), typeof(DateTime), typeof(TimeSpan), typeof(Guid), typeof(byte[]), typeof(char[]), typeof(Geometry)};
+        private static readonly Type[] SimpleTypes = {typeof(string), typeof(decimal), typeof(DateTime), typeof(DateTimeOffset), typeof(TimeSpan), typeof(Guid), typeof(byte[]), typeof(char[]), typeof(Geometry)};
         private static readonly Type Nullable = typeof(Nullable<>);
 
         /// <summary>
@@ -451,6 +451,7 @@ namespace Dexih.Utils.DataType
                         return ETypeCode.Int64;
                     case TypeCode.Object:
                         if (dataType == typeof(TimeSpan) || dataType == typeof(TimeSpan?)) return ETypeCode.Time;
+                        if (dataType == typeof(DateTimeOffset) || dataType == typeof(DateTimeOffset?)) return ETypeCode.DateTime;
                         if (dataType == typeof(Guid) || dataType == typeof(Guid?)) return ETypeCode.Guid;
                         if (dataType == typeof(byte[])) return ETypeCode.Binary;
                         if (dataType == typeof(char[])) return ETypeCode.CharArray;

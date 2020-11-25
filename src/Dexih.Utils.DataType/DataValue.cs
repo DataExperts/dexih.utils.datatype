@@ -103,6 +103,11 @@ namespace Dexih.Utils.DataType
                 _int64 = value.Ticks;
             }
 
+            public Storage(DateTimeOffset value) : this()
+            {
+                _int64 = value.Ticks;
+            }
+
             public Storage(sbyte value) : this()
             {
                 _sbyte = value;
@@ -183,11 +188,19 @@ namespace Dexih.Utils.DataType
             _typeCode = ETypeCode.Time;
             _value = new Storage(value);
         }
+        
         public DataValue(DateTime value)
         {
             _typeCode = ETypeCode.DateTime;
             _value = new Storage(value);
         }
+
+        public DataValue(DateTimeOffset value)
+        {
+            _typeCode = ETypeCode.DateTime;
+            _value = new Storage(value);
+        }
+
         public DataValue(sbyte value)
         {
             _typeCode = ETypeCode.SByte;
@@ -346,6 +359,18 @@ namespace Dexih.Utils.DataType
             }
         }
 
+        public DateTimeOffset DateTimeOffset {
+            get {
+                if (ETypeCode.DateTime == _typeCode) {
+                    return new DateTimeOffset(_value._int64, TimeSpan.Zero);
+                }
+                if (ETypeCode.Date == _typeCode) {
+                    return new DateTimeOffset(new DateTime(_value._int64).Date, TimeSpan.Zero);
+                }
+                throw new InvalidTypeException(ETypeCode.DateTime, _typeCode);
+            }
+        }
+        
         public Decimal Decimal {
             get {
                 if (ETypeCode.Decimal == _typeCode) {

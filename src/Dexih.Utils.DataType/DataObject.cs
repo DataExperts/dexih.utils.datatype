@@ -111,6 +111,11 @@ namespace Dexih.Utils.DataType
             _dataValue = new DataValue(value);
         }
         
+        public DataObject(DateTimeOffset value)
+        {
+            _dataValue = new DataValue(value);
+        }
+        
         public DataObject(sbyte value)
         {
             _dataValue = new DataValue(value);
@@ -271,6 +276,7 @@ namespace Dexih.Utils.DataType
         public Byte Byte => _dataValue.Byte;
         public Char Char => _dataValue.Char;
         public DateTime DateTime => _dataValue.DateTime;
+        public DateTimeOffset DateTimeOffset => _dataValue.DateTimeOffset;
         public Decimal Decimal => _dataValue.Decimal;
         public Double Double => _dataValue.Double;
         public Int16 Int16 => _dataValue.Int16;
