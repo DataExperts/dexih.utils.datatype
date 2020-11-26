@@ -9,7 +9,7 @@ namespace Dexih.Utils.DataType.Tests
         [Theory]
         [InlineData(new [] {"1.1", "1.2"}, new [] {ETypeCode.Double, ETypeCode.String})]
         [InlineData(new [] {"1.1", "abc"}, new [] {ETypeCode.String})]
-        [InlineData(new [] {"1 jan 2000", "2000/01/01"}, new [] {ETypeCode.DateTime, ETypeCode.String})]
+        [InlineData(new [] {"1 jan 2000", "2000/01/01"}, new [] {ETypeCode.DateTime, ETypeCode.DateTimeOffset, ETypeCode.String})]
         [InlineData(new [] {"1234", "123456"}, new [] {ETypeCode.Int32, ETypeCode.Int64, ETypeCode.Double, ETypeCode.String})]
         [InlineData(new [] {"6000000000", "7000000000"}, new [] {ETypeCode.Int64, ETypeCode.Double, ETypeCode.String})]
         [InlineData(new [] {"6000000000", "700.1"}, new [] {ETypeCode.Double, ETypeCode.String})]
@@ -32,6 +32,7 @@ namespace Dexih.Utils.DataType.Tests
             Assert.Equal(available.Contains(ETypeCode.Double), avail.DoubleType);
             Assert.Equal(available.Contains(ETypeCode.Boolean), avail.BooleanType);
             Assert.Equal(available.Contains(ETypeCode.DateTime), avail.DateTimeType);
+            Assert.Equal(available.Contains(ETypeCode.DateTimeOffset), avail.DateTimeOffsetType);
             Assert.Equal(available.Contains(ETypeCode.Xml), avail.XmlType);
             Assert.Equal(available.Contains(ETypeCode.Json), avail.JsonType);
             Assert.Equal(available.Contains(ETypeCode.Guid), avail.GuidType);

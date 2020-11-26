@@ -92,6 +92,8 @@ namespace Dexih.Utils.DataType
                         return jsonElement.GetDateTime();
                     case ETypeCode.Date:
                         return jsonElement.GetDateTime().Date;
+                    case ETypeCode.DateTimeOffset:
+                        return jsonElement.GetDateTimeOffset();
                     case ETypeCode.Time:
                         return TimeSpan.Parse(jsonElement.GetString());
                     case ETypeCode.Guid:
@@ -151,6 +153,8 @@ namespace Dexih.Utils.DataType
                     return inputValue is bool ? inputValue : Parse<bool>(inputValue);
                 case ETypeCode.DateTime:
                     return inputValue is DateTime ? inputValue : Parse<DateTime>(inputValue);
+                case ETypeCode.DateTimeOffset:
+                    return inputValue is DateTimeOffset ? inputValue : Parse<DateTimeOffset>(inputValue);
                 case ETypeCode.Date:
                     return inputValue is DateTime dateTime ? dateTime.Date : Parse<DateTime>(inputValue).Date;
                 case ETypeCode.Time:
@@ -372,6 +376,8 @@ namespace Dexih.Utils.DataType
                     return doubleValue.ToString(format);
                 case DateTime dateTimeValue:
                     return dateTimeValue.ToString(format);
+                case DateTimeOffset dateTimeOffsetValue:
+                    return dateTimeOffsetValue.ToString(format);
                 case TimeSpan timeSpanValue:
                     return timeSpanValue.ToString(format);
             }
@@ -654,6 +660,8 @@ namespace Dexih.Utils.DataType
                     return (DateTime) value1 > (DateTime) value2;
                 case ETypeCode.Date:
                     return ((DateTime) value1).Date > ((DateTime) value2).Date;
+                case ETypeCode.DateTimeOffset:
+                    return (DateTimeOffset) value1 > (DateTimeOffset) value2;
                 case ETypeCode.Boolean:
                     return BoolIsGreaterThan((bool) value1, (bool) value2);
                 case ETypeCode.Time:
@@ -742,6 +750,8 @@ namespace Dexih.Utils.DataType
                     return (DateTime) value1 >= (DateTime) value2;
                 case ETypeCode.Date:
                     return ((DateTime) value1).Date >= ((DateTime) value2).Date;
+                case ETypeCode.DateTimeOffset:
+                    return (DateTimeOffset) value1 >= (DateTimeOffset) value2;
                 case ETypeCode.Boolean:
                     return BoolIsGreaterThanOrEqual((bool) value1, (bool) value2);
                 case ETypeCode.Time:
@@ -828,6 +838,8 @@ namespace Dexih.Utils.DataType
                     return (DateTime) value1 < (DateTime) value2;
                 case ETypeCode.Date:
                     return ((DateTime) value1).Date < ((DateTime) value2).Date;
+                case ETypeCode.DateTimeOffset:
+                    return (DateTimeOffset) value1 < (DateTimeOffset) value2;
                 case ETypeCode.Boolean:
                     return BoolIsLessThan((bool) value1, (bool) value2);
                 case ETypeCode.Time:
@@ -915,6 +927,8 @@ namespace Dexih.Utils.DataType
                     return (DateTime) value1 <= (DateTime) value2;
                 case ETypeCode.Date:
                     return ((DateTime) value1).Date <= ((DateTime) value2).Date;
+                case ETypeCode.DateTimeOffset:
+                    return (DateTimeOffset) value1 <= (DateTimeOffset) value2;
                 case ETypeCode.Boolean:
                     return BoolIsLessThanOrEqual((bool) value1, (bool) value2);
                 case ETypeCode.Time:
@@ -973,6 +987,7 @@ namespace Dexih.Utils.DataType
                 case ETypeCode.Text:
                 case ETypeCode.DateTime:
                 case ETypeCode.Date:
+                case ETypeCode.DateTimeOffset:
                 case ETypeCode.Boolean:
                 case ETypeCode.Unknown:
                 case ETypeCode.Guid:
@@ -1037,6 +1052,7 @@ namespace Dexih.Utils.DataType
                 case ETypeCode.Text:
                 case ETypeCode.DateTime:
                 case ETypeCode.Date:
+                case ETypeCode.DateTimeOffset:
                 case ETypeCode.Boolean:
                 case ETypeCode.Unknown:
                 case ETypeCode.Guid:
@@ -1101,6 +1117,7 @@ namespace Dexih.Utils.DataType
                 case ETypeCode.Text:
                 case ETypeCode.DateTime:
                 case ETypeCode.Date:
+                case ETypeCode.DateTimeOffset:
                 case ETypeCode.Boolean:
                 case ETypeCode.Unknown:
                 case ETypeCode.Time:
@@ -1164,6 +1181,7 @@ namespace Dexih.Utils.DataType
                 case ETypeCode.Text:
                 case ETypeCode.DateTime:
                 case ETypeCode.Date:
+                case ETypeCode.DateTimeOffset:
                 case ETypeCode.Boolean:
                 case ETypeCode.Unknown:
                 case ETypeCode.Guid:
@@ -1226,6 +1244,7 @@ namespace Dexih.Utils.DataType
                 case ETypeCode.Text:
                 case ETypeCode.DateTime:
                 case ETypeCode.Date:
+                case ETypeCode.DateTimeOffset:
                 case ETypeCode.Boolean:
                 case ETypeCode.Unknown:
                 case ETypeCode.Guid:
@@ -1288,6 +1307,7 @@ namespace Dexih.Utils.DataType
                 case ETypeCode.Text:
                 case ETypeCode.DateTime:
                 case ETypeCode.Date:
+                case ETypeCode.DateTimeOffset:
                 case ETypeCode.Boolean:
                 case ETypeCode.Unknown:
                 case ETypeCode.Guid:
@@ -1347,6 +1367,7 @@ namespace Dexih.Utils.DataType
                 case ETypeCode.Text:
                 case ETypeCode.DateTime:
                 case ETypeCode.Date:
+                case ETypeCode.DateTimeOffset:
                 case ETypeCode.Boolean:
                 case ETypeCode.Unknown:
                 case ETypeCode.Guid:
@@ -1409,6 +1430,7 @@ namespace Dexih.Utils.DataType
                 case ETypeCode.Text:
                 case ETypeCode.DateTime:
                 case ETypeCode.Date:
+                case ETypeCode.DateTimeOffset:
                 case ETypeCode.Boolean:
                 case ETypeCode.Unknown:
                 case ETypeCode.Guid:
@@ -1526,6 +1548,8 @@ namespace Dexih.Utils.DataType
                     return ((DateTime)inputValue).CompareTo((DateTime)compareTo);
                 case ETypeCode.Date:
                     return ((DateTime)inputValue).Date.CompareTo(((DateTime)compareTo).Date);
+                case ETypeCode.DateTimeOffset:
+                    return ((DateTimeOffset)inputValue).CompareTo((DateTimeOffset)compareTo);
                 case ETypeCode.Time:
                     return ((TimeSpan)inputValue).CompareTo((TimeSpan)compareTo);
                 case ETypeCode.Guid:
@@ -2142,6 +2166,7 @@ namespace Dexih.Utils.DataType
                     break;
                 case TypeCode.Object:
                     if (dataType == typeof(TimeSpan) || dataType == typeof(TimeSpan?)) exp = value => value.ToString();
+                    else if (dataType == typeof(DateTimeOffset) || dataType == typeof(DateTimeOffset?)) exp = value => value.ToString();
                     else if (dataType == typeof(Guid) || dataType == typeof(Guid?)) exp = value => value.ToString();
                     else if (dataType == typeof(byte[])) exp = value => ByteArrayToHex(value as byte[]);
                     else if (dataType == typeof(char[])) exp = value => new string(value as char[]);
@@ -2260,6 +2285,37 @@ namespace Dexih.Utils.DataType
 
 
                 throw new DataTypeParseException("TimeSpan conversion is only supported for strings or longs.");
+            };
+        }
+
+        private static Func<object, T> ConvertToDateTimeOffset()
+        {
+            return value =>
+            {
+                switch (value)
+                {
+                    case DateTimeOffset dateTimeOffset:
+                        return (T) (object) dateTimeOffset;
+                    case DateTime dateTime:
+                        return (T) (object) new DateTimeOffset(dateTime);
+                    case string stringValue:
+                        return (T) (object) DateTimeOffset.Parse(stringValue);
+                    case long longValue:
+                        return (T) (object) new DateTimeOffset(longValue, TimeSpan.Zero);
+                    case int intValue:
+                        return (T) (object) new DateTimeOffset(intValue, TimeSpan.Zero);
+                    case short ushortValue:
+                        return (T) (object) new DateTimeOffset(ushortValue, TimeSpan.Zero);
+                    case ulong ulongValue:
+                        return (T) (object) new DateTimeOffset(Convert.ToInt64(ulongValue), TimeSpan.Zero);
+                    case uint uintValue:
+                        return (T) (object) new DateTimeOffset(uintValue, TimeSpan.Zero);
+                    case ushort ushortValue:
+                        return (T) (object) new DateTimeOffset(ushortValue, TimeSpan.Zero);
+                }
+
+
+                throw new DataTypeParseException("DateTimeOffset conversion is only supported for datetime, strings, longs.");
             };
         }
 
@@ -2493,6 +2549,7 @@ namespace Dexih.Utils.DataType
                     break;
                 case TypeCode.Object:
                     if (dataType == typeof(TimeSpan) || dataType == typeof(TimeSpan?)) exp = ConvertToTimeSpan();
+                    else if (dataType == typeof(DateTimeOffset) || dataType == typeof(DateTimeOffset?)) exp = ConvertToDateTimeOffset();
                     else if (dataType.IsEnum) exp = value => (T) (object) Convert.ToInt32(value);
                     else if (dataType == typeof(Guid) || dataType == typeof(Guid?)) exp = ConvertToGuid();
                     else if (dataType == typeof(byte[])) exp = ConvertToByteArray();

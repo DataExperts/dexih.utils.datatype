@@ -200,6 +200,9 @@ namespace Dexih.Utils.DataType.Tests
           [InlineData(ETypeCode.Date, "2001-01-01", "2000-12-31", 1)]
           [InlineData(ETypeCode.Date, "2001-01-01", "2001-01-01", 0)]
           [InlineData(ETypeCode.Date, "2000-01-02", "2000-01-03", -1)]
+          [InlineData(ETypeCode.DateTimeOffset, "2001-01-01", "2000-12-31", 1)]
+          [InlineData(ETypeCode.DateTimeOffset, "2001-01-01", "2001-01-01", 0)]
+          [InlineData(ETypeCode.DateTimeOffset, "2000-01-02", "2000-01-03", -1)]
         [InlineData(ETypeCode.Time, "00:01:00", "00:00:59", 1)]
         [InlineData(ETypeCode.Time, "00:00:59", "00:00:59", 0)]
         [InlineData(ETypeCode.Time, "00:01:00", "00:01:01", -1)]
@@ -265,6 +268,7 @@ namespace Dexih.Utils.DataType.Tests
         {
             new object[] {(Decimal) 1000, "1,000", "##,#"},
             new object[] {DateTime.Parse("2020-01-01"), "20-01-01", "yy-MM-dd"},
+            new object[] {DateTimeOffset.Parse("2020-01-01"), "20-01-01", "yy-MM-dd"},
             new object[] {TimeSpan.Parse("01:01:01"), "0101", "hhmm"},
         };
     }

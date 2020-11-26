@@ -51,7 +51,8 @@ namespace Dexih.Utils.DataType
             Object,
             Node, // a reference to another record-set.
             Geometry,
-            Date
+            Date,
+            DateTimeOffset
         }
         
         // [JsonConverter(typeof(StringEnumConverter))]

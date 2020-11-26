@@ -17,7 +17,7 @@ namespace Dexih.Utils.DataType
         private static readonly Type Nullable = typeof(Nullable<>);
 
         /// <summary>
-        /// Is a simple type that can be mapped to db.  Includes generic types and decimal, datetime, timespan, guid, byte[] and char[]
+        /// Is a simple type that can be mapped to db.  Includes generic types and decimal, datetime, dateTimeOffset, timespan, guid, byte[] and char[]
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
@@ -141,6 +141,7 @@ namespace Dexih.Utils.DataType
                 case ETypeCode.Boolean:
                 case ETypeCode.DateTime:
                 case ETypeCode.Date:
+                case ETypeCode.DateTimeOffset:
                 case ETypeCode.Time:
                     return true;
             }
@@ -170,6 +171,7 @@ namespace Dexih.Utils.DataType
             {ETypeCode.DateTime, ETypeCode.Int64},
             {ETypeCode.Date, ETypeCode.Int64},
             {ETypeCode.Time, ETypeCode.Int64},
+            {ETypeCode.DateTimeOffset, ETypeCode.Int64},
             {ETypeCode.Guid, ETypeCode.String},
             {ETypeCode.Json, ETypeCode.String},
             {ETypeCode.Xml, ETypeCode.String},
@@ -199,9 +201,10 @@ namespace Dexih.Utils.DataType
             {ETypeCode.String, 255},
             {ETypeCode.Text, 252},
             {ETypeCode.Boolean, 1},
-            {ETypeCode.DateTime, 1},
-            {ETypeCode.Date, 2},
-            {ETypeCode.Time, 1},
+            {ETypeCode.DateTimeOffset, 1},
+            {ETypeCode.DateTime, 2},
+            {ETypeCode.Date, 3},
+            {ETypeCode.Time, 2},
             {ETypeCode.Guid, 253},
             {ETypeCode.Json, 253},
             {ETypeCode.Xml, 254},
@@ -285,6 +288,8 @@ namespace Dexih.Utils.DataType
                     return DateTime.MaxValue;
                 case ETypeCode.Date:
                     return DateTime.MaxValue.Date;
+                case ETypeCode.DateTimeOffset:
+                    return DateTimeOffset.MaxValue;
                 case ETypeCode.Time:
                     return TimeSpan.FromDays(1) - TimeSpan.FromMilliseconds(1);
                 case ETypeCode.Guid:
@@ -352,6 +357,8 @@ namespace Dexih.Utils.DataType
                     return new DateTime(0001, 01, 01); // new DateTime(1753,01,01);
                 case ETypeCode.Date:
                     return new DateTime(0001, 01, 01); // new DateTime(1753,01,01);
+                case ETypeCode.DateTimeOffset:
+                    return new DateTimeOffset(0001, 01, 01, 0, 0, 0, TimeSpan.Zero); 
                 case ETypeCode.Time:
                     return TimeSpan.FromDays(0);
                 case ETypeCode.Guid:
@@ -399,6 +406,7 @@ namespace Dexih.Utils.DataType
                 case ETypeCode.Boolean: return EBasicType.Boolean;
                 case ETypeCode.DateTime: return EBasicType.Date;
                 case ETypeCode.Date: return EBasicType.Date;
+                case ETypeCode.DateTimeOffset: return EBasicType.Date;
                 case ETypeCode.Time: return EBasicType.Time;
                 case ETypeCode.Binary: return EBasicType.Binary;
                 case ETypeCode.Enum: return EBasicType.Enum;
@@ -451,7 +459,7 @@ namespace Dexih.Utils.DataType
                         return ETypeCode.Int64;
                     case TypeCode.Object:
                         if (dataType == typeof(TimeSpan) || dataType == typeof(TimeSpan?)) return ETypeCode.Time;
-                        if (dataType == typeof(DateTimeOffset) || dataType == typeof(DateTimeOffset?)) return ETypeCode.DateTime;
+                        if (dataType == typeof(DateTimeOffset) || dataType == typeof(DateTimeOffset?)) return ETypeCode.DateTimeOffset;
                         if (dataType == typeof(Guid) || dataType == typeof(Guid?)) return ETypeCode.Guid;
                         if (dataType == typeof(byte[])) return ETypeCode.Binary;
                         if (dataType == typeof(char[])) return ETypeCode.CharArray;
@@ -594,6 +602,9 @@ namespace Dexih.Utils.DataType
                 case ETypeCode.Date:
                     type = typeof(DateTime);
                     break;
+                case ETypeCode.DateTimeOffset:
+                    type = typeof(DateTimeOffset);
+                    break;
                 case ETypeCode.Time:
                     type = typeof(TimeSpan);
                     break;
@@ -675,6 +686,8 @@ namespace Dexih.Utils.DataType
                     return DbType.Boolean;
                 case ETypeCode.DateTime:
                     return DbType.DateTime;
+                case ETypeCode.DateTimeOffset:
+                    return DbType.DateTimeOffset;
                 case ETypeCode.Date:
                     return DbType.Date;
                 case ETypeCode.Time:

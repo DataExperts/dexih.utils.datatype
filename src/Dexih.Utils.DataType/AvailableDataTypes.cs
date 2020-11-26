@@ -27,6 +27,8 @@ namespace Dexih.Utils.DataType
         public bool DoubleType { get; private  set; }
         public bool BooleanType { get; private  set; }
         public bool DateTimeType { get; private  set; }
+        
+        public bool DateTimeOffsetType { get; private  set; }
         public int MinLength { get; private set; }
         public int MaxLength { get; private  set; }
         public bool HasNulls { get; private  set; }
@@ -52,6 +54,7 @@ namespace Dexih.Utils.DataType
                 DoubleType = true;
                 BooleanType = true;
                 DateTimeType = true;
+                DateTimeOffsetType = true;
                 JsonType = true;
                 XmlType = true;
                 GuidType = true;
@@ -108,6 +111,7 @@ namespace Dexih.Utils.DataType
             {
                 DateTimeType = false;
                 DateType = false;
+                DateTimeOffsetType = false;
             }
 
             if (TimeType && !TimeSpan.TryParse(value, out _))
@@ -130,6 +134,7 @@ namespace Dexih.Utils.DataType
                 {
                     // if the string is a double then override the datetime parse with a false (as value like 1.1 will incorrectly parse as a date)
                     DateTimeType = false;
+                    DateTimeOffsetType = false;
                 }
             }
 

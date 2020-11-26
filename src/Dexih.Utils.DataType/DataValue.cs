@@ -23,6 +23,17 @@ namespace Dexih.Utils.DataType
             internal Boolean Positive;
         }
 
+        internal struct DateTimeOffsetInfo
+        {
+            internal Int64 DateTimeTicks;
+            internal Int64 TimeSpanTicks;
+
+            internal Int64 TotalTicks()
+            {
+                return DateTimeTicks + TimeSpanTicks;
+            }
+        }
+
         [StructLayout(LayoutKind.Explicit)]
         internal readonly struct Storage
         {
@@ -39,6 +50,7 @@ namespace Dexih.Utils.DataType
             [FieldOffset(0)] internal readonly UInt64 _uint64;
             [FieldOffset(0)] internal readonly sbyte _sbyte;
             [FieldOffset(0)] internal readonly Single _single;
+            [FieldOffset(0)] internal readonly DateTimeOffsetInfo _dateTimeOffsetInfo;
 
             public Storage(bool value) : this()
             {
@@ -105,7 +117,8 @@ namespace Dexih.Utils.DataType
 
             public Storage(DateTimeOffset value) : this()
             {
-                _int64 = value.Ticks;
+                _dateTimeOffsetInfo.DateTimeTicks = value.Ticks;
+                _dateTimeOffsetInfo.TimeSpanTicks = value.Offset.Ticks;
             }
 
             public Storage(sbyte value) : this()
@@ -197,7 +210,7 @@ namespace Dexih.Utils.DataType
 
         public DataValue(DateTimeOffset value)
         {
-            _typeCode = ETypeCode.DateTime;
+            _typeCode = ETypeCode.DateTimeOffset;
             _value = new Storage(value);
         }
 
@@ -296,6 +309,9 @@ namespace Dexih.Utils.DataType
                 case ETypeCode.Date:
                     _value = new Storage((DateTime)value);
                     break;
+                case ETypeCode.DateTimeOffset:
+                    _value = new Storage((DateTimeOffset)value);
+                    break;
                 case ETypeCode.Time:
                     _value = new Storage((TimeSpan)value);
                     break;
@@ -361,13 +377,11 @@ namespace Dexih.Utils.DataType
 
         public DateTimeOffset DateTimeOffset {
             get {
-                if (ETypeCode.DateTime == _typeCode) {
-                    return new DateTimeOffset(_value._int64, TimeSpan.Zero);
+                if (ETypeCode.DateTimeOffset == _typeCode) {
+                    return new DateTimeOffset(_value._dateTimeOffsetInfo.DateTimeTicks, new TimeSpan(_value._dateTimeOffsetInfo.TimeSpanTicks));
                 }
-                if (ETypeCode.Date == _typeCode) {
-                    return new DateTimeOffset(new DateTime(_value._int64).Date, TimeSpan.Zero);
-                }
-                throw new InvalidTypeException(ETypeCode.DateTime, _typeCode);
+
+                throw new InvalidTypeException(ETypeCode.DateTimeOffset, _typeCode);
             }
         }
         
@@ -547,6 +561,7 @@ namespace Dexih.Utils.DataType
                     ETypeCode.Boolean => (a.Boolean == b.Boolean),
                     ETypeCode.DateTime => (a._value._int64 == b._value._int64),
                     ETypeCode.Date => (a._value._int64 == b._value._int64),
+                    ETypeCode.DateTimeOffset => (a._value._dateTimeOffsetInfo.TotalTicks() == b._value._dateTimeOffsetInfo.TotalTicks()),
                     ETypeCode.Time => (a._value._int64 == b._value._int64),
                     ETypeCode.Json => throw new CompareTypeException(ETypeCode.Json),
                     ETypeCode.Xml => throw new CompareTypeException(ETypeCode.Xml),
@@ -590,6 +605,7 @@ namespace Dexih.Utils.DataType
                     // ETypeCode.Text => Operations.LessThan(a.Text, b.Text),
                     ETypeCode.Boolean => Operations.LessThan(a.Boolean, b.Boolean),
                     ETypeCode.DateTime => (a._value._int64 < b._value._int64),
+                    ETypeCode.DateTimeOffset => (a._value._dateTimeOffsetInfo.TotalTicks() < b._value._dateTimeOffsetInfo.TotalTicks()),
                     ETypeCode.Date => (a._value._int64 < b._value._int64),
                     ETypeCode.Time => (a._value._int64 < b._value._int64),
                     // ETypeCode.Guid => Operations.LessThan(a.Guid, b.Guid),
@@ -631,6 +647,7 @@ namespace Dexih.Utils.DataType
                     // ETypeCode.Text => Operations.GreaterThan(a.Text, b.Text),
                     ETypeCode.Boolean => Operations.GreaterThan(a.Boolean, b.Boolean),
                     ETypeCode.DateTime => (a._value._int64 > b._value._int64),
+                    ETypeCode.DateTimeOffset => (a._value._dateTimeOffsetInfo.TotalTicks() > b._value._dateTimeOffsetInfo.TotalTicks()),
                     ETypeCode.Date => (a._value._int64 > b._value._int64),
                     ETypeCode.Time => (a._value._int64 > b._value._int64),
                     // ETypeCode.Guid => Operations.GreaterThan(a.Guid, b.Guid),
@@ -673,6 +690,7 @@ namespace Dexih.Utils.DataType
                     ETypeCode.Boolean => Operations.LessThanOrEqual(a.Boolean, b.Boolean),
                     ETypeCode.DateTime => (a._value._int64 <= b._value._int64),
                     ETypeCode.Date => (a._value._int64 <= b._value._int64),
+                    ETypeCode.DateTimeOffset => (a._value._dateTimeOffsetInfo.TotalTicks() <= b._value._dateTimeOffsetInfo.TotalTicks()),
                     ETypeCode.Time => (a._value._int64 <= b._value._int64),
                     // ETypeCode.Guid => Operations.LessThanOrEqual(a.Guid, b.Guid),
                     ETypeCode.Json => throw new CompareTypeException(ETypeCode.Json),
@@ -714,6 +732,7 @@ namespace Dexih.Utils.DataType
                     ETypeCode.Boolean => Operations.GreaterThanOrEqual(a.Boolean, b.Boolean),
                     ETypeCode.DateTime => (a._value._int64 >= b._value._int64),
                     ETypeCode.Date => (a._value._int64 >= b._value._int64),
+                    ETypeCode.DateTimeOffset => (a._value._dateTimeOffsetInfo.TotalTicks() >= b._value._dateTimeOffsetInfo.TotalTicks()),
                     ETypeCode.Time => (a._value._int64 >= b._value._int64),
                     // ETypeCode.Guid => Operations.GreaterThanOrEqual(a.Guid, b.Guid),
                     ETypeCode.Json => throw new CompareTypeException(ETypeCode.Json),
@@ -966,7 +985,10 @@ namespace Dexih.Utils.DataType
                     case ETypeCode.Byte:            
                         return Byte;
                     case ETypeCode.DateTime:        
+                    case ETypeCode.Date:        
                         return DateTime;
+                    case ETypeCode.DateTimeOffset:        
+                        return DateTimeOffset;
                     case ETypeCode.Decimal:         
                         return Decimal;
                     case ETypeCode.Double:          
